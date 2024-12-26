@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一. Pytorch 简介 Pytorch是torch的python版本，专门针对 GPU 加速的深度神经网络（DNN）编程。Torch 是一个经典的对多维矩阵数据进行操作的张量（tensor ）库，在机器学习和其他数学密集型应用有广泛应用，PyTorch 为 Python 语言使用者提供了舒适的写代码选择">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pytorch的基础用法">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/index.html">
+<meta property="og:site_name" content="ChenYuXuan的个人博客">
+<meta property="og:description" content="一. Pytorch 简介 Pytorch是torch的python版本，专门针对 GPU 加速的深度神经网络（DNN）编程。Torch 是一个经典的对多维矩阵数据进行操作的张量（tensor ）库，在机器学习和其他数学密集型应用有广泛应用，PyTorch 为 Python 语言使用者提供了舒适的写代码选择">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735216400134.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/%E6%95%B0%E6%8D%AE%E7%9A%84%E7%BB%B4%E5%BA%A6.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735217401318.png">
+<meta property="article:published_time" content="2024-12-26T12:21:00.000Z">
+<meta property="article:modified_time" content="2024-12-26T14:27:28.330Z">
+<meta property="article:author" content="ChenYuXuan">
+<meta property="article:tag" content="Pytorch 安装 Tensor 使用">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735216400134.png">
+
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>pytorch的基础用法 | ChenYuXuan的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ChenYuXuan的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-github">
+
+    <a href="https://github.com/cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>Github</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ChenYuXuan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ChenYuXuan的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          pytorch的基础用法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-12-26 20:21:00 / 修改时间：22:27:28" itemprop="dateCreated datePublished" datetime="2024-12-26T20:21:00+08:00">2024-12-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一-Pytorch"><a href="#一-Pytorch" class="headerlink" title="一. Pytorch"></a>一. Pytorch</h1><ol>
+<li><p>简介</p>
+<p>Pytorch是torch的python版本，专门针对 GPU 加速的深度神经网络（DNN）编程。Torch 是一个经典的对多维矩阵数据进行操作的张量（tensor ）库，在机器学习和其他数学密集型应用有广泛应用，PyTorch 为 Python 语言使用者提供了舒适的写代码选择</p>
+<span id="more"></span>
+
+</li>
+<li><p>安装</p>
+<p>在此之前，首先需要安装GPU环境，包括Anaconda、CUDA以及CUDNN</p>
+<p>接下来进入pytorch官网：<a target="_blank" rel="noopener" href="https://pytorch.org/">https://pytorch.org/</a></p>
+<p>找到符合你的电脑配置的pytorch版本，复制命令到pycharm的命令行执行</p>
+<p>可以通过下面代码测试是否安装成功：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line">device = torch.device(<span class="string">&quot;cuda&quot;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&quot;cpu&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(device)</span><br></pre></td></tr></table></figure>
+
+<p>若安装成功则会在控制台打印”cuda”，展示如下</p>
+<img src="/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735216400134.png" class="" title="img"></li>
+</ol>
+<h1 id="二-Tensor的基本概念"><a href="#二-Tensor的基本概念" class="headerlink" title="二. Tensor的基本概念"></a>二. Tensor的基本概念</h1><ol>
+<li><p>简介</p>
+<p>Tensor张量是Pytorch里最基本的数据结构，直观上来讲，它是一个多维矩阵，支持GPU加速</p>
+</li>
+<li><p>数据的维度</p>
+<ul>
+<li>标量：标量是指一个单一的数值，例如<code>3</code>等，在数学上，它是一个实数(0维数组)</li>
+<li>向量：向量是一个由多个标量组成的有序数组，在数学上，它是一个一维数组</li>
+<li>矩阵：矩阵一个由多个向量组成的二维数组，在数学上他是一个二维数组，也称为矩阵</li>
+<li>张量：狭义的张量是指更高维度的数据。例如三维张量可以视为多个矩阵的集合，四维张量可以视为多个三维张量的集合，Tensor就是用来表示张量的数据</li>
+</ul>
+<img src="/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/%E6%95%B0%E6%8D%AE%E7%9A%84%E7%BB%B4%E5%BA%A6.png" class="" title="img">
+</li>
+<li><p>属性</p>
+<ul>
+<li>shape：Tensor的形状，描述了他在每个维度的大小</li>
+<li>type：Tensor中每个元素的数据类型，如float32和int32等</li>
+<li>device：Tensor存储的设备，是CPU(内存)还是GPU(显存)</li>
+</ul>
+</li>
+</ol>
+<h1 id="三-Tensor的基本使用"><a href="#三-Tensor的基本使用" class="headerlink" title="三. Tensor的基本使用"></a>三. Tensor的基本使用</h1><p>在使用tensor前需要导入torch包</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>Tensor的创建</p>
+<p>下面这张图展示了各种tensor的创建</p>
+<img src="/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735217401318.png" class="" title="img">
+</li>
+<li><p>查看Tensor的属性</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(tensor_rand.shape) 		<span class="comment">#查看shape</span></span><br><span class="line"><span class="built_in">print</span>(tensor_rand.size()) 		<span class="comment">#查看shape</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(tensor_rand.numel()) 	    <span class="comment">#查看元素个数</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(tensor_rand.dtype)        <span class="comment">#查看type</span></span><br><span class="line"><span class="built_in">print</span>(tensor_rand.device)       <span class="comment">#查看device</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Numpy与Tensor的相互转换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">data = np.random.randint(<span class="number">1</span>, <span class="number">9</span>, size=(<span class="number">3</span>, <span class="number">3</span>))</span><br><span class="line"></span><br><span class="line">data_tensor = torch.Tensor(data)  <span class="comment"># 从numpy创建tensor</span></span><br><span class="line">data_numpy = data_tensor.numpy()  <span class="comment"># 从tensor转化为numpy</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Tensor的type转换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">data_float16 = data_tensor.to(torch.float16) </span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(data_float16)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Tensor的切片与索引</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">data = torch.rand([<span class="number">5</span>, <span class="number">6</span>], dtype=torch.float32)</span><br><span class="line"></span><br><span class="line">data[<span class="number">3</span>, <span class="number">4</span>]			<span class="comment">#找到某个元素（第三行第四列）</span></span><br><span class="line">data[:, <span class="number">0</span>]			<span class="comment">#找到某列元素</span></span><br><span class="line">data[<span class="number">0</span>, :]			<span class="comment">#找到某行元素</span></span><br><span class="line">data[<span class="number">1</span>:<span class="number">2</span>, <span class="number">3</span>:<span class="number">5</span>]		<span class="comment">#找到某个片段</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注意torch.Tensor(2,3)与torch.Tensor([2,3])的不同点</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">torch.Tensor(<span class="number">2</span>,<span class="number">3</span>)</span><br><span class="line">torch.Tensor([<span class="number">2</span>,<span class="number">3</span>])</span><br></pre></td></tr></table></figure>
+
+<p>torch.tensor()和torch.tensor([])，这二者的主要区别在于创建的对象的size和value不同</p>
+<ul>
+<li><code>torch.Tensor(2, 3)</code> 会创建一个2行3列的张量，元素是随机的</li>
+<li><code>torch.Tensor(3,2,3)</code>会创建批次为3的2行3列张量，元素是随机的</li>
+<li><code>torch.Tensor([2, 3])</code> 会创建一个包含两个元素的一维张量，这个一维张量就是[2, 3]</li>
+</ul>
+</li>
+<li><p>Tensor的合并与堆叠</p>
+<p>方法一：使用.cat，<code>torch.cat()</code>不会引入新的维度，它只会在现有的某个维度上对输入张量进行拼接。以两个形状为(2,3)的二维张量为例，使用<code>torch.cat()</code>后，它们会被拼接成一个形状为(2,6)的二维张量。这种操作在需要合并不同维度的数据时非常有用，要求所有的tensor必须有相同的size</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tensor1=torch.Tensor(<span class="number">2</span>,<span class="number">3</span>)</span><br><span class="line">tensor2=torch.Tensor(<span class="number">2</span>,<span class="number">3</span>)</span><br><span class="line">data_list=[tensor1,tensor2]</span><br><span class="line"></span><br><span class="line">data=torch.cat(data_list,<span class="number">0</span>)</span><br><span class="line">data.shape</span><br></pre></td></tr></table></figure>
+
+<p>这时data.shape为[4, 6]</p>
+<p>方法二：使用.stack，<code>torch.stack()</code>在堆叠时会创建一个新的维度，将输入张量序列沿着这个新维度进行堆叠。这意味着，堆叠后的张量的维度比输入张量序列的维度多一。例如，如果我们有两个形状为(2,3)的二维张量，使用<code>torch.stack()</code>后，它们会被堆叠成一个形状为(2,3,2)的三维张量</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tensor1=torch.Tensor(<span class="number">2</span>,<span class="number">3</span>)</span><br><span class="line">tensor2=torch.Tensor(<span class="number">2</span>,<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">data_list=[tensor1,tensor2]</span><br><span class="line"></span><br><span class="line">data=torch.stack(data_list,<span class="number">0</span>)</span><br><span class="line">data.shape</span><br></pre></td></tr></table></figure>
+
+<p>这时data.shape为[2, 2, 3]</p>
+<p>总结一下：使用.cat方法不会额外增加tensor的维度，而使用.stack方法会在新的维度上堆叠张量</p>
+</li>
+<li><p>Tensor的设备选择</p>
+<p>检查设备</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">torch.cuda.is_available()  <span class="comment">#检查当前设备是否有GPU可用(bool)</span></span><br><span class="line">torch.cuda.device_count(） <span class="comment">#输出当前设备的显卡数量(int)</span></span><br></pre></td></tr></table></figure>
+
+<p>切换设备</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#在cpu上创建数据</span></span><br><span class="line">tensor_cpu = torch.tensor([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])  <span class="comment">#或&quot;device = &#x27;cpu&#x27;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#在gpu上创建数据</span></span><br><span class="line">tensor_gpu = torch.tensor([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], device=<span class="string">&#x27;cuda&#x27;</span>) </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tensor_cpu2gpu = tensor_cpu.to(<span class="string">&#x27;cuda&#x27;</span>)</span><br><span class="line">tensor_gpu2cpu = tensor_gpu.to(<span class="string">&#x27;cpu&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>.to</code>可以实现设备上的迁移，不仅仅适用于tensor，也适用于模型整体迁移。例如model.to(’cuda’)等</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Pytorch-%E5%AE%89%E8%A3%85-Tensor-%E4%BD%BF%E7%94%A8/" rel="tag"># Pytorch 安装 Tensor 使用</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/12/26/%E5%A6%82%E4%BD%95%E7%94%A8hexo%E6%A1%86%E6%9E%B6%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" rel="prev" title="如何用hexo框架搭建自己的个人博客">
+      <i class="fa fa-chevron-left"></i> 如何用hexo框架搭建自己的个人博客
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-Pytorch"><span class="nav-number">1.</span> <span class="nav-text">一. Pytorch</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-Tensor%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">2.</span> <span class="nav-text">二. Tensor的基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-Tensor%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">三. Tensor的基本使用</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ChenYuXuan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyxCHENYUXUAN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cyx2897@gmail.com" title="E-Mail → mailto:cyx2897@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <font color="red"><i class="fa fa-heartbeat" aria-hidden="true"></i></font>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChenYuXuan</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">5k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">4 分钟</span>
+</div>
+<!--添加运行时间-->
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+      Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+      year - 作为date对象的年份，为4位年份值
+      month - 0-11之间的整数，做为date对象的月份
+      day - 1-31之间的整数，做为date对象的天数
+      hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+      minutes - 0-59之间的整数，做为date对象的分钟数
+      seconds - 0-59之间的整数，做为date对象的秒数
+      microseconds - 0-999之间的整数，做为date对象的毫秒数
+     */
+		var t1 = Date.UTC(2024,12,24,15,00,00); //北京时间
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" 已运行"+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒";
+	}
+	siteTime();
+</script>
+<!--// 添加运行时间-->
+
+<!-- 新增访客统计代码 -->
+<div class="busuanzi-count">
+    <script async="" src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      访客数量 <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 人
+      <span class="post-meta-divider">|</span>
+    </span>
+    <div class="powered-by"></div>
+    <span class="site-uv">
+      <i class="fa fa-eye"></i>
+      总访问量 <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 次
+    </span>
+    <!--
+    <span class="site-pv">
+      <i class="fa fa-pencil"></i>
+      本站博客共 <span class="post-count">2.2k</span> 字
+    </span>
+    -->
+</div>
+<!-- 新增访客统计代码 END-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
