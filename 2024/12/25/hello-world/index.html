@@ -416,7 +416,7 @@
       seconds - 0-59之间的整数，做为date对象的秒数
       microseconds - 0-999之间的整数，做为date对象的毫秒数
      */
-		var t1 = Date.UTC(2024,12,24,15,00,00); //北京时间2018-2-13 00:00:00
+		var t1 = Date.UTC(2024,12,24,15,00,00); //北京时间
 		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
 		var diff = t2-t1;
 		var diffYears = Math.floor(diff/years);
@@ -435,13 +435,13 @@
     <script async="" src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <span class="site-uv">
       <i class="fa fa-user"></i>
-      访问量 <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 次
+      访客数量 <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 人
       <span class="post-meta-divider">|</span>
     </span>
     <div class="powered-by"></div>
     <span class="site-uv">
       <i class="fa fa-eye"></i>
-      总访客 <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 人
+      总访问量 <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 次
     </span>
     <!--
     <span class="site-pv">
