@@ -196,7 +196,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-12-27 21:55:10 / 修改时间：23:20:06" itemprop="dateCreated datePublished" datetime="2024-12-27T21:55:10+08:00">2024-12-27</time>
+              <time title="创建时间：2024-12-27 21:55:10 / 修改时间：23:22:05" itemprop="dateCreated datePublished" datetime="2024-12-27T21:55:10+08:00">2024-12-27</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -234,6 +234,9 @@
 
       
           <h1 id="一-读取数据"><a href="#一-读取数据" class="headerlink" title="一. 读取数据"></a>一. 读取数据</h1><p>数据处理主要是进行数据预处理和将数据分成batch依次读取这两个步骤</p>
+<ol>
+<li><p>数据预处理（构建Dataset）</p>
+<p>PyTorch 提供的一个简单的数据集包装器，用于将多个张量（tensor）打包在一起，方便后续的批次处理。它将每个张量的第一维度（batch）视为数据样本的数量，并将这些张量按样本进行配对，因此常用于将输入特征和目标标签组合在一起，示例代码如下</p></li></ol>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/12/27/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%B8%80%E8%88%AC%E6%AD%A5%E9%AA%A4/#more" rel="contents">
