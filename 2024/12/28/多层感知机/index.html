@@ -20,22 +20,25 @@
     var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="一. 线性分类模型 分类问题与回归问题 回归问题解决的是“how much”的问题，例如预测房价 分类问题解决的是“which one”的问题，例如预测一个邮件“是不是”一个垃圾邮件，一个蘑菇“是不是”毒蘑菇，一个人”是不是“糖尿病，判断一朵花”是哪种“鸢尾花">
+  <meta name="description" content="一. 神经网络神经网络是一种基于生物神经系统结构和功能特点而设计的人工神经网络模型，具有很强的自适应性和非线性映射能力。神经网络由多个神经元（或节点）组成，这些神经元通过连接权重相互连接，构成多层的网络结构。每个神经元接收到来自其它神经元的信号，并将这些信号加权线性组合后通过激活函数进行非线性转换，最终输出给下一层神经元或输出层">
 <meta property="og:type" content="article">
-<meta property="og:title" content="线性分类">
-<meta property="og:url" content="http://cyxchenyuxuan.github.io/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/index.html">
+<meta property="og:title" content="多层感知机">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/index.html">
 <meta property="og:site_name" content="ChenYuXuan的个人博客">
-<meta property="og:description" content="一. 线性分类模型 分类问题与回归问题 回归问题解决的是“how much”的问题，例如预测房价 分类问题解决的是“which one”的问题，例如预测一个邮件“是不是”一个垃圾邮件，一个蘑菇“是不是”毒蘑菇，一个人”是不是“糖尿病，判断一朵花”是哪种“鸢尾花">
+<meta property="og:description" content="一. 神经网络神经网络是一种基于生物神经系统结构和功能特点而设计的人工神经网络模型，具有很强的自适应性和非线性映射能力。神经网络由多个神经元（或节点）组成，这些神经元通过连接权重相互连接，构成多层的网络结构。每个神经元接收到来自其它神经元的信号，并将这些信号加权线性组合后通过激活函数进行非线性转换，最终输出给下一层神经元或输出层">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/image-20241228142516290.png">
-<meta property="article:published_time" content="2024-12-28T04:59:36.000Z">
-<meta property="article:modified_time" content="2024-12-28T06:28:28.180Z">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/sigmoid.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/tanh.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/ReLU.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/image-20241228153405094.png">
+<meta property="article:published_time" content="2024-12-28T06:36:44.000Z">
+<meta property="article:modified_time" content="2024-12-28T08:23:27.238Z">
 <meta property="article:author" content="ChenYuXuan">
-<meta property="article:tag" content="深度学习 线性分类 模型">
+<meta property="article:tag" content="深度学习 多层感知机 MLP">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/image-20241228142516290.png">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/sigmoid.png">
 
-<link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/">
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/">
 
 
 <script id="page-configurations">
@@ -48,7 +51,7 @@
   };
 </script>
 
-  <title>线性分类 | ChenYuXuan的个人博客</title>
+  <title>多层感知机 | ChenYuXuan的个人博客</title>
   
 
 
@@ -179,7 +182,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -192,7 +195,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          线性分类
+          多层感知机
         </h1>
 
         <div class="post-meta">
@@ -203,7 +206,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-12-28 12:59:36 / 修改时间：14:28:28" itemprop="dateCreated datePublished" datetime="2024-12-28T12:59:36+08:00">2024-12-28</time>
+              <time title="创建时间：2024-12-28 14:36:44 / 修改时间：16:23:27" itemprop="dateCreated datePublished" datetime="2024-12-28T14:36:44+08:00">2024-12-28</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -228,14 +231,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.8k</span>
+              <span>1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -247,93 +250,87 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="一-线性分类模型"><a href="#一-线性分类模型" class="headerlink" title="一. 线性分类模型"></a>一. 线性分类模型</h1><ol>
-<li><p>分类问题与回归问题</p>
-<p>回归问题解决的是“how much”的问题，例如预测房价</p>
-<p>分类问题解决的是“which one”的问题，例如预测一个邮件“是不是”一个垃圾邮件，一个蘑菇“是不是”毒蘑菇，一个人”是不是“糖尿病，判断一朵花”是哪种“鸢尾花</p>
-</li>
-</ol>
+        <h1 id="一-神经网络"><a href="#一-神经网络" class="headerlink" title="一. 神经网络"></a>一. 神经网络</h1><p>神经网络是一种基于生物神经系统结构和功能特点而设计的人工神经网络模型，具有很强的自适应性和非线性映射能力。神经网络由多个神经元（或节点）组成，这些神经元通过连接权重相互连接，构成多层的网络结构。每个神经元接收到来自其它神经元的信号，并将这些信号加权线性组合后通过激活函数进行<strong>非线性转换</strong>，最终输出给下一层神经元或输出层</p>
 <span id="more"></span>
+<p>神经网络可以分为多种不同的类型，下面列举一些常见的神经网络类型</p>
 <ol>
-<li><p>分类模型的直观理解</p>
-<p>回归模型是<code>多输入</code>对应<code>单输出</code>，而分类模型是<code>多输入</code>对应<code>多输出</code>，下面用一张图直观展示分类模型</p>
+<li><p>前馈神经网络：前馈神经网络是最基本的神经网络类型，也是深度学习中最常见的神经网络类型。它由若干个神经元按照一定的层次结构组成，每个神经元接收上一层的输出，产生本层的输出，从而实现信息的传递和处理</p>
+</li>
+<li><p>卷积神经网络：卷积神经网络是一种专门用于图像处理和计算机视觉任务的神经网络类型。它通过卷积和池化等操作，可以提取图像中的特征，从而实现图像分类、目标检测、图像分割等任务</p>
+</li>
+<li><p>循环神经网络：循环神经网络是一种能够处理序列数据的神经网络类型。它通过记忆单元和门控机制等方式，可以处理任意长度的序列数据，从而实现自然语言处理、语音识别等任务</p>
+</li>
+<li><p>自编码器：自编码器是一种无监督学习的神经网络类型，它的目标是将输入数据进行压缩和解压缩，从而实现特征提取和降维等任务</p>
+</li>
+<li><p>深度置信网络：深度置信网络是一种由多个受限玻尔兹曼机组成的神经网络类型。它可以通过逐层贪心预训练和微调等方式，实现高效的特征学习和分类任务</p>
 </li>
 </ol>
-   <img src="/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/image-20241228142516290.png" class="" title="image-20241228142516290">
-<p>   其中$x_1$，$x_2$，$x_3$，$x_4$对应着多输入，$o_1$，$o_2$，$o_3$则对应着多输出</p>
+<p>MLP神经网络属于前馈神经网络的一种。在网络训练过程中，需要通过反向传播算法计算梯度，将误差从输出层反向传播回输入层，用于更新网络参数。这个过程中需要使用反向传播算法来计算梯度，并且在某些类型的神经网络中。除了MLP，其他常见的前馈神经网络包括卷积神经网络（CNN）和循环神经网络（RNN）</p>
+<h1 id="二-激活函数"><a href="#二-激活函数" class="headerlink" title="二. 激活函数"></a>二. 激活函数</h1><p>在两层线性函数之间加入一个非线性函数，这个非线性函数就被称为<strong>激活函数</strong>，通常激活函数需要放在两层线性层之间，用于引入非线性</p>
+<p>问：如果要搭建一个五层的神经网络，需要几个激活函数？</p>
+<p>答：若两个线性层之间都需要加一个激活函数，那么一共需要4个激活函数</p>
 <ol>
-<li>线性回归模型与线性分类模型的区别</li>
-</ol>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th></th>
-<th>线性回归</th>
-<th>线性分类</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>输出</td>
-<td>标量</td>
-<td>向量</td>
-</tr>
-<tr>
-<td>权重</td>
-<td>向量</td>
-<td>矩阵</td>
-</tr>
-<tr>
-<td>偏置项</td>
-<td>标量</td>
-<td>向量</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h1 id="二-softmax"><a href="#二-softmax" class="headerlink" title="二. softmax"></a>二. softmax</h1><p>softmax用于分类问题，将多个输出映射到（0, 1）区间内，也就是转换成概率，同时需要注意，所有概率的和应当等于1</p>
-<p>假设有一个数组$V$，该数组共有$n$个元素，$V_i$表示$V$中的第$i$个元素，这时该元素的softmax值可以如下表示</p>
-<script type="math/tex; mode=display">
-S_i=\frac{e^{V_i} }{\sum_{0}^{n-1}e^{V_j} }</script><p>举个例子，假设有现在有3个数据，它们为[3,1,-3]，经过softmax之后，处理结果如下</p>
-<script type="math/tex; mode=display">
-S_0=\frac{e^{3}}{e^{3}+e^{1}+e^{-3}} =0.87887824</script><script type="math/tex; mode=display">
-S_1=\frac{e^{1}}{e^{3}+e^{1}+e^{-3}} =0.11894324</script><script type="math/tex; mode=display">
-S_2=\frac{e^{-3}}{e^{3}+e^{1}+e^{-3}} =0.00217852</script><h1 id="三-交叉熵（Cross-Entropy）"><a href="#三-交叉熵（Cross-Entropy）" class="headerlink" title="三. 交叉熵（Cross Entropy）"></a>三. 交叉熵（Cross Entropy）</h1><p>交叉熵一般用于求<code>目标与预测值之间的差距</code></p>
-<ol>
-<li><p>“熵”的概念</p>
-<p>熵用于衡量数据的不均衡程度。对于一个标签来说，我们将其视为一个真实概率分布，那么他的熵就可以表示为如下</p>
-<script type="math/tex; mode=display">
-H(p)=-\sum_ip_i\log p_i</script><p>$p_i$是真实分布的概率</p>
-<p>但是在机器学习中，往往不仅关注<code>真实分布</code>$p_i$，还要关注<code>预测结果</code>$q_i$，于是<strong>在给定真实分布$p_i$的情况下，衡量预测分布$q_i$描述真实分布所需的平均比特数的变量，被称为交叉熵</strong></p>
-</li>
-<li><p>交叉熵损失</p>
-<p>交叉熵的基本公式如下所示</p>
-<script type="math/tex; mode=display">
-H(p, q)=-\sum_ip_i\log(q_i)</script><p>那么对于分类模型，记<code>预测概率</code>为$\hat y_i$，<code>真实概率</code>为$y_i$，交叉熵损失可以表示如下</p>
-<script type="math/tex; mode=display">
-L(\mathbf{y}, \mathbf{\hat y})=-\sum_i y_i\log(\hat y_i)</script><p>举个例子，计算以下两个结果的均方误差和交叉熵损失</p>
-<script type="math/tex; mode=display">
-\begin{align*}\mathbf{\hat{y}^{(1)}}=&[0.6, 0.2, 0.2]\\\mathbf{\hat{y}^{(2)}}=&[0.3, 0.4, 0.3]\\\mathbf{y}=&[1, 0, 0]\end{align*}</script><p>均方误差计算结果如下</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-L_{\text{MSE}}^{(1)}=(0.6-1)^2+(0.2-0)^2+(0.2-0)^2=0.16 +0.08=0.24\\
-L_{\text{MSE}}^{(2)}=(0.8-1)^2+(0.1-0)^2+(0.1-0)^2=0.04+0.02=0.08 \end{align*}</script><p>交叉熵损失计算结果如下</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-L_{\text{CRE}}^{(1)}=1\times\log0.6+0\times\log0.2+0\times\log0.2=0.51\\
-L_{\text{CRE}}^{(2)}=1\times\log0.3+0\times\log0.4+0\times\log0.3=1.20 \end{align*}</script><p>二者对比可以发现交叉熵损失有如下优势</p>
+<li><p>激活函数需要具备的基本要求</p>
 <ul>
-<li>数值更大，从而有利于训练</li>
-<li>只关注正确类别的数值，不关注其他类别的数值</li>
-<li>计算更加便捷，训练过程加速</li>
+<li><p>激活函数需要具备非线性</p>
+<p>激活函数的目的是为了给线性模型引入非线性，从而让模型变得更加复杂。那么“非线性”就是激活函数中的最基本要求</p>
+</li>
+<li><p>激活函数需要连续可导（可微性）</p>
+<p>然而ReLU函数（其函数形式展示如下）</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\operatorname{ReLU}(x) & =\left\{\begin{array}{ll}
+x & x \geq 0 \\
+0 & x<0
+\end{array}\right. \\
+& =\max (0, x) .
+\end{aligned}</script><p>作为一个连续但不可导的函数，ReLU函数作为激活函数却被广泛应用</p>
+</li>
+<li><p>激活函数的导函数的值域要在一个合适的区间内，否则会影响训练的稳定性</p>
+<p>激活函数的导数不应当在大部分区间内接近于0，其次，其次，激活函数的输出范围应当有界，避免梯度爆炸，这就要避免激活函数的导数趋近于<code>0</code>和<code>Nan</code></p>
+<ul>
+<li>梯度趋近于0会导致在使用SGD更新参数时，增量项几乎为0，从而无法更新参数(梯度消失)</li>
+<li>如果激活函数的输出值范围非常大，在反向传播中输出值可能会导致极大的梯度，尤其是在使用链式法则计算梯度时。这可能导致梯度爆炸，即权重更新的值变得非常大，从而使得网络在训练过程中变得不稳定，无法收敛</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>激活函数的典型形态</p>
+<p>下面例举几个常见的激活函数</p>
+<ul>
+<li><p>sigmoid函数及其导数如下</p>
+<script type="math/tex; mode=display">
+y=\frac{1}{1+e^{-x}}, y'=y(1-y)</script><img src="/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/sigmoid.png" class="" title="sigmoid">
+<p>sigmoid激活函数容易产生梯度消失，输出非中心化，造成梯度更新减慢：导致多层梯度方向趋同，更新变得缓慢</p>
+</li>
+<li><p>tanh函数(双曲正切)及其导数如下</p>
+<script type="math/tex; mode=display">
+y=\frac{e^x - e^{-x}}{e^x + e^{-x}}, y'=1-y^2</script><img src="/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/tanh.png" class="" title="tanh">
+<p>tanh激活函数也存在梯度消失的风险</p>
+</li>
+<li><p>ReLU函数及其导数如下</p>
+<script type="math/tex; mode=display">
+\text{ReLU}(x)=\max(0, x)</script><img src="/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/ReLU.png" class="" title="ReLU">
+<p>ReLU激活函数计算简单，可以缓解梯度消失，但是如果一个神经元总接受到负值，那么神经元将始终输出为0。从而其梯度也为0，意味着神经元不会再被激活和更新。降低了学习能力</p>
+</li>
 </ul>
 </li>
 </ol>
-<h1 id="四-交叉熵损失在pytorch中的使用"><a href="#四-交叉熵损失在pytorch中的使用" class="headerlink" title="四. 交叉熵损失在pytorch中的使用"></a>四. 交叉熵损失在pytorch中的使用</h1><p>softmax函数并不用写在模型中。实际上，softmax的步骤是被集成到了交叉熵函数中的内容，使用torch时并不需要写softmax函数</p>
-<p>torch提供了专门的交叉熵损失函数，如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line">criterion = nn.CrossEntropyLoss()</span><br><span class="line">loss = criterion(outputs,labels)</span><br></pre></td></tr></table></figure>
-<p><code>outputs</code>为预测值，<code>labels</code>为真实标签</p>
+<h1 id="三-多层感知机的理论基础"><a href="#三-多层感知机的理论基础" class="headerlink" title="三. 多层感知机的理论基础"></a>三. 多层感知机的理论基础</h1><img src="/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/image-20241228153405094.png" class="" title="image-20241228153405094">
+<p>上图中有<code>input layer（输入层）</code>、<code>hidden layer（隐藏层）</code>和<code>output layer（输出层）</code>这三部分</p>
+<ul>
+<li><strong>输入层</strong>：输入层负责特征的输入。同线性模型一样，特征多少维，输入层就有多少个神经元，<strong>输入层之后需要连接一个激活函数</strong></li>
+<li><strong>隐藏层 </strong>：隐藏层是包含了若干层、每层若干个神经元的模块。其中两个超参数分别是层数$\bf{L}$和神经元个数$\bf{n}=\{n_1, …, n_L\}$，每层之间需要有激活函数相连</li>
+<li><strong>输出层</strong>：输出层根据问题不同有所不同。在回归模型中，只需要设置一个神经元即可，对于分类问题，则需按类别数量设置输出层神经元个数。<strong>最后一层无需激活函数</strong></li>
+</ul>
+<p>上面已经讲过，MLP属于前馈神经网络，训练时仍然需要<code>前向传播</code>、<code>反向传播</code>以及<code>更新参数</code>这三个步骤</p>
+<h1 id="四-多层感知机的代码实现"><a href="#四-多层感知机的代码实现" class="headerlink" title="四. 多层感知机的代码实现"></a>四. 多层感知机的代码实现</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MLP</span>(nn.Module):</span><br><span class="line">  <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,<span class="built_in">input</span>,hidden1,hidden2,output</span>):</span><br><span class="line">    <span class="built_in">super</span>(MLP,<span class="variable language_">self</span>).__init__()</span><br><span class="line">    <span class="variable language_">self</span>.hidden1 = nn.Linear(<span class="built_in">input</span>,hidden1)</span><br><span class="line">    <span class="variable language_">self</span>.relu1 = nn.ReLU()</span><br><span class="line">    <span class="variable language_">self</span>.hidden2 = nn.Linear(hidden1,hidden2)</span><br><span class="line">    <span class="variable language_">self</span>.relu2 = nn.ReLU()</span><br><span class="line">    <span class="variable language_">self</span>.output = nn.Linear(hidden2,output)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self,x</span>):</span><br><span class="line">    x = x.view(-<span class="number">1</span>, <span class="number">28</span> * <span class="number">28</span> * <span class="number">1</span>)</span><br><span class="line">    x = <span class="variable language_">self</span>.hidden1(x)</span><br><span class="line">    x = <span class="variable language_">self</span>.relu1(x)</span><br><span class="line">    x = <span class="variable language_">self</span>.hidden2(x)</span><br><span class="line">    x = <span class="variable language_">self</span>.relu2(x)</span><br><span class="line">    x = <span class="variable language_">self</span>.output(x)</span><br><span class="line">    <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<p>上面给出了一个简单的MLP模型，解释如下</p>
+<p><code>self.hidden1 = nn.Linear(input,hidden1)</code>和<code>self.hidden2 = nn.Linear(input,hidden2)</code>分别是第一个隐藏层和第二个隐藏层</p>
+<p><code>self.relu1 = nn.ReLU()</code>和<code>self.relu2 = nn.ReLU()</code>都是加在线性层后面的激活函数</p>
+<p><code>forward</code>函数定义了前向传播，首先要把矩阵展平成一维，<code>x = x.view(-1, 28 * 28 * 1)</code>，其中<code>-1</code>表示自动计算批次（batch），<code>28 * 28 * 1</code>改为你图像的尺寸，<code>1</code>是通道数，由于我输入的是灰度图像，所以这里通道数为<code>1</code>，如果输入彩色图像，则把<code>1</code>改为<code>3</code></p>
+<p><code>__init__</code>函数中，<code>input</code>为输入尺寸，<code>hidden1</code>为第一个隐藏层数，<code>hidden2</code>为第二个隐藏层数，<code>output</code>为输出的分类数，例如MNIST手写数据集共有<code>10</code>分类，就把<code>output</code>改为<code>10</code></p>
+<h1 id="五-多层感知机的局限性"><a href="#五-多层感知机的局限性" class="headerlink" title="五. 多层感知机的局限性"></a>五. 多层感知机的局限性</h1><p>MLP有一个最大的短板，那就是<strong>缺乏空间解释信息</strong>，对于同一图像中处在不同位置的相同的图像信息，MLP可能无法得到结果。当然MLP也存在梯度消失问题，导致参数无法更新。当隐藏层神经元数量更多，隐藏层数量增加时，会导致参数数量变多，增加训练难度</p>
 
     </div>
 
@@ -343,7 +340,7 @@ L_{\text{CRE}}^{(2)}=1\times\log0.3+0\times\log0.4+0\times\log0.3=1.20 \end{alig
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB-%E6%A8%A1%E5%9E%8B/" rel="tag"># 深度学习 线性分类 模型</a>
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA-MLP/" rel="tag"># 深度学习 多层感知机 MLP</a>
           </div>
 
         
@@ -352,13 +349,10 @@ L_{\text{CRE}}^{(2)}=1\times\log0.3+0\times\log0.4+0\times\log0.3=1.20 \end{alig
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2024/12/27/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%B8%80%E8%88%AC%E6%AD%A5%E9%AA%A4/" rel="prev" title="深度学习中训练模型的一般步骤">
-      <i class="fa fa-chevron-left"></i> 深度学习中训练模型的一般步骤
+    <a href="/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/" rel="prev" title="线性分类">
+      <i class="fa fa-chevron-left"></i> 线性分类
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/" rel="next" title="多层感知机">
-      多层感知机 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -417,7 +411,7 @@ L_{\text{CRE}}^{(2)}=1\times\log0.3+0\times\log0.4+0\times\log0.3=1.20 \end{alig
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">一. 线性分类模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-softmax"><span class="nav-number">2.</span> <span class="nav-text">二. softmax</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E4%BA%A4%E5%8F%89%E7%86%B5%EF%BC%88Cross-Entropy%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三. 交叉熵（Cross Entropy）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-%E4%BA%A4%E5%8F%89%E7%86%B5%E6%8D%9F%E5%A4%B1%E5%9C%A8pytorch%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">四. 交叉熵损失在pytorch中的使用</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">1.</span> <span class="nav-text">一. 神经网络</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">二. 激活函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80"><span class="nav-number">3.</span> <span class="nav-text">三. 多层感知机的理论基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.</span> <span class="nav-text">四. 多层感知机的代码实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94-%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">5.</span> <span class="nav-text">五. 多层感知机的局限性</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

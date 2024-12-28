@@ -27,15 +27,15 @@
 <meta property="og:site_name" content="ChenYuXuan的个人博客">
 <meta property="og:description" content="一. Pytorch 简介 Pytorch是torch的python版本，专门针对 GPU 加速的深度神经网络（DNN）编程。Torch 是一个经典的对多维矩阵数据进行操作的张量（tensor ）库，在机器学习和其他数学密集型应用有广泛应用，PyTorch 为 Python 语言使用者提供了舒适的写代码选择">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/.io//12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735216400134.png">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/.io//12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/%E6%95%B0%E6%8D%AE%E7%9A%84%E7%BB%B4%E5%BA%A6.png">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/.io//12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735217401318.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735216400134.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/%E6%95%B0%E6%8D%AE%E7%9A%84%E7%BB%B4%E5%BA%A6.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735217401318.png">
 <meta property="article:published_time" content="2024-12-26T12:21:00.000Z">
 <meta property="article:modified_time" content="2024-12-27T06:40:27.330Z">
 <meta property="article:author" content="ChenYuXuan">
 <meta property="article:tag" content="Pytorch 安装 Tensor 使用">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/.io//12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735216400134.png">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735216400134.png">
 
 <link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">
 
@@ -269,7 +269,7 @@
 <p>可以通过下面代码测试是否安装成功：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line">device = torch.device(<span class="string">&quot;cuda&quot;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&quot;cpu&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(device)</span><br></pre></td></tr></table></figure>
 <p>若安装成功则会在控制台打印”cuda”，展示如下</p>
-<img src="/.io//12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735216400134.png" class title="img">
+<img src="/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735216400134.png" class="" title="img">
 <h1 id="二-Tensor的基本概念"><a href="#二-Tensor的基本概念" class="headerlink" title="二. Tensor的基本概念"></a>二. Tensor的基本概念</h1><ol>
 <li><p>简介</p>
 <p>Tensor张量是Pytorch里最基本的数据结构，直观上来讲，它是一个多维矩阵，支持GPU加速</p>
@@ -283,7 +283,7 @@
 <li>矩阵：矩阵一个由多个向量组成的二维数组，在数学上他是一个二维数组，也称为矩阵</li>
 <li>张量：狭义的张量是指更高维度的数据。例如三维张量可以视为多个矩阵的集合，四维张量可以视为多个三维张量的集合，Tensor就是用来表示张量的数据</li>
 </ul>
-<img src="/.io//12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/%E6%95%B0%E6%8D%AE%E7%9A%84%E7%BB%B4%E5%BA%A6.png" class title="img">
+<img src="/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/%E6%95%B0%E6%8D%AE%E7%9A%84%E7%BB%B4%E5%BA%A6.png" class="" title="img">
 </li>
 <li><p>属性</p>
 <ul>
@@ -298,7 +298,7 @@
 <ol>
 <li><p>Tensor的创建</p>
 <p>下面这张图展示了各种tensor的创建</p>
-<img src="/.io//12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735217401318.png" class title="img">
+<img src="/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/QQ_1735217401318.png" class="" title="img">
 </li>
 <li><p>查看Tensor的属性</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(tensor_rand.shape) 		<span class="comment">#查看shape</span></span><br><span class="line"><span class="built_in">print</span>(tensor_rand.size()) 		<span class="comment">#查看shape</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(tensor_rand.numel()) 	    <span class="comment">#查看元素个数</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(tensor_rand.dtype)        <span class="comment">#查看type</span></span><br><span class="line"><span class="built_in">print</span>(tensor_rand.device)       <span class="comment">#查看device</span></span><br></pre></td></tr></table></figure>
@@ -482,7 +482,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -495,7 +495,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -540,13 +540,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">17k</span>
+    <span title="站点总字数">18k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">15 分钟</span>
+    <span title="站点阅读时长">16 分钟</span>
 </div>
 <!--添加运行时间-->
 <span id="sitetime"></span>
@@ -605,7 +605,7 @@
     <!--
     <span class="site-pv">
       <i class="fa fa-pencil"></i>
-      本站博客共 <span class="post-count">7.5k</span> 字
+      本站博客共 <span class="post-count">8.4k</span> 字
     </span>
     -->
 </div>
