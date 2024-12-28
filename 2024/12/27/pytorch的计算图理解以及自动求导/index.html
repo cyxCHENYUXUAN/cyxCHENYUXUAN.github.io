@@ -273,10 +273,23 @@ y = \log(e^{x} + 5)</script><p>给定$x=5$为初值</p>
 \frac{\partial y}{\partial x} = \frac{1}{e^{x}+5} *1*e^{x}=\frac{e^{x}}{e^{x}+5}</script><p>​    当x=5时</p>
 <script type="math/tex; mode=display">
 \frac{\partial y}{\partial x} = \frac{1}{e^{5}+5} *1*e^{5}=\frac{e^{5}}{e^{5}+5}\approx 0.9674</script><p>根据所给方程构建一个计算图如下</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">	A((A: x))--&gt;C(C: e**A)</span><br><span class="line">	C(C: e**A) --&gt; E(E: C+D)</span><br><span class="line">	D((D: b)) --&gt; E(E: C+D)</span><br><span class="line">	E(E: C+D) --&gt; F(F: logE)</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">graph LR
+    A((A: x))-->C(C: e**A)
+    C(C: e**A) --> E(E: C+D)
+    D((D: b)) --> E(E: C+D)
+    E(E: C+D) --> F(F: logE)</pre>
+
 <p>上图中，节点A、D是数据节点，节点C、E、F是计算节点，当给定数据节点的数值，就可以在最终节点处得到例题公式中的结果</p>
 <p>计算图的优势就是方便求导，只需要在计算节点处，保存好导数的值，就可以在得到最终结果的时候，把所求得的导数相乘起来，就可以得到当前的导数值，如下图，图中虚线所指的就是计算节点的导数</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">	A((A: x))--&gt;C(C: e**A)</span><br><span class="line">	C(C: e**A)-.-&gt;C1(C1: e**A)</span><br><span class="line">	C(C: e**A) --&gt; E(E: C+D)</span><br><span class="line">	D((D: b)) --&gt; E(E: C+D)</span><br><span class="line">	E(E:C+D) -.-&gt; E1(E1: 1)</span><br><span class="line">	E(E: C+D) --&gt; F(F: logE)</span><br><span class="line">	F(F: logE) -.-&gt; F1(F1: 1/E)</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">graph LR
+    A((A: x))-->C(C: e**A)
+    C(C: e**A)-.->C1(C1: e**A)
+    C(C: e**A) --> E(E: C+D)
+    D((D: b)) --> E(E: C+D)
+    E(E:C+D) -.-> E1(E1: 1)
+    E(E: C+D) --> F(F: logE)
+    F(F: logE) -.-> F1(F1: 1/E)</pre>
+
 <p>上图流程如下：</p>
 <ul>
 <li><p>给定节点A、D的值如下：</p>
@@ -419,7 +432,7 @@ y'=e^{5}*1*\frac{1}{e^{5} +5}=\frac{e^{5}}{e^{5} +5}</script><p><strong>注意�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -432,7 +445,7 @@ y'=e^{5}*1*\frac{1}{e^{5} +5}=\frac{e^{5}}{e^{5} +5}</script><p><strong>注意�
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -477,13 +490,13 @@ y'=e^{5}*1*\frac{1}{e^{5} +5}=\frac{e^{5}}{e^{5} +5}</script><p><strong>注意�
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">18k</span>
+    <span title="站点总字数">19k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">16 分钟</span>
+    <span title="站点阅读时长">17 分钟</span>
 </div>
 <!--添加运行时间-->
 <span id="sitetime"></span>
@@ -542,7 +555,7 @@ y'=e^{5}*1*\frac{1}{e^{5} +5}=\frac{e^{5}}{e^{5} +5}</script><p><strong>注意�
     <!--
     <span class="site-pv">
       <i class="fa fa-pencil"></i>
-      本站博客共 <span class="post-count">8.4k</span> 字
+      本站博客共 <span class="post-count">9.5k</span> 字
     </span>
     -->
 </div>
@@ -615,6 +628,19 @@ y'=e^{5}*1*\frac{1}{e^{5} +5}=\frac{e^{5}}{e^{5} +5}</script><p><strong>注意�
 
 
 
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
 
 
   
