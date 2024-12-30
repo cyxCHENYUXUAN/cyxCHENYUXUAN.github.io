@@ -20,25 +20,23 @@
     var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="一. 神经网络神经网络是一种基于生物神经系统结构和功能特点而设计的人工神经网络模型，具有很强的自适应性和非线性映射能力。神经网络由多个神经元（或节点）组成，这些神经元通过连接权重相互连接，构成多层的网络结构。每个神经元接收到来自其它神经元的信号，并将这些信号加权线性组合后通过激活函数进行非线性转换，最终输出给下一层神经元或输出层">
+  <meta name="description" content="一. 什么是感受野感受野（Receptive Field），指的是神经网络中神经元“看到的”输入区域，在卷积神经网络中，feature map上某个元素的计算受输入图像上某个区域的影响，这个区域即该元素的感受野 卷积神经网络中，越深层的神经元看到的输入区域越大，如下图所示，kernel size 均为$3\times3$，stride均为1，绿色标记的是$Layer2$ 每个神经元看到的区域，黄色">
 <meta property="og:type" content="article">
-<meta property="og:title" content="多层感知机">
-<meta property="og:url" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/index.html">
+<meta property="og:title" content="感受野">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2024/12/30/%E6%84%9F%E5%8F%97%E9%87%8E/index.html">
 <meta property="og:site_name" content="ChenYuXuan的个人博客">
-<meta property="og:description" content="一. 神经网络神经网络是一种基于生物神经系统结构和功能特点而设计的人工神经网络模型，具有很强的自适应性和非线性映射能力。神经网络由多个神经元（或节点）组成，这些神经元通过连接权重相互连接，构成多层的网络结构。每个神经元接收到来自其它神经元的信号，并将这些信号加权线性组合后通过激活函数进行非线性转换，最终输出给下一层神经元或输出层">
+<meta property="og:description" content="一. 什么是感受野感受野（Receptive Field），指的是神经网络中神经元“看到的”输入区域，在卷积神经网络中，feature map上某个元素的计算受输入图像上某个区域的影响，这个区域即该元素的感受野 卷积神经网络中，越深层的神经元看到的输入区域越大，如下图所示，kernel size 均为$3\times3$，stride均为1，绿色标记的是$Layer2$ 每个神经元看到的区域，黄色">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/sigmoid.png">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/tanh.png">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/ReLU.png">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/image-20241228153405094.png">
-<meta property="article:published_time" content="2024-12-28T06:36:44.000Z">
-<meta property="article:modified_time" content="2024-12-28T08:23:27.238Z">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E6%84%9F%E5%8F%97%E9%87%8E/Q4wXPf.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E6%84%9F%E5%8F%97%E9%87%8E/QQ_1735539336700.png">
+<meta property="article:published_time" content="2024-12-30T05:51:19.000Z">
+<meta property="article:modified_time" content="2024-12-30T06:17:00.715Z">
 <meta property="article:author" content="ChenYuXuan">
-<meta property="article:tag" content="深度学习 多层感知机 MLP">
+<meta property="article:tag" content="感受野">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/sigmoid.png">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E6%84%9F%E5%8F%97%E9%87%8E/Q4wXPf.png">
 
-<link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/">
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/30/%E6%84%9F%E5%8F%97%E9%87%8E/">
 
 
 <script id="page-configurations">
@@ -51,7 +49,7 @@
   };
 </script>
 
-  <title>多层感知机 | ChenYuXuan的个人博客</title>
+  <title>感受野 | ChenYuXuan的个人博客</title>
   
 
 
@@ -182,7 +180,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2024/12/30/%E6%84%9F%E5%8F%97%E9%87%8E/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -195,7 +193,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          多层感知机
+          感受野
         </h1>
 
         <div class="post-meta">
@@ -206,7 +204,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-12-28 14:36:44 / 修改时间：16:23:27" itemprop="dateCreated datePublished" datetime="2024-12-28T14:36:44+08:00">2024-12-28</time>
+              <time title="创建时间：2024-12-30 13:51:19 / 修改时间：14:17:00" itemprop="dateCreated datePublished" datetime="2024-12-30T13:51:19+08:00">2024-12-30</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -231,7 +229,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1k</span>
+              <span>945</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -250,87 +248,24 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="一-神经网络"><a href="#一-神经网络" class="headerlink" title="一. 神经网络"></a>一. 神经网络</h1><p>神经网络是一种基于生物神经系统结构和功能特点而设计的人工神经网络模型，具有很强的自适应性和非线性映射能力。神经网络由多个神经元（或节点）组成，这些神经元通过连接权重相互连接，构成多层的网络结构。每个神经元接收到来自其它神经元的信号，并将这些信号加权线性组合后通过激活函数进行<strong>非线性转换</strong>，最终输出给下一层神经元或输出层</p>
+        <h1 id="一-什么是感受野"><a href="#一-什么是感受野" class="headerlink" title="一. 什么是感受野"></a>一. 什么是感受野</h1><p><strong>感受野（Receptive Field），指的是神经网络中神经元“看到的”输入区域，在卷积神经网络中，feature map上某个元素的计算受输入图像上某个区域的影响，这个区域即该元素的感受野</strong></p>
+<p>卷积神经网络中，越深层的神经元看到的输入区域越大，如下图所示，kernel size 均为$3\times3$，stride均为1，绿色标记的是$Layer2$ 每个神经元看到的区域，黄色标记的是$Layer3$看到的区域，具体地，$Layer2$每个神经元可看到$Layer1$上 $3\times3$ 大小的区域，$Layer3$ 每个神经元既可以看到$Layer2$ 上 $3\times3 $大小的区域，又能看到$Layer1$上 $5\times5$ 大小的区域</p>
 <span id="more"></span>
-<p>神经网络可以分为多种不同的类型，下面列举一些常见的神经网络类型</p>
-<ol>
-<li><p>前馈神经网络：前馈神经网络是最基本的神经网络类型，也是深度学习中最常见的神经网络类型。它由若干个神经元按照一定的层次结构组成，每个神经元接收上一层的输出，产生本层的输出，从而实现信息的传递和处理</p>
-</li>
-<li><p>卷积神经网络：卷积神经网络是一种专门用于图像处理和计算机视觉任务的神经网络类型。它通过卷积和池化等操作，可以提取图像中的特征，从而实现图像分类、目标检测、图像分割等任务</p>
-</li>
-<li><p>循环神经网络：循环神经网络是一种能够处理序列数据的神经网络类型。它通过记忆单元和门控机制等方式，可以处理任意长度的序列数据，从而实现自然语言处理、语音识别等任务</p>
-</li>
-<li><p>自编码器：自编码器是一种无监督学习的神经网络类型，它的目标是将输入数据进行压缩和解压缩，从而实现特征提取和降维等任务</p>
-</li>
-<li><p>深度置信网络：深度置信网络是一种由多个受限玻尔兹曼机组成的神经网络类型。它可以通过逐层贪心预训练和微调等方式，实现高效的特征学习和分类任务</p>
-</li>
-</ol>
-<p>MLP神经网络属于前馈神经网络的一种。在网络训练过程中，需要通过反向传播算法计算梯度，将误差从输出层反向传播回输入层，用于更新网络参数。这个过程中需要使用反向传播算法来计算梯度，并且在某些类型的神经网络中。除了MLP，其他常见的前馈神经网络包括卷积神经网络（CNN）和循环神经网络（RNN）</p>
-<h1 id="二-激活函数"><a href="#二-激活函数" class="headerlink" title="二. 激活函数"></a>二. 激活函数</h1><p>在两层线性函数之间加入一个非线性函数，这个非线性函数就被称为<strong>激活函数</strong>，通常激活函数需要放在两层线性层之间，用于引入非线性</p>
-<p>问：如果要搭建一个五层的神经网络，需要几个激活函数？</p>
-<p>答：若两个线性层之间都需要加一个激活函数，那么一共需要4个激活函数</p>
-<ol>
-<li><p>激活函数需要具备的基本要求</p>
-<ul>
-<li><p>激活函数需要具备非线性</p>
-<p>激活函数的目的是为了给线性模型引入非线性，从而让模型变得更加复杂。那么“非线性”就是激活函数中的最基本要求</p>
-</li>
-<li><p>激活函数需要连续可导（可微性）</p>
-<p>然而ReLU函数（其函数形式展示如下）</p>
+<img src="/2024/12/30/%E6%84%9F%E5%8F%97%E9%87%8E/Q4wXPf.png" class="" title="https:&#x2F;&#x2F;www.researchgate.net&#x2F;publication&#x2F;316950618_Maritime_Semantic_Labeling_of_Optical_Remote_Sens">
+<p><strong>感受野是个相对概念，某层feature map上的元素看到前面不同层上的区域范围是不同的，通常在不特殊指定的情况下，感受野指的是看到输入图像上的区域</strong></p>
+<h1 id="二-感受野的计算"><a href="#二-感受野的计算" class="headerlink" title="二. 感受野的计算"></a>二. 感受野的计算</h1><p>给出感受野的计算公式如下</p>
 <script type="math/tex; mode=display">
-\begin{aligned}
-\operatorname{ReLU}(x) & =\left\{\begin{array}{ll}
-x & x \geq 0 \\
-0 & x<0
-\end{array}\right. \\
-& =\max (0, x) .
-\end{aligned}</script><p>作为一个连续但不可导的函数，ReLU函数作为激活函数却被广泛应用</p>
-</li>
-<li><p>激活函数的导函数的值域要在一个合适的区间内，否则会影响训练的稳定性</p>
-<p>激活函数的导数不应当在大部分区间内接近于0，其次，其次，激活函数的输出范围应当有界，避免梯度爆炸，这就要避免激活函数的导数趋近于<code>0</code>和<code>Nan</code></p>
+R_{out}=R_{in}+(k-1)\times \prod s</script><p>$\prod s$是累计步幅，即前面所有层步幅的乘积(不包括本层)，$R_{out}$是这层计算得到的感受野，$R_{in}$是上一层传递到这一层的感受野的值，$k$为这层的kernel_size的尺寸</p>
+<p>那么对于上面的感受野示意图，kernel size 均为$3\times3$，stride均为1，则有如下计算感受野的方法</p>
 <ul>
-<li>梯度趋近于0会导致在使用SGD更新参数时，增量项几乎为0，从而无法更新参数(梯度消失)</li>
-<li>如果激活函数的输出值范围非常大，在反向传播中输出值可能会导致极大的梯度，尤其是在使用链式法则计算梯度时。这可能导致梯度爆炸，即权重更新的值变得非常大，从而使得网络在训练过程中变得不稳定，无法收敛</li>
+<li>$Layer1$：输入层，感受野为<code>1</code></li>
+<li>$Layer2$：感受野为<code>1+(3-1)*1=3</code>，因此$Layer2$每个神经元可看到$Layer1$上 $3\times3$ 大小的区域</li>
+<li>$Layer3$：感受野为<code>3+(3-1)*1=5</code>，因此$Layer3$每个神经元可看到$Layer1$上 $5\times5$ 大小的区域</li>
 </ul>
-</li>
-</ul>
-</li>
-<li><p>激活函数的典型形态</p>
-<p>下面例举几个常见的激活函数</p>
-<ul>
-<li><p>sigmoid函数及其导数如下</p>
-<script type="math/tex; mode=display">
-y=\frac{1}{1+e^{-x}}, y'=y(1-y)</script><img src="/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/sigmoid.png" class="" title="sigmoid">
-<p>sigmoid激活函数容易产生梯度消失，输出非中心化，造成梯度更新减慢：导致多层梯度方向趋同，更新变得缓慢</p>
-</li>
-<li><p>tanh函数(双曲正切)及其导数如下</p>
-<script type="math/tex; mode=display">
-y=\frac{e^x - e^{-x}}{e^x + e^{-x}}, y'=1-y^2</script><img src="/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/tanh.png" class="" title="tanh">
-<p>tanh激活函数也存在梯度消失的风险</p>
-</li>
-<li><p>ReLU函数及其导数如下</p>
-<script type="math/tex; mode=display">
-\text{ReLU}(x)=\max(0, x)</script><img src="/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/ReLU.png" class="" title="ReLU">
-<p>ReLU激活函数计算简单，可以缓解梯度消失，但是如果一个神经元总接受到负值，那么神经元将始终输出为0。从而其梯度也为0，意味着神经元不会再被激活和更新。降低了学习能力</p>
-</li>
-</ul>
-</li>
-</ol>
-<h1 id="三-多层感知机的理论基础"><a href="#三-多层感知机的理论基础" class="headerlink" title="三. 多层感知机的理论基础"></a>三. 多层感知机的理论基础</h1><img src="/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/image-20241228153405094.png" class="" title="image-20241228153405094">
-<p>上图中有<code>input layer（输入层）</code>、<code>hidden layer（隐藏层）</code>和<code>output layer（输出层）</code>这三部分</p>
-<ul>
-<li><strong>输入层</strong>：输入层负责特征的输入。同线性模型一样，特征多少维，输入层就有多少个神经元，<strong>输入层之后需要连接一个激活函数</strong></li>
-<li><strong>隐藏层 </strong>：隐藏层是包含了若干层、每层若干个神经元的模块。其中两个超参数分别是层数$\bf{L}$和神经元个数$\bf{n}=\{n_1, …, n_L\}$，每层之间需要有激活函数相连</li>
-<li><strong>输出层</strong>：输出层根据问题不同有所不同。在回归模型中，只需要设置一个神经元即可，对于分类问题，则需按类别数量设置输出层神经元个数。<strong>最后一层无需激活函数</strong></li>
-</ul>
-<p>上面已经讲过，MLP属于前馈神经网络，训练时仍然需要<code>前向传播</code>、<code>反向传播</code>以及<code>更新参数</code>这三个步骤</p>
-<h1 id="四-多层感知机的代码实现"><a href="#四-多层感知机的代码实现" class="headerlink" title="四. 多层感知机的代码实现"></a>四. 多层感知机的代码实现</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MLP</span>(nn.Module):</span><br><span class="line">  <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,<span class="built_in">input</span>,hidden1,hidden2,output</span>):</span><br><span class="line">    <span class="built_in">super</span>(MLP,<span class="variable language_">self</span>).__init__()</span><br><span class="line">    <span class="variable language_">self</span>.hidden1 = nn.Linear(<span class="built_in">input</span>,hidden1)</span><br><span class="line">    <span class="variable language_">self</span>.relu1 = nn.ReLU()</span><br><span class="line">    <span class="variable language_">self</span>.hidden2 = nn.Linear(hidden1,hidden2)</span><br><span class="line">    <span class="variable language_">self</span>.relu2 = nn.ReLU()</span><br><span class="line">    <span class="variable language_">self</span>.output = nn.Linear(hidden2,output)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self,x</span>):</span><br><span class="line">    x = x.view(-<span class="number">1</span>, <span class="number">28</span> * <span class="number">28</span> * <span class="number">1</span>)</span><br><span class="line">    x = <span class="variable language_">self</span>.hidden1(x)</span><br><span class="line">    x = <span class="variable language_">self</span>.relu1(x)</span><br><span class="line">    x = <span class="variable language_">self</span>.hidden2(x)</span><br><span class="line">    x = <span class="variable language_">self</span>.relu2(x)</span><br><span class="line">    x = <span class="variable language_">self</span>.output(x)</span><br><span class="line">    <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
-<p>上面给出了一个简单的MLP模型，解释如下</p>
-<p><code>self.hidden1 = nn.Linear(input,hidden1)</code>和<code>self.hidden2 = nn.Linear(input,hidden2)</code>分别是第一个隐藏层和第二个隐藏层</p>
-<p><code>self.relu1 = nn.ReLU()</code>和<code>self.relu2 = nn.ReLU()</code>都是加在线性层后面的激活函数</p>
-<p><code>forward</code>函数定义了前向传播，首先要把矩阵展平成一维，<code>x = x.view(-1, 28 * 28 * 1)</code>，其中<code>-1</code>表示自动计算批次（batch），<code>28 * 28 * 1</code>改为你图像的尺寸，<code>1</code>是通道数，由于我输入的是灰度图像，所以这里通道数为<code>1</code>，如果输入彩色图像，则把<code>1</code>改为<code>3</code></p>
-<p><code>__init__</code>函数中，<code>input</code>为输入尺寸，<code>hidden1</code>为第一个隐藏层数，<code>hidden2</code>为第二个隐藏层数，<code>output</code>为输出的分类数，例如MNIST手写数据集共有<code>10</code>分类，就把<code>output</code>改为<code>10</code></p>
-<h1 id="五-多层感知机的局限性"><a href="#五-多层感知机的局限性" class="headerlink" title="五. 多层感知机的局限性"></a>五. 多层感知机的局限性</h1><p>MLP有一个最大的短板，那就是<strong>缺乏空间解释信息</strong>，对于同一图像中处在不同位置的相同的图像信息，MLP可能无法得到结果。当然MLP也存在梯度消失问题，导致参数无法更新。当隐藏层神经元数量更多，隐藏层数量增加时，会导致参数数量变多，增加训练难度</p>
+<p><a target="_blank" rel="noopener" href="https://airaria.github.io/2017/10/28/CNN%20RF%20calculator/">感受野在线计算器</a>，可以点击使用来计算感受野</p>
+<p>其中，width为输入图像的尺寸；点击<code>Add a new layer</code>即为增加一个卷积层或池化层，然后依次输入参数<code>kernel_size，stride，padding</code>；点击<code>Calc</code>即可开始计算，会得到输出尺寸<code>size</code>，感受野<code>Rf</code>，以及该层的<code>stride</code>；点击<code>Clear</code>即可清除所有层的参数，再次点击即可清除所有增加的层</p>
+<p>使用示例如下</p>
+<img src="/2024/12/30/%E6%84%9F%E5%8F%97%E9%87%8E/QQ_1735539336700.png" class="" title="img">
 
     </div>
 
@@ -340,7 +275,7 @@ y=\frac{e^x - e^{-x}}{e^x + e^{-x}}, y'=1-y^2</script><img src="/2024/12/28/%E5%
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA-MLP/" rel="tag"># 深度学习 多层感知机 MLP</a>
+              <a href="/tags/%E6%84%9F%E5%8F%97%E9%87%8E/" rel="tag"># 感受野</a>
           </div>
 
         
@@ -349,12 +284,12 @@ y=\frac{e^x - e^{-x}}{e^x + e^{-x}}, y'=1-y^2</script><img src="/2024/12/28/%E5%
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/" rel="prev" title="线性分类">
-      <i class="fa fa-chevron-left"></i> 线性分类
+    <a href="/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BLeNet/" rel="prev" title="卷积神经网络之LeNet">
+      <i class="fa fa-chevron-left"></i> 卷积神经网络之LeNet
     </a></div>
       <div class="post-nav-item">
-    <a href="/2024/12/28/%E6%9D%83%E9%87%8D%E8%A1%B0%E9%80%80%E4%B8%8E%E4%B8%A2%E5%BC%83%E6%B3%95/" rel="next" title="权重衰退与丢弃法">
-      权重衰退与丢弃法 <i class="fa fa-chevron-right"></i>
+    <a href="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/" rel="next" title="卷积神经网络之AlexNet">
+      卷积神经网络之AlexNet <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -414,7 +349,7 @@ y=\frac{e^x - e^{-x}}{e^x + e^{-x}}, y'=1-y^2</script><img src="/2024/12/28/%E5%
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">1.</span> <span class="nav-text">一. 神经网络</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">二. 激活函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80"><span class="nav-number">3.</span> <span class="nav-text">三. 多层感知机的理论基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.</span> <span class="nav-text">四. 多层感知机的代码实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94-%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">5.</span> <span class="nav-text">五. 多层感知机的局限性</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E4%BB%80%E4%B9%88%E6%98%AF%E6%84%9F%E5%8F%97%E9%87%8E"><span class="nav-number">1.</span> <span class="nav-text">一. 什么是感受野</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E6%84%9F%E5%8F%97%E9%87%8E%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="nav-number">2.</span> <span class="nav-text">二. 感受野的计算</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

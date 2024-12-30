@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一. AlexNet的网络结构AlexNet网络结构相对简单，使用了8层卷积神经网络，前5层是卷积层，剩下的3层是全连接层，具体如下所示  上图包含了GPU通信的部分，这是由当时GPU内存的限制引起的，使用了两块GPU进行计算，因此分为了上下两部分。单GPU的结构图如下所示">
+<meta property="og:type" content="article">
+<meta property="og:title" content="卷积神经网络之AlexNet">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/index.html">
+<meta property="og:site_name" content="ChenYuXuan的个人博客">
+<meta property="og:description" content="一. AlexNet的网络结构AlexNet网络结构相对简单，使用了8层卷积神经网络，前5层是卷积层，剩下的3层是全连接层，具体如下所示  上图包含了GPU通信的部分，这是由当时GPU内存的限制引起的，使用了两块GPU进行计算，因此分为了上下两部分。单GPU的结构图如下所示">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/QQ_1735540229337.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/dbcbcc632ea823bc331e7fae8d2790ff.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/alexnet.png">
+<meta property="article:published_time" content="2024-12-30T06:25:18.000Z">
+<meta property="article:modified_time" content="2024-12-30T08:16:09.632Z">
+<meta property="article:author" content="ChenYuXuan">
+<meta property="article:tag" content="卷积神经网络 AlexNet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/QQ_1735540229337.png">
+
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>卷积神经网络之AlexNet | ChenYuXuan的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ChenYuXuan的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-github">
+
+    <a href="https://github.com/cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>Github</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ChenYuXuan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ChenYuXuan的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          卷积神经网络之AlexNet
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-12-30 14:25:18 / 修改时间：16:16:09" itemprop="dateCreated datePublished" datetime="2024-12-30T14:25:18+08:00">2024-12-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一-AlexNet的网络结构"><a href="#一-AlexNet的网络结构" class="headerlink" title="一. AlexNet的网络结构"></a>一. AlexNet的网络结构</h1><p>AlexNet网络结构相对简单，使用了8层卷积神经网络，前5层是卷积层，剩下的3层是全连接层，具体如下所示</p>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/QQ_1735540229337.png" class="" title="img">
+<p>上图包含了GPU通信的部分，这是由当时GPU内存的限制引起的，使用了两块GPU进行计算，因此分为了上下两部分。单GPU的结构图如下所示</p>
+<span id="more"></span>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/dbcbcc632ea823bc331e7fae8d2790ff.png" class="" title="img">
+<p>在所使用的新模块中，LRN是一个在alexnet中特有的模块，其本质是一个归一化模块。旨在增强神经网络对局部竞争的模拟，从而提升模型的泛化能力和抑制过拟合。在AlexNet中，LRN被应用于某些卷积层之后，以规范化特定位置的激活值。然而，LRN在现代模型中已经逐渐弃用，包括Batch Normalization在内的更优秀的归一化方法，体现了更好的性能</p>
+<p>给定输入图像为227*227*3，下面通过框图直观展示每层的输入输出、参数数量以及感受野，参数数量中加粗的为偏置项</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>类型</td>
+<td>参数设置(k, s, p, c)</td>
+<td>输出大小</td>
+<td>参数数量</td>
+<td>感受野</td>
+</tr>
+<tr>
+<td>Conv-1</td>
+<td>11, 4, 0, 96</td>
+<td>55*55*96</td>
+<td>11*11*96*3<strong>+96</strong>=34944</td>
+<td>1+10*1=11</td>
+</tr>
+<tr>
+<td>ReLU</td>
+<td>n/a</td>
+<td>55*55*96</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>LRN</td>
+<td>n/a</td>
+<td>55*55*96</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Pool-1</td>
+<td>3, 2, 0, 96</td>
+<td>27*27*96</td>
+<td>n/a</td>
+<td>11+2*4*1=19</td>
+</tr>
+<tr>
+<td>Conv-2</td>
+<td>5, 1, 2, 256</td>
+<td>27*27*256</td>
+<td>5*5*96*256<strong>+256</strong>=614656</td>
+<td>19+4*2*4*1=51</td>
+</tr>
+<tr>
+<td>ReLU</td>
+<td>n/a</td>
+<td>27*27*256</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>LRN</td>
+<td>n/a</td>
+<td>27*27*256</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Pool-2</td>
+<td>3, 2, 0, 256</td>
+<td>13*13*256</td>
+<td>n/a</td>
+<td>51+2*1*2*4*1=67</td>
+</tr>
+<tr>
+<td>Conv-3</td>
+<td>3, 1, 1, 384</td>
+<td>13*13*384</td>
+<td>3*3*384*256<strong>+384</strong>=885120</td>
+<td>67+2*2*1*2*4*1=99</td>
+</tr>
+<tr>
+<td>ReLU</td>
+<td>n/a</td>
+<td>13*13*384</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Conv-4</td>
+<td>3, 1, 1, 384</td>
+<td>13*13*384</td>
+<td>3*3*384*384<strong>+384</strong>=1327488</td>
+<td>99+2*1*2*1*2*4*1=131</td>
+</tr>
+<tr>
+<td>ReLU</td>
+<td>n/a</td>
+<td>13*13*384</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Conv-5</td>
+<td>3, 1, 1, 256</td>
+<td>13*13*256</td>
+<td>3*3*256*384<strong>+256</strong>=884992</td>
+<td>131+2*1*1*2*1*2*4*1=163</td>
+</tr>
+<tr>
+<td>ReLU</td>
+<td>n/a</td>
+<td>13*13*256</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Pool-3</td>
+<td>3, 2, 0, 256</td>
+<td>6*6*256</td>
+<td>n/a</td>
+<td>163+1*2*1*1*2*1*2*4*1=195</td>
+</tr>
+<tr>
+<td>Pool-4</td>
+<td>n/a</td>
+<td>6*6*256</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Flatten</td>
+<td>256*1*6*6=9216</td>
+<td>25*6*6=9216</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>FC-6</td>
+<td>4096</td>
+<td>4096</td>
+<td>4096*9216<strong>+4096</strong>=37752832</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>ReLU</td>
+<td>n/a</td>
+<td>4096</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Dropout</td>
+<td>n/a</td>
+<td>4096</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>FC-7</td>
+<td>4096</td>
+<td>4096</td>
+<td>4096*4096<strong>+4096</strong>=16781312</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>ReLU</td>
+<td>n/a</td>
+<td>4096</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Dropout</td>
+<td>n/a</td>
+<td>4096</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>FC-8</td>
+<td>1000</td>
+<td>1000</td>
+<td>4096*1000<strong>+1000</strong>=4097000</td>
+<td>n/a</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>其中<strong>Pool-4</strong>是<code>nn.AdaptiveAvgPool2d((6, 6))</code>，是一个自适应平均池化层。可以根据输入特征图的大小动态地计算输出特征图的大小。这与固定大小的池化层（如<code>nn.AvgPool2d</code>）不同，后者需要在初始化时指定输出特征图的大小</p>
+<p>当使用<code>nn.AdaptiveAvgPool2d((6, 6))</code>时，池化层将输入特征图的每个空间维度（宽度和高度）都池化到$6\times6$的大小。这意味着无论输入特征图的原始尺寸如何，输出特征图的尺寸总是$6\times6$</p>
+<h1 id="二-AlexNet设计思想"><a href="#二-AlexNet设计思想" class="headerlink" title="二. AlexNet设计思想"></a>二. AlexNet设计思想</h1><p>下面展示一张图，用来对比LeNet和AlexNet的模型结构</p>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/alexnet.png" class="" title="img">
+<p>对比于LeNet，发现AlexNet有如下不同点</p>
+<ul>
+<li>深度更深</li>
+<li>卷积尺寸不同(前面更大、后面更小)</li>
+<li>通道数量更多</li>
+</ul>
+<ol>
+<li><p>深度更深</p>
+<p><strong>卷积层的数量</strong>（即网络的深度）是影响模型性能的关键因素之一。合理设计卷积层的数量，可以提升模型的特征表达能力，同时控制计算复杂度和过拟合风险</p>
+<p><strong>从特征提取能力角度来说</strong>：增加卷积层的数量，可以使模型学习到更高级、更抽象的特征，有助于提升模型的识别和分类性能</p>
+<p><strong>从过拟合风险角度来说</strong>：卷积层数量越多，模型的参数量通常也越多，模型容量增大，从而增加过拟合风险</p>
+<p><strong>从计算复杂度与效率角度来说</strong>：更多的卷积层意味着更多的计算量，训练和推理时间增加，同时也会消耗更多的GPU资源</p>
+<p>下面给出定性的结论，用于调整模型的层数：</p>
+<ul>
+<li>任务越复杂，所需的卷积层数量可能越多，以充分学习数据中的复杂模式和特征</li>
+<li>数据集越大、样本多样性越高，可以使用更深的网络</li>
+<li>在模型性能和计算成本之间找到平衡，选择合适的卷积层数量</li>
+</ul>
+</li>
+<li><p>卷积尺寸不同</p>
+<p>大卷积核可以捕获更大的图像区域信息，小卷积核更关注局部细节</p>
+<ul>
+<li>大卷积核的应用场景：<ul>
+<li>捕获全局特征。在网络初始层中，原始图像中存在大量冗余，通过使用大卷积核，可以在初始阶段快速捕捉全局特征，包括总体形状、颜色分布等</li>
+<li>快速降低空间尺寸。在网络的前几层使用大卷积核，可以尽快降低特征图的尺寸，从而尽可能地减少计算量</li>
+<li>在一些需要全局信息的场景中，如语义分割任务，可以使用大卷积核来扩大感受野。比如卫星图像、医学图像中，目标占据较大面积，需要获取尽可能大的全局信息</li>
+</ul>
+</li>
+<li>小卷积核的应用场景：<ul>
+<li>关注局部细节，对一些微小特征敏感。比如在需要精细分割边缘的任务中，或者风格迁移的任务中，常常使用小卷积核</li>
+<li>构建深度较大的网络时，常常用一些小卷积核进行构建。其主要目的是保持较低的参数规模的前提下，逐渐扩大感受野，并引入更多的非线性变换</li>
+<li>减少计算量。显然，小卷积核比大卷积核的计算量更少，且参数也少(一定程度防止过拟合)。而这也是后续的模型大多采用小卷积核的主要原因</li>
+</ul>
+</li>
+</ul>
+<p>对于何时大卷积还是小卷积，总结如下</p>
+<p><strong>模型的输入端采用较大的卷积核，甚至只是在第一层使用大卷积核；剩余的层大多采用小卷积核构建，特别是深度较深的网络，采用小卷积核不仅有利于减少参数规模，也有助于实现感受野的逐渐扩大</strong></p>
+</li>
+<li><p>通道数量更多</p>
+<p>常见的通道数量的设置规律和模式如下</p>
+<ul>
+<li><p>倍次增长模式</p>
+<p>通道数量按照一定的倍数增长，常见的是以2的倍数增长（如64、128、256、512)，这种方式易于管理和调整，便于二次修改且可以充分利用GPU</p>
+</li>
+<li><p>逐层递增后递减</p>
+<p>通道数量在前几层逐渐增加，到达某个峰值后，再在后续层适当减少</p>
+<ul>
+<li>中间层需要更多通道捕获复杂特征</li>
+<li>最后卷积层可以适当减少通道，整合特征，控制规模</li>
+</ul>
+</li>
+<li><p>与特征图的尺寸成反比：空间尺寸减小会导致信息量减少，增加通道数量可以弥补这一损失，保持总体信息容量</p>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="三-AlexNet的代码实现"><a href="#三-AlexNet的代码实现" class="headerlink" title="三. AlexNet的代码实现"></a>三. AlexNet的代码实现</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AlexNet</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, num_classes=<span class="number">1000</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(AlexNet, <span class="variable language_">self</span>).__init__()</span><br><span class="line">        <span class="variable language_">self</span>.features = nn.Sequential(</span><br><span class="line">            nn.Conv2d(<span class="number">3</span>, <span class="number">96</span>, kernel_size=<span class="number">11</span>, stride=<span class="number">4</span>, padding=<span class="number">2</span>),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>)</span><br><span class="line">            nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>),</span><br><span class="line">            </span><br><span class="line">            nn.Conv2d(<span class="number">96</span>, <span class="number">256</span>, kernel_size=<span class="number">5</span>, padding=<span class="number">2</span>),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line">            nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>),</span><br><span class="line">            </span><br><span class="line">            nn.Conv2d(<span class="number">256</span>, <span class="number">384</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line">            </span><br><span class="line">            nn.Conv2d(<span class="number">384</span>, <span class="number">384</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line">            </span><br><span class="line">            nn.Conv2d(<span class="number">384</span>, <span class="number">256</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line">            nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>),</span><br><span class="line">        )</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.avgpool = nn.AdaptiveAvgPool2d((<span class="number">6</span>, <span class="number">6</span>))</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.classifier = nn.Sequential(</span><br><span class="line">            nn.Dropout(),</span><br><span class="line">            nn.Linear(<span class="number">256</span> * <span class="number">6</span> * <span class="number">6</span>, <span class="number">4096</span>),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line">            </span><br><span class="line">            nn.Dropout(),</span><br><span class="line">            nn.Linear(<span class="number">4096</span>, <span class="number">4096</span>),</span><br><span class="line">            nn.ReLu(inplace=<span class="literal">True</span>),</span><br><span class="line">            </span><br><span class="line">            nn.Linear(<span class="number">4096</span>, num_classes)</span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = <span class="variable language_">self</span>.features(x)</span><br><span class="line">        x = <span class="variable language_">self</span>.avgpool(x)</span><br><span class="line">        x = x.view(x.size(<span class="number">0</span>), -<span class="number">1</span>)</span><br><span class="line">        x = <span class="variable language_">self</span>.classifier(x)</span><br></pre></td></tr></table></figure>
+<p><code>nn.ReLu(inplace=True)</code>中的<code>inplace=True</code>的作用是确定ReLU操作是否应该在原地（in-place）进行，即直接在输入张量上修改数据而不是创建一个新的张量来存储输出，可以减少内存的使用</p>
+<p>使用torchsummary进行打印模型的结构输出，检查上面的框图是否正确，代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> torchsummary <span class="keyword">import</span> summary</span><br><span class="line"></span><br><span class="line">model = AlexNet()</span><br><span class="line">summary(model, (<span class="number">3</span>, <span class="number">227</span>, <span class="number">227</span>))</span><br></pre></td></tr></table></figure>
+<p>打印结果如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">----------------------------------------------------------------</span><br><span class="line">        Layer (<span class="built_in">type</span>)               Output Shape         Param <span class="comment">#</span></span><br><span class="line">================================================================</span><br><span class="line">            Conv2d-<span class="number">1</span>           [-<span class="number">1</span>, <span class="number">96</span>, <span class="number">56</span>, <span class="number">56</span>]          <span class="number">34</span>,<span class="number">944</span></span><br><span class="line">              ReLU-<span class="number">2</span>           [-<span class="number">1</span>, <span class="number">96</span>, <span class="number">56</span>, <span class="number">56</span>]               <span class="number">0</span></span><br><span class="line">         MaxPool2d-<span class="number">3</span>           [-<span class="number">1</span>, <span class="number">96</span>, <span class="number">27</span>, <span class="number">27</span>]               <span class="number">0</span></span><br><span class="line">            Conv2d-<span class="number">4</span>          [-<span class="number">1</span>, <span class="number">256</span>, <span class="number">27</span>, <span class="number">27</span>]         <span class="number">614</span>,<span class="number">656</span></span><br><span class="line">              ReLU-<span class="number">5</span>          [-<span class="number">1</span>, <span class="number">256</span>, <span class="number">27</span>, <span class="number">27</span>]               <span class="number">0</span></span><br><span class="line">         MaxPool2d-<span class="number">6</span>          [-<span class="number">1</span>, <span class="number">256</span>, <span class="number">13</span>, <span class="number">13</span>]               <span class="number">0</span></span><br><span class="line">            Conv2d-<span class="number">7</span>          [-<span class="number">1</span>, <span class="number">384</span>, <span class="number">13</span>, <span class="number">13</span>]         <span class="number">885</span>,<span class="number">120</span></span><br><span class="line">              ReLU-<span class="number">8</span>          [-<span class="number">1</span>, <span class="number">384</span>, <span class="number">13</span>, <span class="number">13</span>]               <span class="number">0</span></span><br><span class="line">            Conv2d-<span class="number">9</span>          [-<span class="number">1</span>, <span class="number">384</span>, <span class="number">13</span>, <span class="number">13</span>]       <span class="number">1</span>,<span class="number">327</span>,<span class="number">488</span></span><br><span class="line">             ReLU-<span class="number">10</span>          [-<span class="number">1</span>, <span class="number">384</span>, <span class="number">13</span>, <span class="number">13</span>]               <span class="number">0</span></span><br><span class="line">           Conv2d-<span class="number">11</span>          [-<span class="number">1</span>, <span class="number">256</span>, <span class="number">13</span>, <span class="number">13</span>]         <span class="number">884</span>,<span class="number">992</span></span><br><span class="line">             ReLU-<span class="number">12</span>          [-<span class="number">1</span>, <span class="number">256</span>, <span class="number">13</span>, <span class="number">13</span>]               <span class="number">0</span></span><br><span class="line">        MaxPool2d-<span class="number">13</span>            [-<span class="number">1</span>, <span class="number">256</span>, <span class="number">6</span>, <span class="number">6</span>]               <span class="number">0</span></span><br><span class="line">AdaptiveAvgPool2d-<span class="number">14</span>            [-<span class="number">1</span>, <span class="number">256</span>, <span class="number">6</span>, <span class="number">6</span>]               <span class="number">0</span></span><br><span class="line">          Dropout-<span class="number">15</span>                 [-<span class="number">1</span>, <span class="number">9216</span>]               <span class="number">0</span></span><br><span class="line">           Linear-<span class="number">16</span>                 [-<span class="number">1</span>, <span class="number">4096</span>]      <span class="number">37</span>,<span class="number">752</span>,<span class="number">832</span></span><br><span class="line">             ReLU-<span class="number">17</span>                 [-<span class="number">1</span>, <span class="number">4096</span>]               <span class="number">0</span></span><br><span class="line">          Dropout-<span class="number">18</span>                 [-<span class="number">1</span>, <span class="number">4096</span>]               <span class="number">0</span></span><br><span class="line">           Linear-<span class="number">19</span>                 [-<span class="number">1</span>, <span class="number">4096</span>]      <span class="number">16</span>,<span class="number">781</span>,<span class="number">312</span></span><br><span class="line">             ReLU-<span class="number">20</span>                 [-<span class="number">1</span>, <span class="number">4096</span>]               <span class="number">0</span></span><br><span class="line">           Linear-<span class="number">21</span>                 [-<span class="number">1</span>, <span class="number">1000</span>]       <span class="number">4</span>,097,<span class="number">000</span></span><br><span class="line">================================================================</span><br><span class="line">Total params: <span class="number">62</span>,<span class="number">378</span>,<span class="number">344</span></span><br><span class="line">Trainable params: <span class="number">62</span>,<span class="number">378</span>,<span class="number">344</span></span><br><span class="line">Non-trainable params: <span class="number">0</span></span><br><span class="line">----------------------------------------------------------------</span><br><span class="line">Input size (MB): <span class="number">0.59</span></span><br><span class="line">Forward/backward <span class="keyword">pass</span> size (MB): <span class="number">11.32</span></span><br><span class="line">Params size (MB): <span class="number">237.95</span></span><br><span class="line">Estimated Total Size (MB): <span class="number">249.87</span></span><br><span class="line">----------------------------------------------------------------</span><br></pre></td></tr></table></figure>
+<p>结果与上面的框图无误</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C-AlexNet/" rel="tag"># 卷积神经网络 AlexNet</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/12/30/%E6%84%9F%E5%8F%97%E9%87%8E/" rel="prev" title="感受野">
+      <i class="fa fa-chevron-left"></i> 感受野
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-AlexNet%E7%9A%84%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">一. AlexNet的网络结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-AlexNet%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3"><span class="nav-number">2.</span> <span class="nav-text">二. AlexNet设计思想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-AlexNet%E7%9A%84%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">三. AlexNet的代码实现</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ChenYuXuan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyxCHENYUXUAN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cyx2897@gmail.com" title="E-Mail → mailto:cyx2897@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <font color="red"><i class="fa fa-heartbeat" aria-hidden="true"></i></font>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChenYuXuan</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">33k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">30 分钟</span>
+</div>
+<!--添加运行时间-->
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+      Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+      year - 作为date对象的年份，为4位年份值
+      month - 0-11之间的整数，做为date对象的月份
+      day - 1-31之间的整数，做为date对象的天数
+      hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+      minutes - 0-59之间的整数，做为date对象的分钟数
+      seconds - 0-59之间的整数，做为date对象的秒数
+      microseconds - 0-999之间的整数，做为date对象的毫秒数
+     */
+		var t1 = Date.UTC(2024,12,24,15,00,00); //北京时间
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" 已运行"+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒";
+	}
+	siteTime();
+</script>
+<!--// 添加运行时间-->
+
+<!-- 新增访客统计代码 -->
+<div class="busuanzi-count">
+    <script async="" src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      访客数量 <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 人
+      <span class="post-meta-divider">|</span>
+    </span>
+    <div class="powered-by"></div>
+    <span class="site-uv">
+      <i class="fa fa-eye"></i>
+      总访问量 <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 次
+    </span>
+    <!--
+    <span class="site-pv">
+      <i class="fa fa-pencil"></i>
+      本站博客共 <span class="post-count">17.3k</span> 字
+    </span>
+    -->
+</div>
+<!-- 新增访客统计代码 END-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
