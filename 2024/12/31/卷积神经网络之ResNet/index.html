@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一. 层间的捷径（shortcut）假设一个卷积神经网络中的某一层对最终的输出结果非常重要，希望这层的feature map能够直接传递到更深的层，如果没有层之间的捷径，这些feature map经过多层的变换可能会被扭曲甚至弱化，而通过层与层之间的捷径可以直接跳过中间层，直接传递到后面的层。举个例子来解释层与层之间的捷径，在团队合作中，如果某个成员有重要的信息需要传递给最终决策者，直接沟通比经过">
+<meta property="og:type" content="article">
+<meta property="og:title" content="卷积神经网络之ResNet">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/index.html">
+<meta property="og:site_name" content="ChenYuXuan的个人博客">
+<meta property="og:description" content="一. 层间的捷径（shortcut）假设一个卷积神经网络中的某一层对最终的输出结果非常重要，希望这层的feature map能够直接传递到更深的层，如果没有层之间的捷径，这些feature map经过多层的变换可能会被扭曲甚至弱化，而通过层与层之间的捷径可以直接跳过中间层，直接传递到后面的层。举个例子来解释层与层之间的捷径，在团队合作中，如果某个成员有重要的信息需要传递给最终决策者，直接沟通比经过">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/image.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/%E5%9B%BE%E7%89%87_4.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/QMURNF.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/QMwSTf.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/QQqCxe.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/BN.webp">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/bce0392e-7ce4-45d9-b857-b2e0c68664fe.png">
+<meta property="article:published_time" content="2024-12-31T04:59:18.000Z">
+<meta property="article:modified_time" content="2024-12-31T07:29:40.972Z">
+<meta property="article:author" content="ChenYuXuan">
+<meta property="article:tag" content="卷积神经网络 ResNet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/image.png">
+
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>卷积神经网络之ResNet | ChenYuXuan的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ChenYuXuan的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-github">
+
+    <a href="https://github.com/cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>Github</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ChenYuXuan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ChenYuXuan的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          卷积神经网络之ResNet
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-12-31 12:59:18 / 修改时间：15:29:40" itemprop="dateCreated datePublished" datetime="2024-12-31T12:59:18+08:00">2024-12-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一-层间的捷径（shortcut）"><a href="#一-层间的捷径（shortcut）" class="headerlink" title="一. 层间的捷径（shortcut）"></a>一. 层间的捷径（shortcut）</h1><p>假设一个卷积神经网络中的某一层对最终的输出结果非常重要，希望这层的feature map能够直接传递到更深的层，如果没有层之间的捷径，这些feature map经过多层的变换可能会被扭曲甚至弱化，而通过层与层之间的捷径可以直接跳过中间层，直接传递到后面的层。举个例子来解释层与层之间的捷径，在团队合作中，如果某个成员有重要的信息需要传递给最终决策者，直接沟通比经过多个中间人要有效得多，避免信息在传递过程中失真。示意图如下</p>
+<span id="more"></span>
+<img src="/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/image.png" class="" title="img">
+<h1 id="二-残差模块（Residual-Block）"><a href="#二-残差模块（Residual-Block）" class="headerlink" title="二. 残差模块（Residual Block）"></a>二. 残差模块（Residual Block）</h1><p>类似于NiN中的NiN Block和GoogLeNet中的Inception Block，残差模块是构成ResNet的基本单元，它在卷积层之间加入了捷径。残差模块分为<code>Basic Block</code>和<code>Bottleneck Block</code>两张基本形态，二者都采用ReLU激活函数进行非线性处理，如下图所示</p>
+<img src="/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/%E5%9B%BE%E7%89%87_4.png" class="" title="img">
+<p>深度卷积神经网络在增加层数后，理论上应该具备更强的表达能力。然而实践中却发现，网络加深后训练误差反而增大，这被称为<strong>退化问题</strong>。这种现象并非过拟合引起，而是由于信息和梯度在深层网络中传递困难。残差模块通过引入捷径连接（shortcut connection），使信息可以跨层高效传递，缓解了退化问题</p>
+<p>残差模块的核心思想是<strong>让模型学习输入与输出之间的残差（即差异）</strong>，而不是直接学习复杂的映射函数。这种设计降低了学习难度，使网络更容易训练</p>
+<p>传统的卷积神经网络直接学习从输入x到输出y的映射函数$y=\mathcal{H}(x)$，而残差模块将目标转移为学习残差函数$\mathcal{F}(x)=\mathcal{H}(x)-x$，从而$\mathcal{H}(x)=\mathcal{F}(x)+x$，此时卷积神经网络学习到的则是$y=\mathcal{H}(x)=\mathcal{F}(x)+x$</p>
+<p>残差模块的本质：<strong>一条路不变（传统的恒等映射）；另一条路负责拟合相对于原始网络的残差，去纠正原始网络的偏差，而不是让整体网络去拟合全部的底层映射，这样网络只需要纠正偏差</strong></p>
+<h1 id="三-Batch-Normalization（批归一化）"><a href="#三-Batch-Normalization（批归一化）" class="headerlink" title="三. Batch Normalization（批归一化）"></a>三. Batch Normalization（批归一化）</h1><ol>
+<li><p>单层视角来看BN</p>
+<img src="/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/QMURNF.png" class="" title="http:&#x2F;&#x2F;gradientscience.org&#x2F;batchnorm&#x2F;">
+<p>神经网络可以看成是上图的形式，对于其中的某一层，其前面的层可以看作是对输入的处理，其后面的层可以看作是损失函数，反向传播时会更新所有层的权重$W_1, W_2, … , W_L$，第$k$层前面的层的权重的更新会改变这一层的输入的分布。然而<strong>反向传播对于权重$W$的更新是在层的输入不变的情况下进行的</strong></p>
+<p>假设第$k$层的输入节点只有2个，对第$k$层的某个输出节点而言（假设是线性模型）输出为$y=w_1x_1+w_2x_2+b$，如下图所示</p>
+<img src="/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/QMwSTf.png" class="" title="https:&#x2F;&#x2F;wiki2.org&#x2F;en&#x2F;Linear_classifier#&#x2F;media&#x2F;File:Svm_separating_hyperplanes.png">
+<p>当前输入的$x_1$和$x_2$的分布分别是图中的实心圆和空心圆，本次更新的方向是将直线$H1$更新成$H2$，本以为切分得不错，但是当前面层的权重更新完毕，当前层输入的分布换成了另一个样子，直线相对输入分布的位置可能变成了$H3$，下一次更新又要根据新的分布重新调整。<strong>直线调整了位置，输入分布又在发生变化，直线再调整位置，就像是直线和分布之间的“追逐游戏”</strong>。</p>
+<p>对于浅层模型（如SVM），输入特征的分布是固定的，即使拆分成不同的batch，每个batch的统计特性也是相近的，因此只需调整直线位置来适应输入分布；对于深层模型，输入的分布和权重都在变化，训练更加困难</p>
+</li>
+<li><p>多层视角来看BN</p>
+<p>上面是从卷积神经网络中拿出的单一的层进行分析，下面将展示多层的情况。在反向传播过程中，每层权重的更新是在假定其它层的权重不变的情况下，向损失函数降低的方向调整自己。问题在于，在一次反向传播过程中，所有的权重会同时更新，导致层间配合“缺乏默契”，每层都在进行上节所说的“追逐游戏”，而且层数越多，相互配合越困难，每层都在进行“追逐游戏”</p>
+<p><strong>简单来说，多层视角来看BN就是每层都在进行单层视角的“追逐游戏”，直线调整了位置，输入分布又在发生变化，直线再调整位置，层与层之间缺乏默契</strong>，如下图所示</p>
+<img src="/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/QQqCxe.png" class="" title="https:&#x2F;&#x2F;gab41.lab41.org&#x2F;batch-normalization-what-the-hey-d480039a9e3b">
+</li>
+</ol>
+<p>为了对卷积神经网络中每层的输入进行控制，Batch Normalization便由此诞生。具体操作是对每层输入做Normalization，只有一个数据是谈不上Normalization的，所以是对一个batch的数据进行Normalization</p>
+<p>下面来一张图直观展示BN的作用</p>
+<img src="/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/BN.webp" class="" title="BN">
+<p><strong>注意：BN层应该放在激活函数的前一层，也就是卷积层和激活函数中间</strong></p>
+<p>BN在pytorch中的函数为<code>nn.BatchNorm2d(num_features=256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)</code>，对于其中的参数：</p>
+<ul>
+<li><code>num_features</code>：表示输入的feature map的通道数</li>
+<li><code>eps</code>：一个小的常数，用于在归一化计算的分母中添加，以增加数值稳定性，防止除以零的情况发生。默认值通常是 1e-5</li>
+<li>后面的<code>momentum</code>、<code>affine</code>、<code>track_running_stats</code>参数均可以省略，但是<code>num_features</code>必须要有</li>
+</ul>
+<h1 id="四-ResNet的网络结构"><a href="#四-ResNet的网络结构" class="headerlink" title="四. ResNet的网络结构"></a>四. ResNet的网络结构</h1><p>ResNet是一个系列模型，根据层数不同可以分为ResNet-18，ResNet-34，ResNet-50，ResNet-101等，其网络结构示意图如下所示</p>
+<img src="/2024/12/31/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BResNet/bce0392e-7ce4-45d9-b857-b2e0c68664fe.png" class="" title="img">
+<h1 id="五-ResNet的代码实现"><a href="#五-ResNet的代码实现" class="headerlink" title="五. ResNet的代码实现"></a>五. ResNet的代码实现</h1><p>Basic Block的代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">BasicBlock</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_channels, out_channels, stride=<span class="number">1</span>, conv11=<span class="literal">False</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(BasicBlock, <span class="variable language_">self</span>).__init__()</span><br><span class="line">        <span class="variable language_">self</span>.conv11 = conv11</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=<span class="number">3</span>, </span><br><span class="line">                               padding=<span class="number">1</span>, stride = stride)</span><br><span class="line">        <span class="variable language_">self</span>.bn1 = nn.BatchNorm2d(out_channels)</span><br><span class="line">        <span class="variable language_">self</span>.relu1 = nn.ReLU()</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=<span class="number">3</span>, </span><br><span class="line">                               padding=<span class="number">1</span>, stride=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.bn2 = nn.BatchNorm2d(out_channels)</span><br><span class="line">        </span><br><span class="line">        <span class="comment">#conv11是一个布尔值参数，用于指示是否使用1×1卷积来调整通道数。在残差模块中，当输入通道与输出通道		 不同时，需要使用1×1卷积来匹配通道数</span></span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.conv11:</span><br><span class="line">            <span class="variable language_">self</span>.conv3 = nn.Conv2d(in_channels, out_channels, </span><br><span class="line">                                   kernel_size=<span class="number">1</span>, stride=stride)</span><br><span class="line">            <span class="variable language_">self</span>.bn3 = nn.BatchNorm2d(out_channels)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.relu2 = nn.ReLU()</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        y = <span class="variable language_">self</span>.conv1(x)</span><br><span class="line">        y = <span class="variable language_">self</span>.bn1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.relu1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.conv2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.bn2(y)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.conv11:</span><br><span class="line">            x = <span class="variable language_">self</span>.conv3(x)</span><br><span class="line">            x = <span class="variable language_">self</span>.bn3(x)</span><br><span class="line">            </span><br><span class="line">        y = y+x</span><br><span class="line">        y = <span class="variable language_">self</span>.relu2(y)</span><br><span class="line">        <span class="keyword">return</span> y</span><br></pre></td></tr></table></figure>
+<p>Bottleneck Block的代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">BottelNeck</span>(nn.Module):</span><br><span class="line">    <span class="comment">#expansion表示扩展因子。BottleNeck块通过扩展因子来增加中间层的通道数，通常是4或2。这意味着中间       3x3卷积层的通道数是out_channels的expansion倍</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">#布尔值参数，用于指示是否需要对输入进行下采样以匹配输出的空间维度。如果设置为 True，则会添加一个下采样     模块，通常包含一个 1x1 卷积和一个批量归一化层</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_channels, out_channels, stride=<span class="number">1</span>, conv11=<span class="literal">False</span>, </span></span><br><span class="line"><span class="params">                 expansion=<span class="number">4</span>, downsample=<span class="literal">False</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(BottelNeck, <span class="variable language_">self</span>).__init__()</span><br><span class="line">        <span class="variable language_">self</span>.conv11 = conv11</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=<span class="number">1</span>, stride=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.bn1 = nn.BatchNorm2d(out_channels)</span><br><span class="line">        <span class="variable language_">self</span>.relu1 = nn.ReLU()</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=<span class="number">3</span>,</span><br><span class="line">                               padding=<span class="number">3</span>, stride=stride)</span><br><span class="line">        <span class="variable language_">self</span>.bn2 = nn.BatchNorm2d(out_channels)</span><br><span class="line">        <span class="variable language_">self</span>.relu2 = nn.ReLU()</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.conv3 = nn.Conv2d(out_channels, out_channels*expansion, </span><br><span class="line">                               kernel_size=<span class="number">1</span>, stride=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.bn3 = nn.BatchNorm2d(out_channels*expansion)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.conv11:</span><br><span class="line">            <span class="variable language_">self</span>.conv4 = nn.Conv2d(in_channels, out_channels*expansion, </span><br><span class="line">                                   kernel_size=<span class="number">1</span>, stride=stride)</span><br><span class="line">            <span class="variable language_">self</span>.bn4 = nn.BatchNorm2d(out_channels*expansion)</span><br><span class="line">            </span><br><span class="line">        <span class="variable language_">self</span>.relu3 = nn.ReLU()</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        y = <span class="variable language_">self</span>.conv1(x)</span><br><span class="line">        y = <span class="variable language_">self</span>.bn1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.relu1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.conv2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.bn2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.relu2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.conv3(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.bn3(y)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.conv11:</span><br><span class="line">            x = <span class="variable language_">self</span>.conv4(x)</span><br><span class="line">            x = <span class="variable language_">self</span>.bn4(x)</span><br><span class="line">            </span><br><span class="line">        y = y+x</span><br><span class="line">        y = <span class="variable language_">self</span>.relu3(y)</span><br><span class="line">        <span class="keyword">return</span> y</span><br></pre></td></tr></table></figure>
+<p>ResNet-18的代码如下，其中使用的残差模块是BasicBlock</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ResNet18</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(ResNet18, <span class="variable language_">self</span>).__init__()</span><br><span class="line">        <span class="variable language_">self</span>.conv1 = nn.Conv2d(<span class="number">3</span>, <span class="number">64</span>, kernel_size=<span class="number">7</span>, stride=<span class="number">2</span>, padding=<span class="number">3</span>)</span><br><span class="line">        <span class="variable language_">self</span>.bn2 = nn.BatchNorm2d(<span class="number">64</span>)</span><br><span class="line">        <span class="variable language_">self</span>.relu1 = nn.ReLU()</span><br><span class="line">        <span class="variable language_">self</span>.maxpool1 = nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.a1 = BasicBlock(<span class="number">64</span>, <span class="number">64</span>)</span><br><span class="line">        <span class="variable language_">self</span>.a2 = BasicBlock(<span class="number">64</span>, <span class="number">64</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.b1 = BasicBlock(<span class="number">64</span>, <span class="number">128</span>, stride=<span class="number">2</span>, conv11=<span class="literal">True</span>)</span><br><span class="line">        <span class="variable language_">self</span>.b2 = BasicBlock(<span class="number">128</span>, <span class="number">128</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.c1 = BasicBlock(<span class="number">128</span>, <span class="number">256</span>, stride=<span class="number">2</span>, conv11=<span class="literal">True</span>)</span><br><span class="line">        <span class="variable language_">self</span>.c2 = BasicBlock(<span class="number">256</span>, <span class="number">256</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.d1 = BasicBlock(<span class="number">256</span>, <span class="number">512</span>, stride=<span class="number">2</span>, conv11=<span class="literal">True</span>)</span><br><span class="line">        <span class="variable language_">self</span>.d2 = BasicBlock(<span class="number">512</span>, <span class="number">512</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.avgpool = nn.AdaptiveAvgPool2d([<span class="number">1</span>, <span class="number">1</span>])</span><br><span class="line">        <span class="variable language_">self</span>.flatten = nn.Flatten()</span><br><span class="line">        <span class="variable language_">self</span>.linear = nn.Linear(<span class="number">512</span>, <span class="number">10</span>)</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        y = <span class="variable language_">self</span>.conv1(x)</span><br><span class="line">        y = <span class="variable language_">self</span>.bn2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.relu1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.maxpool1(y)</span><br><span class="line">        </span><br><span class="line">        y = <span class="variable language_">self</span>.a1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.a2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.b1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.b2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.c1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.c2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.d1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.d2(y)</span><br><span class="line">        </span><br><span class="line">        y = <span class="variable language_">self</span>,avgpool(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.flatten(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.linear(y)</span><br><span class="line">        <span class="keyword">return</span> y</span><br></pre></td></tr></table></figure>
+<p>ResNet-50的代码如下，其中使用的残差模块是Bottleneck Block</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ResNet50</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(ResNet50, <span class="variable language_">self</span>).__init__()</span><br><span class="line">        <span class="variable language_">self</span>.conv1 = nn.Conv2d(<span class="number">3</span>, <span class="number">64</span>, kernel_size=<span class="number">7</span>, stride=<span class="number">2</span>, padding=<span class="number">3</span>)</span><br><span class="line">        <span class="variable language_">self</span>.bn1 = nn.BatchNorm2d(<span class="number">64</span>)</span><br><span class="line">        <span class="variable language_">self</span>.relu1 = nn.ReLU()</span><br><span class="line">        <span class="variable language_">self</span>.maxpool1 = nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.a1 = BottelNeck(<span class="number">64</span>, <span class="number">64</span>)</span><br><span class="line">        <span class="variable language_">self</span>.a2 = BottelNeck(<span class="number">256</span>, <span class="number">64</span>)</span><br><span class="line">        <span class="variable language_">self</span>.a3 = BottelNeck(<span class="number">256</span>, <span class="number">64</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.b1 = BottelNeck(<span class="number">256</span>, <span class="number">128</span>, conv11=<span class="literal">True</span>, stride=<span class="number">2</span>)</span><br><span class="line">        <span class="variable language_">self</span>.b2 = BottelNeck(<span class="number">512</span>, <span class="number">128</span>)</span><br><span class="line">        <span class="variable language_">self</span>.b3 = BottelNeck(<span class="number">512</span>, <span class="number">128</span>)</span><br><span class="line">        <span class="variable language_">self</span>.b4 = BottelNeck(<span class="number">512</span>, <span class="number">128</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.c1 = BottelNeck(<span class="number">512</span>, <span class="number">256</span>, conv11=<span class="literal">True</span>, stride=<span class="number">2</span>)</span><br><span class="line">        <span class="variable language_">self</span>.c2 = BottelNeck(<span class="number">1024</span>, <span class="number">256</span>)</span><br><span class="line">        <span class="variable language_">self</span>.c3 = BottelNeck(<span class="number">1024</span>, <span class="number">256</span>)</span><br><span class="line">        <span class="variable language_">self</span>.c4 = BottelNeck(<span class="number">1024</span>, <span class="number">256</span>)</span><br><span class="line">        <span class="variable language_">self</span>.c5 = BottelNeck(<span class="number">1024</span>, <span class="number">256</span>)</span><br><span class="line">        <span class="variable language_">self</span>.c6 = BottelNeck(<span class="number">1024</span>, <span class="number">256</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.d1 = BottelNeck(<span class="number">1024</span>, <span class="number">512</span>, conv11=<span class="literal">True</span>, stride=<span class="number">2</span>)</span><br><span class="line">        <span class="variable language_">self</span>.d2 = BottelNeck(<span class="number">2048</span>, <span class="number">512</span>)</span><br><span class="line">        <span class="variable language_">self</span>.d3 = BottelNeck(<span class="number">2048</span>, <span class="number">512</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.avgpool = nn.AdaptiveAvgPool2d((<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">        <span class="variable language_">self</span>.flatten = nn.Flatten()</span><br><span class="line">        <span class="variable language_">self</span>.fc = nn.Linear(<span class="number">2048</span>, <span class="number">1000</span>)</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        y = <span class="variable language_">self</span>.conv1(x)</span><br><span class="line">        y = <span class="variable language_">self</span>.bn1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.relu1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.maxpool1(y)</span><br><span class="line">        </span><br><span class="line">        y = <span class="variable language_">self</span>.a1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.a2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.a3(y)</span><br><span class="line">        </span><br><span class="line">        y = <span class="variable language_">self</span>.b1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.b2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.b3(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.b4(y)</span><br><span class="line">        </span><br><span class="line">        y = <span class="variable language_">self</span>.c1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.c2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.c3(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.c4(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.c5(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.c6(y)</span><br><span class="line">        </span><br><span class="line">        y = <span class="variable language_">self</span>.d1(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.d2(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.d3(y)</span><br><span class="line">        </span><br><span class="line">        y = <span class="variable language_">self</span>.avgpool(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.flatten(y)</span><br><span class="line">        y = <span class="variable language_">self</span>.fc(y)</span><br><span class="line">        <span class="keyword">return</span> y</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C-ResNet/" rel="tag"># 卷积神经网络 ResNet</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/" rel="prev" title="卷积神经网络之GoogLeNet">
+      <i class="fa fa-chevron-left"></i> 卷积神经网络之GoogLeNet
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E5%B1%82%E9%97%B4%E7%9A%84%E6%8D%B7%E5%BE%84%EF%BC%88shortcut%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">一. 层间的捷径（shortcut）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E6%AE%8B%E5%B7%AE%E6%A8%A1%E5%9D%97%EF%BC%88Residual-Block%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二. 残差模块（Residual Block）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-Batch-Normalization%EF%BC%88%E6%89%B9%E5%BD%92%E4%B8%80%E5%8C%96%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三. Batch Normalization（批归一化）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-ResNet%E7%9A%84%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84"><span class="nav-number">4.</span> <span class="nav-text">四. ResNet的网络结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94-ResNet%E7%9A%84%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.</span> <span class="nav-text">五. ResNet的代码实现</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ChenYuXuan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyxCHENYUXUAN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cyx2897@gmail.com" title="E-Mail → mailto:cyx2897@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <font color="red"><i class="fa fa-heartbeat" aria-hidden="true"></i></font>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChenYuXuan</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">46k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">42 分钟</span>
+</div>
+<!--添加运行时间-->
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+      Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+      year - 作为date对象的年份，为4位年份值
+      month - 0-11之间的整数，做为date对象的月份
+      day - 1-31之间的整数，做为date对象的天数
+      hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+      minutes - 0-59之间的整数，做为date对象的分钟数
+      seconds - 0-59之间的整数，做为date对象的秒数
+      microseconds - 0-999之间的整数，做为date对象的毫秒数
+     */
+		var t1 = Date.UTC(2024,12,24,15,00,00); //北京时间
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" 已运行"+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒";
+	}
+	siteTime();
+</script>
+<!--// 添加运行时间-->
+
+<!-- 新增访客统计代码 -->
+<div class="busuanzi-count">
+    <script async="" src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      访客数量 <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 人
+      <span class="post-meta-divider">|</span>
+    </span>
+    <div class="powered-by"></div>
+    <span class="site-uv">
+      <i class="fa fa-eye"></i>
+      总访问量 <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 次
+    </span>
+    <!--
+    <span class="site-pv">
+      <i class="fa fa-pencil"></i>
+      本站博客共 <span class="post-count">22.2k</span> 字
+    </span>
+    -->
+</div>
+<!-- 新增访客统计代码 END-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
