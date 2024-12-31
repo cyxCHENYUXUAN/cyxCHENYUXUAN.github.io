@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一. $1\times1$卷积层大卷积核可以融合较大区域中的信息，但参数较多； 小卷积核可以融合较为局部的信息，但参数较少。$1\times1$卷积层无法扩大感受野，那么其存在的意义是什么 $1\times1$ 卷积层的引入源于对CNN性能和效率的优化需求，其意义如下  跨通道信息交互：实现不同通道间的特征融合，捕获通道间的相关性，提高特征表达的丰富性 参数和计算量的控制：通过调整输出通道数，实现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="卷积神经网络之GoogLeNet">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/index.html">
+<meta property="og:site_name" content="ChenYuXuan的个人博客">
+<meta property="og:description" content="一. $1\times1$卷积层大卷积核可以融合较大区域中的信息，但参数较多； 小卷积核可以融合较为局部的信息，但参数较少。$1\times1$卷积层无法扩大感受野，那么其存在的意义是什么 $1\times1$ 卷积层的引入源于对CNN性能和效率的优化需求，其意义如下  跨通道信息交互：实现不同通道间的特征融合，捕获通道间的相关性，提高特征表达的丰富性 参数和计算量的控制：通过调整输出通道数，实现">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/2587288-20211021135935253-1710488916.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/1_Convolution.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/e15de72109f46d899f6b5398d433c106.gif">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/f261c7f5fe4b0ccae54820db5efd2e94.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/image.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/nin.webp">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/QQ_1735563909395.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/inception.svg">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/concatenate.webp">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/9074720245a6c717d39bbb2844a031c9.png">
+<meta property="article:published_time" content="2024-12-30T10:59:51.000Z">
+<meta property="article:modified_time" content="2024-12-31T03:49:33.142Z">
+<meta property="article:author" content="ChenYuXuan">
+<meta property="article:tag" content="卷积神经网络 1×1卷积 GoogLeNet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/2587288-20211021135935253-1710488916.png">
+
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>卷积神经网络之GoogLeNet | ChenYuXuan的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ChenYuXuan的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-github">
+
+    <a href="https://github.com/cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>Github</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ChenYuXuan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ChenYuXuan的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          卷积神经网络之GoogLeNet
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-12-30 18:59:51" itemprop="dateCreated datePublished" datetime="2024-12-30T18:59:51+08:00">2024-12-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-12-31 11:49:33" itemprop="dateModified" datetime="2024-12-31T11:49:33+08:00">2024-12-31</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一-1-times1-卷积层"><a href="#一-1-times1-卷积层" class="headerlink" title="一. $1\times1$卷积层"></a>一. $1\times1$卷积层</h1><p>大卷积核可以融合较大区域中的信息，但参数较多； 小卷积核可以融合较为局部的信息，但参数较少。$1\times1$卷积层无法扩大感受野，那么其存在的意义是什么</p>
+<p>$1\times1$ 卷积层的引入源于对CNN性能和效率的优化需求，其意义如下</p>
+<ul>
+<li><strong>跨通道信息交互</strong>：实现不同通道间的特征融合，捕获通道间的相关性，提高特征表达的丰富性</li>
+<li><strong>参数和计算量的控制</strong>：通过调整输出通道数，实现模型参数量和计算复杂度的优化</li>
+</ul>
+<p>$1\times1$卷积层无法关联邻域像素，而是更关注通道间的关联，用这种卷积核来加强通道间的联系，相较于其它的卷积核，$1\times1$卷积使用的参数最少，多次使用可以最大程度地减少参数的使用并且$1\times1$卷积还可以调整通道数量。下面给出$1\times1$卷积计算的两张示意图</p>
+<span id="more"></span>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/2587288-20211021135935253-1710488916.png" class="" title="img">
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/1_Convolution.png" class="" title="图1 1*1 卷积结构示意图">
+<p>对于单通道输入与单通道输出，$1\times1$卷积层就可以被认为是一个全连接层；对于多通道输入与单通道输出，$1\times1$卷积层则被认为是多个全连接层的结果再进行加权叠加（示意图如下），详细地说，$1\times1$卷积核实质上是由多个单个参数组成，每个参数与之<strong>对应通道的feature map</strong>进行运算，相当于对feature map进行一次常数乘法。然后一组卷积（一组卷积的数量即为feature map的数量）得到的结果进行加权后，得到对应的通道输出；多组卷积得到的结果得到多个feature map。$1\times1$ 卷积层和全连接层的区别只在于1×1 卷积核可以调整feature map的通道数</p>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/e15de72109f46d899f6b5398d433c106.gif" class="" title="img">
+<p>举个例子</p>
+<p>这里有$32\times32\times10$的输入，$1\times1$卷积层的尺寸是$1\times1\times10$，得到的输出尺寸会是什么样呢，下面通过一张图来详细说明</p>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/f261c7f5fe4b0ccae54820db5efd2e94.png" class="" title="img">
+<ul>
+<li>蓝色虚线代表的是$1\times1$卷积层中的每个参数（卷积核）与之对应通道的feature map进行卷积运算</li>
+<li>红色虚线代表的是对这$1\times1$卷积层中每个参数（卷积核）与之对应通道的feature map卷积之后得到的<strong>一组</strong>（这里由于通道为10，所以一组有10个）新的feature map进行的<strong>一次</strong>加权叠加。由于输入尺寸为32×32，所以这个加权叠加操作要进行32×32次，加权之后的新的feature map共有32×32个。这样就将完成了降维，将多通道降为单通道</li>
+</ul>
+<p>当然$1\times1$卷积也并不是将多通道都降为单通道，下面再举个例子，同时展示$1\times1$卷积在减少参数数量方面的作用</p>
+<p>假设输入尺寸为$28\times28\times192$，要求输出尺寸为$28\times28\times32$，下面两个方法一个采用$1\times1$卷积层，另一个采用传统的大卷积核</p>
+<ul>
+<li><p>大卷积核直接运算</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Conv2D(in_channels=<span class="number">192</span>, out_channels=<span class="number">32</span>, kernel_size=(<span class="number">5</span>, <span class="number">5</span>), padding=(<span class="number">2</span>, <span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+<p>参数数量为$5\times5\times192\times32+32=153632$</p>
+</li>
+<li><p>使用$1\times1$卷积</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Conv2D(in_channels=<span class="number">192</span>, out_channels=<span class="number">16</span>, kernel_size=(<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">Conv2D(in_channels=<span class="number">16</span>, out_channels=<span class="number">32</span>, kernel_size=(<span class="number">5</span>, <span class="number">5</span>), padding=(<span class="number">2</span>, <span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+<p>参数数量为$[(1\times1\times192\times16+16)+(5\times5\times16\times32+32)]=15920$</p>
+</li>
+</ul>
+<p>二者对比可以发现使用$1\times1$卷积可以极大地减少参数数量</p>
+<p>由于在学习到的卷积神经网络中，参数主要分布于全连接层。因此，我们发现可以舍弃全连接层而改用用<strong>全局平均汇聚层（global average pooling layer）</strong>来代替它，二者的对比图如下</p>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/image.png" class="" title="img">
+<h1 id="二-NiN的结构与实现"><a href="#二-NiN的结构与实现" class="headerlink" title="二. NiN的结构与实现"></a>二. NiN的结构与实现</h1><p>NiN的基本模块为NiN Block，典型结构应先进行较大的空间卷积（如 3×3），然后通过 两个$1\times1$ 卷积 来实现通道间的信息融合和特征重组</p>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/nin.webp" class="" title="nin">
+<p>NiN正是取消了全连接层，取而代之的正是上面提到的<strong>全局平均汇聚层</strong>，该层会生成一个对数概率（logits）用于最后的分类</p>
+<p>下图展示了NiN的结构</p>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/QQ_1735563909395.png" class="" title="img">
+<p>NiN的整体代码实现如下：</p>
+<p>首先是NiN Block</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">NiNBlock</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_channels, out_channels, kernel_size, stride, padding</span>):</span><br><span class="line">        <span class="built_in">super</span>(NiNBlock, <span class="variable language_">self</span>).__init__()</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 第一层：空间卷积（如 3×3 卷积） + ReLU</span></span><br><span class="line">        <span class="variable language_">self</span>.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding)</span><br><span class="line">        <span class="variable language_">self</span>.relu1 = nn.ReLU(inplace=<span class="literal">True</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 第二层：1×1 卷积 + ReLU</span></span><br><span class="line">        <span class="variable language_">self</span>.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.relu2 = nn.ReLU(inplace=<span class="literal">True</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 第三层：1×1 卷积 + ReLU</span></span><br><span class="line">        <span class="variable language_">self</span>.conv3 = nn.Conv2d(out_channels, out_channels, kernel_size=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.relu3 = nn.ReLU(inplace=<span class="literal">True</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = <span class="variable language_">self</span>.conv1(x)</span><br><span class="line">        x = <span class="variable language_">self</span>.relu1(x)</span><br><span class="line">        </span><br><span class="line">        x = <span class="variable language_">self</span>.conv2(x)</span><br><span class="line">        x = <span class="variable language_">self</span>.relu2(x)</span><br><span class="line">        </span><br><span class="line">        x = <span class="variable language_">self</span>.conv3(x)</span><br><span class="line">        x = <span class="variable language_">self</span>.relu3(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<p>接下来是使用NiN Block的整个的NiN代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">NiN</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, num_classes=<span class="number">10</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(SimpleNiN, <span class="variable language_">self</span>).__init__()</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.block1 = NiNBlock(in_channels=<span class="number">3</span>, out_channels=<span class="number">96</span>, </span><br><span class="line">												     kernel_size=<span class="number">11</span>, stride=<span class="number">4</span>, padding=<span class="number">0</span>)</span><br><span class="line">        <span class="variable language_">self</span>.pool1 = nn.MaxPool2d(<span class="number">3</span>, stride=<span class="number">2</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.block2 = NiNBlock(in_channels=<span class="number">96</span>, out_channels=<span class="number">256</span>, </span><br><span class="line">												      kernel_size=<span class="number">5</span>, stride=<span class="number">1</span>, padding=<span class="number">2</span>)</span><br><span class="line">		<span class="variable language_">self</span>.pool2 = nn.MaxPool2d(<span class="number">3</span>, stride=<span class="number">2</span>)</span><br><span class="line">				</span><br><span class="line">		<span class="variable language_">self</span>.block3 = NiNBlock(in_channels=<span class="number">256</span>, out_channels=<span class="number">384</span>, </span><br><span class="line">												      kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>)</span><br><span class="line">		<span class="variable language_">self</span>.pool3 = nn.MaxPool2d(<span class="number">3</span>, stride=<span class="number">2</span>)</span><br><span class="line">				</span><br><span class="line">		<span class="variable language_">self</span>.dropout = nn.Dropout(<span class="number">0.5</span>)</span><br><span class="line">				</span><br><span class="line">		<span class="variable language_">self</span>.block4 = NiNBlock(in_channels=<span class="number">384</span>, out_channels=<span class="number">10</span>, </span><br><span class="line">												      kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">0</span>)</span><br><span class="line">				</span><br><span class="line">        <span class="variable language_">self</span>.global_avg_pool = nn.AdaptiveAvgPool2d((<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = <span class="variable language_">self</span>.block1(x)</span><br><span class="line">        x = <span class="variable language_">self</span>.pool1(x)</span><br><span class="line">        </span><br><span class="line">        x = <span class="variable language_">self</span>.block2(x)</span><br><span class="line">        x = <span class="variable language_">self</span>.pool2(x)</span><br><span class="line">        </span><br><span class="line">        x = <span class="variable language_">self</span>.block3(x)</span><br><span class="line">        x = <span class="variable language_">self</span>.pool3(x)</span><br><span class="line">        </span><br><span class="line">        x = <span class="variable language_">self</span>.dropout(x)</span><br><span class="line">        </span><br><span class="line">        x = <span class="variable language_">self</span>.block4(x)</span><br><span class="line">        x = <span class="variable language_">self</span>.global_avg_pool(x) </span><br><span class="line">        x = x.view(x.size(<span class="number">0</span>), -<span class="number">1</span>)    </span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<h1 id="三-GoogLeNet（并行卷积网络）"><a href="#三-GoogLeNet（并行卷积网络）" class="headerlink" title="三. GoogLeNet（并行卷积网络）"></a>三. GoogLeNet（并行卷积网络）</h1><p>与NiN类似，GoogLeNet中的基本模块为Inception Block，Inception Block的基本结构如下图所示</p>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/inception.svg" class="" title="img">
+<p>如上图所示，Inception Block由四条并行路径组成（这就是GoogLeNet被称为并行卷积网络的原因）。一个feature map会被送到4条支路来获取特征。下面解释不同尺寸的卷积核、池化层的作用</p>
+<ul>
+<li>$1\times 1$卷积路径：降低通道维度，减少计算复杂度。换句话说，就是在进行更大尺寸的卷积前，先进行通道上的降维，有效控制后续计算的参数量和计算量</li>
+<li>$3\times 3$卷积路径：捕捉中等尺度的特征。通过 3×3 卷积核提取更广泛的上下文信息，比 1×1 卷积更具表达力</li>
+<li>$5\times 5$卷积路径：捕捉更大尺度的特征。通过 5×5 卷积核进一步扩大感受野，捕捉更全局的特征信息</li>
+<li>池化路径：捕捉不同比例的空间特征。通过池化层来降低特征图的尺寸，变相增加感受野，引入适当的平移不变性。之后经过$1\times 1$卷积进行降维，以便与其他路径进行合并融合</li>
+</ul>
+<p>最后，所有支路的输出在<strong>通道维度</strong>进行结合拼接（concatenation），形成最终的输出特征图。这种特征融合方式使得网络能够同时利用来自不同尺度的特征，提高了模型的多样性和表达能力，下图形象的展示了这一过程</p>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/concatenate.webp" class="" title="concatenate">
+<p>Inception Block代码展示如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Inception</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_channels, c1, c2, c3, c4, **kwargs</span>):</span><br><span class="line">        <span class="built_in">super</span>(Inception, <span class="variable language_">self</span>).__init(**kwargs)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.p1_1 = nn.Conv2d(in_channels, c1, kernel_size=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.relu1 = nn.ReLU(inplace=<span class="literal">True</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.p2_1 = nn.Conv2d(in_channels, c2[<span class="number">0</span>], kernel_size=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.relu2 = nn.ReLU(inplace=<span class="literal">True</span>)</span><br><span class="line">        <span class="variable language_">self</span>.p2_2 = nn.Conv2d(c2[<span class="number">0</span>], c2[<span class="number">1</span>], kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.relu3 = nn.ReLU(inplace=<span class="literal">True</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.p3_1 = nn.Conv2d(in_channels, c3[<span class="number">0</span>], kernel_size=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.relu4 = nn.ReLU(inplace=<span class="literal">True</span>)</span><br><span class="line">        <span class="variable language_">self</span>.p3_2 = nn.Conv2d(c3[<span class="number">0</span>], c3[<span class="number">1</span>], kernel_size=<span class="number">5</span>, padding=<span class="number">2</span>)</span><br><span class="line">        <span class="variable language_">self</span>.relu5 = nn.ReLU(inplace=<span class="literal">True</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">self</span>.p4_1 = nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.p4_2 = nn.Conv2d(in_channels, c4, kernel_size=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.relu6 = nn.ReLU(inplace=<span class="literal">True</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x1 = <span class="variable language_">self</span>.p1_1(x)</span><br><span class="line">        x1 = <span class="variable language_">self</span>.relu1(x)</span><br><span class="line">        </span><br><span class="line">        x2 = <span class="variable language_">self</span>.p2_1(x)</span><br><span class="line">        x2 = <span class="variable language_">self</span>.relu2(x)</span><br><span class="line">        x2 = <span class="variable language_">self</span>.p2_2(x)</span><br><span class="line">        x2 = <span class="variable language_">self</span>.relu3(x)</span><br><span class="line">        </span><br><span class="line">        x3 = <span class="variable language_">self</span>.p3_1(x)</span><br><span class="line">        x3 = <span class="variable language_">self</span>.relu4(x)</span><br><span class="line">        x3 = <span class="variable language_">self</span>.p3_2(x)</span><br><span class="line">        x3 = <span class="variable language_">self</span>.relu5(x)</span><br><span class="line">        </span><br><span class="line">        x4 = <span class="variable language_">self</span>.p4_1(x)</span><br><span class="line">        x4 = <span class="variable language_">self</span>.p4_2(x)</span><br><span class="line">        x4 = <span class="variable language_">self</span>.relu6(x)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> torch.cat((x1, x2, x3, x4), dim=<span class="number">1</span>)</span><br><span class="line">    	<span class="comment">#dim=1表示在通道维度上连接，将不同通道数的feature map合并成一个feature map</span></span><br></pre></td></tr></table></figure>
+<p><code>x1, x2, x3, x4</code>分别表示上图中黄色，绿色，蓝色，橙色这四条路径的输出</p>
+<p>GoogLeNet的网络结构的示意图如下</p>
+<img src="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BGoogLeNet/9074720245a6c717d39bbb2844a031c9.png" class="" title="img">
+<p>通过上图可以发现GoogLeNet是一个较大的模型，深度超过了VGG，使用的卷积层模块也远大于VGG，对上图中的内容做如下解释</p>
+<ul>
+<li>Inception块相当于一个有4条路径的子网络。它通过不同窗口形状的卷积层和最大汇聚层来并行抽取信息，并使用卷积层减少每像素级别上的通道维数从而降低模型复杂度</li>
+<li>GoogLeNet将多个设计精细的Inception块与其他层（卷积层、全连接层）串联起来。其中Inception块的通道数分配之比是在ImageNet数据集上通过大量的实验得来的</li>
+</ul>
+<p>下面是基于Inception Block的GoogLeNet的总体代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">GoogLeNet</span>(nn.Module):</span><br><span class="line">  <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,in_channels,classes</span>):</span><br><span class="line">    <span class="built_in">super</span>(GoogLeNet,<span class="variable language_">self</span>).__init__()</span><br><span class="line">    <span class="variable language_">self</span>.model = nn.Sequential(                          				                               nn.Conv2d(in_channels,out_channels=<span class="number">64</span>,kernel_size=<span class="number">7</span>,stride=<span class="number">2</span>,padding=<span class="number">3</span>),</span><br><span class="line">              nn.ReLU(),</span><br><span class="line">              nn.MaxPool2d(kernel_size=<span class="number">3</span>,stride=<span class="number">2</span>),</span><br><span class="line">              nn.Conv2d(in_channels=<span class="number">64</span>,out_channels=<span class="number">64</span>,kernel_size=<span class="number">1</span>),</span><br><span class="line">              nn.ReLU(),</span><br><span class="line">              nn.Conv2d(in_channels=<span class="number">64</span>,out_channels=<span class="number">192</span>,kernel_size=<span class="number">3</span>,padding=<span class="number">1</span>),</span><br><span class="line">              nn.ReLU(),</span><br><span class="line">              nn.MaxPool2d(kernel_size=<span class="number">3</span>,stride=<span class="number">2</span>),</span><br><span class="line">              Inception(<span class="number">192</span>,c1=<span class="number">64</span>,c2=[<span class="number">96</span>,<span class="number">128</span>],c3=[<span class="number">16</span>,<span class="number">32</span>],c4=<span class="number">32</span>),</span><br><span class="line">              Inception(<span class="number">256</span>,c1=<span class="number">128</span>,c2=[<span class="number">128</span>,<span class="number">192</span>],c3=[<span class="number">32</span>,<span class="number">96</span>],c4=<span class="number">64</span>),</span><br><span class="line">              nn.MaxPool2d(kernel_size=<span class="number">3</span>,stride=<span class="number">2</span>,padding=<span class="number">1</span>),</span><br><span class="line">              Inception(<span class="number">480</span>,c1=<span class="number">192</span>,c2=[<span class="number">96</span>,<span class="number">208</span>],c3=[<span class="number">16</span>,<span class="number">48</span>],c4=<span class="number">64</span>),</span><br><span class="line">              Inception(<span class="number">512</span>,c1=<span class="number">160</span>,c2=[<span class="number">112</span>,<span class="number">224</span>],c3=[<span class="number">24</span>,<span class="number">64</span>],c4=<span class="number">64</span>),</span><br><span class="line">              Inception(<span class="number">512</span>,c1=<span class="number">128</span>,c2=[<span class="number">128</span>,<span class="number">256</span>],c3=[<span class="number">24</span>,<span class="number">64</span>],c4=<span class="number">64</span>),</span><br><span class="line">              Inception(<span class="number">512</span>,c1=<span class="number">112</span>,c2=[<span class="number">144</span>,<span class="number">288</span>],c3=[<span class="number">32</span>,<span class="number">64</span>],c4=<span class="number">64</span>),</span><br><span class="line">              Inception(<span class="number">528</span>,c1=<span class="number">256</span>,c2=[<span class="number">160</span>,<span class="number">320</span>],c3=[<span class="number">32</span>,<span class="number">128</span>],c4=<span class="number">128</span>),</span><br><span class="line">              nn.MaxPool2d(kernel_size=<span class="number">3</span>,stride=<span class="number">2</span>,padding=<span class="number">1</span>),</span><br><span class="line">              Inception(<span class="number">832</span>,c1=<span class="number">256</span>,c2=[<span class="number">160</span>,<span class="number">320</span>],c3=[<span class="number">32</span>,<span class="number">128</span>],c4=<span class="number">128</span>),</span><br><span class="line">              Inception(<span class="number">832</span>,c1=<span class="number">384</span>,c2=[<span class="number">192</span>,<span class="number">384</span>],c3=[<span class="number">48</span>,<span class="number">128</span>],c4=<span class="number">128</span>),</span><br><span class="line">              nn.AvgPool2d(kernel_size=<span class="number">7</span>,stride=<span class="number">1</span>),</span><br><span class="line">              nn.Dropout(p=<span class="number">0.4</span>),</span><br><span class="line">              nn.Flatten(),</span><br><span class="line">              nn.Linear(<span class="number">1024</span>,classes),</span><br><span class="line">              nn.Softmax(dim=<span class="number">1</span>)</span><br><span class="line">            )</span><br><span class="line">    </span><br><span class="line">  <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self,X</span>):</span><br><span class="line">    <span class="keyword">for</span> layer <span class="keyword">in</span> <span class="variable language_">self</span>.model:</span><br><span class="line">      X = layer(X)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> X</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C-1%C3%971%E5%8D%B7%E7%A7%AF-GoogLeNet/" rel="tag"># 卷积神经网络 1×1卷积 GoogLeNet</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/12/30/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BAlexNet/" rel="prev" title="卷积神经网络之AlexNet">
+      <i class="fa fa-chevron-left"></i> 卷积神经网络之AlexNet
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-1-times1-%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="nav-number">1.</span> <span class="nav-text">一. $1\times1$卷积层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-NiN%E7%9A%84%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">二. NiN的结构与实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-GoogLeNet%EF%BC%88%E5%B9%B6%E8%A1%8C%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三. GoogLeNet（并行卷积网络）</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ChenYuXuan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyxCHENYUXUAN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cyx2897@gmail.com" title="E-Mail → mailto:cyx2897@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <font color="red"><i class="fa fa-heartbeat" aria-hidden="true"></i></font>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChenYuXuan</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">39k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">36 分钟</span>
+</div>
+<!--添加运行时间-->
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+      Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+      year - 作为date对象的年份，为4位年份值
+      month - 0-11之间的整数，做为date对象的月份
+      day - 1-31之间的整数，做为date对象的天数
+      hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+      minutes - 0-59之间的整数，做为date对象的分钟数
+      seconds - 0-59之间的整数，做为date对象的秒数
+      microseconds - 0-999之间的整数，做为date对象的毫秒数
+     */
+		var t1 = Date.UTC(2024,12,24,15,00,00); //北京时间
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" 已运行"+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒";
+	}
+	siteTime();
+</script>
+<!--// 添加运行时间-->
+
+<!-- 新增访客统计代码 -->
+<div class="busuanzi-count">
+    <script async="" src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      访客数量 <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 人
+      <span class="post-meta-divider">|</span>
+    </span>
+    <div class="powered-by"></div>
+    <span class="site-uv">
+      <i class="fa fa-eye"></i>
+      总访问量 <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 次
+    </span>
+    <!--
+    <span class="site-pv">
+      <i class="fa fa-pencil"></i>
+      本站博客共 <span class="post-count">19.8k</span> 字
+    </span>
+    -->
+</div>
+<!-- 新增访客统计代码 END-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
