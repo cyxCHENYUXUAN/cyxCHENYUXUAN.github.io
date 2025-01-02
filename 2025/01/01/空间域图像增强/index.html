@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一. 什么是空间域图像增强图像增强并不是恢复原始图像的真实信息，而是强调图像的某些特征或细节，以满足特定都需求 空间域的图像增强是指直接对图像的像素进行处理 通过改变像素的高度、对比度或颜色等属性来达到增强效果。空间域增强方法操作简单且直观，与频域图像增强（如傅里叶变换）不同，空间域图像增强不需要对图像进行复杂的数学变换，而是通过基本的数学运算或者滤波器应用来实现增强效果">
+<meta property="og:type" content="article">
+<meta property="og:title" content="空间域图像增强">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/index.html">
+<meta property="og:site_name" content="ChenYuXuan的个人博客">
+<meta property="og:description" content="一. 什么是空间域图像增强图像增强并不是恢复原始图像的真实信息，而是强调图像的某些特征或细节，以满足特定都需求 空间域的图像增强是指直接对图像的像素进行处理 通过改变像素的高度、对比度或颜色等属性来达到增强效果。空间域增强方法操作简单且直观，与频域图像增强（如傅里叶变换）不同，空间域图像增强不需要对图像进行复杂的数学变换，而是通过基本的数学运算或者滤波器应用来实现增强效果">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/Unknown-29.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/Unknown-34.png">
+<meta property="article:published_time" content="2025-01-01T08:33:13.000Z">
+<meta property="article:modified_time" content="2025-01-02T06:49:13.700Z">
+<meta property="article:author" content="ChenYuXuan">
+<meta property="article:tag" content="数字图像处理 空间域图像增强">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/Unknown-29.png">
+
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>空间域图像增强 | ChenYuXuan的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ChenYuXuan的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-github">
+
+    <a href="https://github.com/cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>Github</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ChenYuXuan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ChenYuXuan的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          空间域图像增强
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-01-01 16:33:13" itemprop="dateCreated datePublished" datetime="2025-01-01T16:33:13+08:00">2025-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-01-02 14:49:13" itemprop="dateModified" datetime="2025-01-02T14:49:13+08:00">2025-01-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">数字图像处理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一-什么是空间域图像增强"><a href="#一-什么是空间域图像增强" class="headerlink" title="一. 什么是空间域图像增强"></a>一. 什么是空间域图像增强</h1><p>图像增强并不是恢复原始图像的真实信息，而是强调图像的某些特征或细节，以满足特定都需求</p>
+<p><strong>空间域的图像增强是指直接对图像的像素进行处理</strong></p>
+<p>通过改变像素的高度、对比度或颜色等属性来达到增强效果。空间域增强方法操作简单且直观，与频域图像增强（如傅里叶变换）不同，空间域图像增强不需要对图像进行复杂的数学变换，而是通过基本的数学运算或者滤波器应用来实现增强效果</p>
+<span id="more"></span>
+<h1 id="二-颜色空间变换"><a href="#二-颜色空间变换" class="headerlink" title="二. 颜色空间变换"></a>二. 颜色空间变换</h1><p>我们所看到的彩色图像都是以RGB格式编码的。在用OpenCV读取图片时，默认的是BGR格式，要将其转换为RGB格式。可以使用下面的代码进行转换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">path = <span class="string">&#x27;&#x27;</span>										<span class="comment">#图片路径</span></span><br><span class="line">img = cv2.imread(path)							<span class="comment">#这时是BGR格式</span></span><br><span class="line">img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)	<span class="comment">#转换成RGB格式</span></span><br></pre></td></tr></table></figure>
+<p>转换结果如下图所示</p>
+<img src="/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/Unknown-29.png" class="" title="img">
+<ol>
+<li><p>HSV颜色空间</p>
+<p>HSV代表色调（Hue）、饱和度（Saturation）和明度（Value）</p>
+<ul>
+<li><p><strong>H</strong>ue，色调/色相</p>
+<p>色调表示颜色的类型或基本颜色的种类，是颜色的属性之一。色调在HSV模型中以0到360度的角度来表示，从红色（0度）开始，顺时针依次是黄色、绿色、青色、蓝色和品红色。例如，0度表示红色，120度表示绿色，240度表示蓝色。色调不考虑亮度或饱和度的影响，仅表示颜色的种类，例如红色、蓝色或绿色</p>
+</li>
+<li><p><strong>S</strong>aturation，饱和度</p>
+<p>饱和度表示颜色的纯度或强度，描述了颜色有多接近于纯光谱颜色。在HSV模型中，饱和度范围为0到1（或0%到100%），0表示完全无色（灰色），1表示完全饱和（纯光谱色）。高饱和度的颜色看起来更加鲜艳，而低饱和度的颜色则更趋于灰色或淡色</p>
+</li>
+<li><p><strong>V</strong>ue，明度/亮度</p>
+<p>明度表示颜色的亮度或强度，反映了颜色的光亮程度。明度的范围为0到1（或0%到100%），0表示完全黑色（无亮度），1表示最亮的状态（最大亮度）。明度值越高，颜色看起来越亮；越低，颜色看起来越暗</p>
+</li>
+</ul>
+<p>下面介绍如何<strong>将RGB转为HSV</strong></p>
+<ol>
+<li><p>色相<strong>H</strong></p>
+<p>首先将RGB归一化</p>
+<script type="math/tex; mode=display">
+r=\frac{R}{255}, g=\frac{G}{255}, b=\frac{B}{255}</script></li>
+</ol>
+</li>
+</ol>
+<pre><code>  计算全部数值的差值
+  $$
+  \triangle = \max(r, g, b) - \min(r, g, b)
+  $$
+
+
+  可以用如下公式计算色相
+  $$
+  H = \begin&#123;cases&#125; 0, &amp; \text&#123;if &#125; \Delta = 0 \\ 60^\circ \times \frac&#123;g - b&#125;&#123;\Delta&#125; + 360^\circ, &amp; \text&#123;if &#125; \max(r,g,b) = r \text&#123; and &#125; g &lt; b \\ 60^\circ \times \frac&#123;g - b&#125;&#123;\Delta&#125;, &amp; \text&#123;if &#125; \max(r,g,b) = r \text&#123; and &#125; g \geq b \\ 60^\circ \times \frac&#123;b - r&#125;&#123;\Delta&#125; + 120^\circ, &amp; \text&#123;if &#125; \max(r,g,b) = g \\ 60^\circ \times \frac&#123;r - g&#125;&#123;\Delta&#125; + 240^\circ, &amp; \text&#123;if &#125; \max(r,g,b) = b \end&#123;cases&#125;
+  $$
+</code></pre><ol>
+<li><p>饱和度<strong>S</strong></p>
+<script type="math/tex; mode=display">
+S=\frac{\triangle}{\max(r, g, b)}</script></li>
+<li><p>亮度<strong>V</strong></p>
+<script type="math/tex; mode=display">
+V=\max(r, g, b)</script></li>
+</ol>
+<pre><code>可以用下面的OpenCV代码实现HSV与RGB的相互转换
+</code></pre>   <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">image_hsv = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2HSV)</span><br><span class="line">image_rgb_from_hsv = cv2.cvtColor(image_hsv, cv2.COLOR_HSV2RGB)</span><br></pre></td></tr></table></figure>
+<h1 id="三-亮度与对比度调整"><a href="#三-亮度与对比度调整" class="headerlink" title="三. 亮度与对比度调整"></a>三. 亮度与对比度调整</h1><ol>
+<li><p>简单的亮度调整</p>
+<p>亮度调整主要是改变图像中的每个像素的光照强度。调整亮度时，是在原始像素值的基础上加上（减去）一个固定的值，这影响整个图像的明暗程度，但<strong>不改变像素之间的相对差异</strong>。对于RGB图像而言，通常对R，G，B三个颜色通道分别进行处理，最后将三个通道合并成一个彩色图像；对于HSV图像而言，通常是对V通道进行亮度增强</p>
+<p>对于RGB图像$I$，可以按照下面的式子调整其亮度</p>
+<script type="math/tex; mode=display">
+I'(x, y)=I(x, y)+d</script><p>但是直接在对RGB三个通道上的所有像素上加常数，可能会<strong>导致图像失真</strong></p>
+</li>
+<li><p>线性对比度调整</p>
+<p>对比度表示的是图像中最亮与最暗的像素的差距。这个差距越小，对比度越差；差距越大，对比度越大，看上去就会感觉非常刺眼，黑白分明。可以对图像乘以一个系数来进行亮度的提升，式子如下</p>
+<script type="math/tex; mode=display">
+I'(x, y)=\alpha I(x, y)</script><p>当$\alpha&gt;1$时，总体亮度增加且像素最大差异也增加；当$\alpha&lt;1$时，整体亮度变暗像素之间的数值差异也减小</p>
+<p>代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">adjust_contrast_brightness</span>(<span class="params">image, alpha=<span class="number">1.0</span>, beta=<span class="number">0</span></span>):</span><br><span class="line">    <span class="comment"># alpha (对比度控制) 乘数因子</span></span><br><span class="line">    <span class="comment"># beta (亮度控制) 加数因子</span></span><br><span class="line">    adjusted = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)</span><br><span class="line">    <span class="keyword">return</span> adjusted</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>直方图对比度增强</p>
+<p>基于直方图的对比度增强算法是最常见的对比度增强方法。直方图作为一种非常有效的图像分析工具，在图像处理的各个方面发挥着非常重要的作用</p>
+<p><strong>直方图</strong>是一个图表或图形表示，它展示了图像中不同像素强度值的频率分布。对于灰度图像，直方图显示从黑到白的不同灰度级别（通常是0到255）的像素数量</p>
+<p>在直方图中，横轴(X轴)代表像素的强度值。在灰度图像中，这可能是从0（全黑）到255（全白）的整数值；在彩色图像中，可能分别为红、绿、蓝三个颜色通道的强度值；纵轴（Y轴）：代表具有特定强度值的像素数量。这可以告诉我们图像中某个特定强度值的像素出现的频率</p>
+<p>用numpy库中的<code>histogram</code>方法即可快速得到每个像素(或是像素区间)的数量统计，示例代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hist, bins = np.histogram(img.flatten(), bins=<span class="number">16</span>, <span class="built_in">range</span>=[<span class="number">0</span>, <span class="number">255</span>])</span><br><span class="line"><span class="comment"># 以灰度直方图为例，第一个参数是把一张灰度图像拉平为向量，bins表示簇，range表示像素范围</span></span><br><span class="line"><span class="comment"># 如果bins越大，则划分的条状越细，bins越小，则划分的条越小。</span></span><br><span class="line"><span class="comment"># 例如，bins=16表示每16个像素等级为一组；bins=128，表示每两个像素等级为一组</span></span><br></pre></td></tr></table></figure>
+<p>示例结果如下</p>
+<img src="/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/Unknown-34.png" class="" title="img">
+<ol>
+<li><p>全局直方图均衡化</p>
+<p>通过重新分配像素值的灰度值，让直方图在区间内分配的更加均匀，使图像的前景和背景更加清晰，提高图像的整体对比度</p>
+<p>在未使用全局直方图均衡化时，我们人为的将直方图放到更宽的区间，这可以增强暗部的细节，同时也使得亮部过曝光，但是<strong>全局直方图均衡化则是通过调整像素级在不同等级的分布，相比于人为将直方图放宽，它能够保证亮度不过曝的前提下，尽可能增强暗部的细节</strong></p>
+<p>下面以一个矩阵为例，模拟灰度图像，展示全局直方图均衡化的过程</p>
+<ul>
+<li><p>统计频次，示例矩阵如下</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}
+  1&  1&  4&  1&  7&  3&3 \\
+  1&  1&  4&  1&  1&  1&3 \\
+  1&  2&  7&  5&  7&  4&6 \\
+  1&  4&  1&  1&  1&  6&6\\
+  7&  1&  2&  2&  7&  3&3 \\
+  4&  5&  7&  4&  2&  7&2 \\
+  1&  7&  1&  5&  2&  1&1
+\end{bmatrix}</script><p>统计结果如下</p>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+<pre><code>    | 像素 | 数量 |
+    | ---- | ---- |
+    | 1    | 18   |
+    | 2    | 6    |
+    | 3    | 5    |
+    | 4    | 6    |
+    | 5    | 3    |
+    | 6    | 3    |
+    | 7    | 8    |
+
+  - 统计比例与累计直方图
+
+    累计直方图是随着像素等级的顺序逐渐累积全部直方图的比例，按照像素值的大小将比例累加，累加到最后一个像素值时为1
+
+    对上述统计结果进行统计比例
+
+
+
+    | 像素 | 比例 |
+    | ---- | ---- |
+    | 1    | 0.38 |
+    | 2    | 0.12 |
+    | 3    | 0.10 |
+    | 4    | 0.12 |
+    | 5    | 0.06 |
+    | 6    | 0.06 |
+    | 7    | 0.16 |
+
+    累计直方图如下
+
+
+
+    | 像素 | 累计 |
+    | ---- | ---- |
+    | 1    | 0.38 |
+    | 2    | 0.50 |
+    | 3    | 0.60 |
+    | 4    | 0.72 |
+    | 5    | 0.78 |
+    | 6    | 0.84 |
+    | 7    | 1    |
+
+  - 建立像素等级映射表
+
+    上面的像素等级范围是1到7，如果想将其映射到0到3，可以对每个像素的累计值乘上像素等级的数量，这里要映射到0到3，那么就可以乘上4，结果如下
+
+    | 像素 | 累计 | 操作  | 操作结果 | 映射像素 |
+    | ---- | ---- | ----- | -------- | -------- |
+    | 1    | 0.38 | 乘以4 | 1.52     | 2        |
+    | 2    | 0.50 | 乘以4 | 2        | 2        |
+    | 3    | 0.60 | 乘以4 | 2.4      | 2        |
+    | 4    | 0.72 | 乘以4 | 2.88     | 3        |
+    | 5    | 0.78 | 乘以4 | 3.12     | 3        |
+    | 6    | 0.84 | 乘以4 | 3.36     | 3        |
+    | 7    | 1    | 乘以4 | 4        | 4        |
+
+  可以使用下面代码对RGB图像进行全局直方图均衡化
+
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line"><span class="comment">#将彩色图像转换为R,G,B三个通道的图像</span></span><br><span class="line">b,g,r = cv2.split(image_rgb)</span><br><span class="line"></span><br><span class="line"><span class="comment">#对每个通道进行直方图均衡化</span></span><br><span class="line">equ_b = cv2.equalizeHist(b)</span><br><span class="line">equ_g = cv2.equalizeHist(g)</span><br><span class="line">equ_r = cv2.equalizeHist(r)</span><br><span class="line"></span><br><span class="line"><span class="comment">#将三个通道的直方图均衡化合并成一张彩色图像</span></span><br><span class="line">image_rgb_equ = cv2.merge([equ_b, equ_g, equ_r])</span><br></pre></td></tr></table></figure>
+</code></pre><ol>
+<li><p>自适应直方图均衡化（AHE）</p>
+<p>自适应直方图均衡化是一种改进常规直方图均衡化的图像处理技术，适用于提高局部图像对比度而不过度放大噪声或造成其它区域的对比度失真。上面的全局直方图均衡化仍然会使得亮部过曝，是因为其处理直方图的算法具有全局性，也就是说，这种方法对所有像素都进行优化。而<strong>自适应直方图均衡化将图像对比度的改变限制在局部</strong>，可以解决上面的直方图均衡化所带来的<strong>过曝光问题</strong></p>
+<p>AHE的具体步骤如下</p>
+<ul>
+<li><strong>分割图像</strong>：将图像分成许多小的区块，这些区块通常会有重叠</li>
+<li><strong>计算局部直方图</strong>：对于每一个小区块，单独计算其直方图而不是整个图像的直方图</li>
+<li><strong>局部均衡化</strong>：每个区块的直方图被独立均衡化，也就是说，根据每个区块的像素值的分布，单独地进行均衡化，从而增强局部对比度</li>
+<li><strong>合并块</strong>：每个块在均衡化之后存在不连续性，AHE通过双线性插值来使不同块之间的边界变得平滑</li>
+</ul>
+<p>然而AHE可能会导致噪声也被过度放大，因此提出了CLAHE（Contrast Limited Adaptive Histogram Equalization）,CLAHE有如下改变</p>
+<ul>
+<li><strong>对比度限制</strong>：CLAHE通过限制均衡化过程中直方图的斜率来避免过度增强对比度，主要的通过裁剪直方图的高峰来实现</li>
+<li><strong>重新分配裁剪的像素</strong>：裁剪直方图的高峰后，将超出阈值的像素重新均匀的分配到其它像素上</li>
+<li><strong>增强边界</strong>：CLAHE改进了AHE中区块处理边界的方法，采用更平滑的技术来处理相邻块之间的过渡</li>
+</ul>
+<p>使用下面代码对RGB图像进行CLAHE算法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">clahe = cv2.createCLAHE(clipLimit=<span class="number">2.0</span>, tileGridSize=(<span class="number">8</span>,<span class="number">8</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment">#将彩色图像转换为R,G,B三个通道的图像</span></span><br><span class="line">b,g,r = cv2.split(image_rgb)</span><br><span class="line"></span><br><span class="line"><span class="comment">#对每个通道进行直方图均衡化</span></span><br><span class="line">clahe_b = clahe.apply(b)</span><br><span class="line">clahe_g = clahe.apply(g)</span><br><span class="line">clahe_r = clahe.apply(r)</span><br><span class="line"></span><br><span class="line"><span class="comment">#将三个通道的直方图均衡化合并成一张彩色图像</span></span><br><span class="line">image_rgb_clahe = cv2.merge([clahe_b, clahe_g, clahe_r])</span><br></pre></td></tr></table></figure>
+<p><code>clipLimit</code>表示某个区块的像素上界，<code>tileGridSize</code>表示按照多大的区块来进行直方图均衡化。其中像素上限越多，噪声被强化的越多，同时细节也被保留的更多；区块尺寸越大，局部对比度就会增强，但是应用于全局效果不好</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86-%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/" rel="tag"># 数字图像处理 空间域图像增强</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/01/01/%E4%BC%98%E5%8C%96%E5%99%A8/" rel="prev" title="优化器">
+      <i class="fa fa-chevron-left"></i> 优化器
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E4%BB%80%E4%B9%88%E6%98%AF%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA"><span class="nav-number">1.</span> <span class="nav-text">一. 什么是空间域图像增强</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E9%A2%9C%E8%89%B2%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text">二. 颜色空间变换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E4%BA%AE%E5%BA%A6%E4%B8%8E%E5%AF%B9%E6%AF%94%E5%BA%A6%E8%B0%83%E6%95%B4"><span class="nav-number">3.</span> <span class="nav-text">三. 亮度与对比度调整</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ChenYuXuan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyxCHENYUXUAN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cyx2897@gmail.com" title="E-Mail → mailto:cyx2897@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <font color="red"><i class="fa fa-heartbeat" aria-hidden="true"></i></font>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChenYuXuan</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">59k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">53 分钟</span>
+</div>
+<!--添加运行时间-->
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+      Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+      year - 作为date对象的年份，为4位年份值
+      month - 0-11之间的整数，做为date对象的月份
+      day - 1-31之间的整数，做为date对象的天数
+      hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+      minutes - 0-59之间的整数，做为date对象的分钟数
+      seconds - 0-59之间的整数，做为date对象的秒数
+      microseconds - 0-999之间的整数，做为date对象的毫秒数
+     */
+		var t1 = Date.UTC(2024,12,24,15,00,00); //北京时间
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" 已运行"+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒";
+	}
+	siteTime();
+</script>
+<!--// 添加运行时间-->
+
+<!-- 新增访客统计代码 -->
+<div class="busuanzi-count">
+    <script async="" src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      访客数量 <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 人
+      <span class="post-meta-divider">|</span>
+    </span>
+    <div class="powered-by"></div>
+    <span class="site-uv">
+      <i class="fa fa-eye"></i>
+      总访问量 <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 次
+    </span>
+    <!--
+    <span class="site-pv">
+      <i class="fa fa-pencil"></i>
+      本站博客共 <span class="post-count">30.2k</span> 字
+    </span>
+    -->
+</div>
+<!-- 新增访客统计代码 END-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
