@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一. 什么是形态学操作形态学操作通过对图像的几何结构进行分析和处理，实现对图像结构和形状的修改与提取。形态学操作的应用对象是二值图像和灰度图像，基本的形态学操作有膨胀、腐蚀、开运算、闭运算、顶帽、黑帽、梯度运算">
+<meta property="og:type" content="article">
+<meta property="og:title" content="形态学操作">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/index.html">
+<meta property="og:site_name" content="ChenYuXuan的个人博客">
+<meta property="og:description" content="一. 什么是形态学操作形态学操作通过对图像的几何结构进行分析和处理，实现对图像结构和形状的修改与提取。形态学操作的应用对象是二值图像和灰度图像，基本的形态学操作有膨胀、腐蚀、开运算、闭运算、顶帽、黑帽、梯度运算">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/QQ_1735824569142.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/1226410-20191223172011139-1832359490.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/1226410-20191223172242614-263001868.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/1226410-20200109153333576-1966193930.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/Unknown-101.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/1226410-20200109153922238-2013494460.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/Unknown-102.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/Unknown-103.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/Unknown-104.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/Unknown-105.png">
+<meta property="article:published_time" content="2025-01-02T11:22:35.000Z">
+<meta property="article:modified_time" content="2025-01-02T13:31:10.492Z">
+<meta property="article:author" content="ChenYuXuan">
+<meta property="article:tag" content="数字图像处理 形态学操作">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/QQ_1735824569142.png">
+
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>形态学操作 | ChenYuXuan的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ChenYuXuan的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-github">
+
+    <a href="https://github.com/cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>Github</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ChenYuXuan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ChenYuXuan的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          形态学操作
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-01-02 19:22:35 / 修改时间：21:31:10" itemprop="dateCreated datePublished" datetime="2025-01-02T19:22:35+08:00">2025-01-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">数字图像处理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一-什么是形态学操作"><a href="#一-什么是形态学操作" class="headerlink" title="一. 什么是形态学操作"></a>一. 什么是形态学操作</h1><p>形态学操作通过对图像的几何结构进行分析和处理，实现对图像结构和形状的修改与提取。<strong>形态学操作的应用对象是二值图像和灰度图像</strong>，基本的形态学操作有<strong>膨胀、腐蚀、开运算、闭运算、顶帽、黑帽、梯度运算</strong></p>
+<span id="more"></span>
+<ol>
+<li><p>结构元素</p>
+<p>结构元素是一个小的二值或灰度图像，通常用一个矩阵表示，用于定义形态学操作中像素的邻域关系和形状。可以认为<strong>结构元素就是一个卷积核</strong>，常见的结构元素如下</p>
+<img src="/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/QQ_1735824569142.png" class="" title="img">
+<p>下面给出不同形状的结构元素的代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义结构元素（3x3矩形）</span></span><br><span class="line">   kernel = np.ones((<span class="number">3</span>, <span class="number">3</span>), np.uint8)</span><br><span class="line">   </span><br><span class="line">   <span class="comment"># 其他结构元素示例：</span></span><br><span class="line">   <span class="comment"># 矩形</span></span><br><span class="line">   rect_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (<span class="number">3</span>, <span class="number">3</span>))</span><br><span class="line">   </span><br><span class="line">   <span class="comment"># 椭圆</span></span><br><span class="line">   ellipse_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (<span class="number">3</span>, <span class="number">3</span>))</span><br><span class="line">   </span><br><span class="line">   <span class="comment"># 十字形</span></span><br><span class="line">   cross_kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (<span class="number">3</span>, <span class="number">3</span>))</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="二-膨胀（Dilation）"><a href="#二-膨胀（Dilation）" class="headerlink" title="二. 膨胀（Dilation）"></a>二. 膨胀（Dilation）</h1><p>膨胀的定义：二值图像中，对于图中的每一个前景元素（像素值为1的像素点），对它的邻域进行操作，<strong>使它周围与结构元素尺寸一样大的邻域变得和结构元素一样</strong>，如下图所示</p>
+<img src="/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/1226410-20191223172011139-1832359490.png" class="" title="img">
+<p>膨胀用于扩展图像中的前景区域，具体如下：</p>
+<ul>
+<li>扩展边界：前景区域（像素值为1的像素点的集合）的边界向外扩展，增大物体面积</li>
+<li>填补孔洞：填补前景区域内小孔洞</li>
+<li>连接邻近的物体：将互相靠近的物体连接起来，形成更大的连通区域</li>
+<li>增强特征：强化图像中的线条和边缘，使其更加明显</li>
+</ul>
+<p>可以调用OpenCV中的代码来完成膨胀操作，如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">dilated = cv2.dilate(A, kernel, iterations=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p><code>iterations</code>表示进行多少次膨胀</p>
+<h1 id="三-腐蚀（Erosion）"><a href="#三-腐蚀（Erosion）" class="headerlink" title="三. 腐蚀（Erosion）"></a>三. 腐蚀（Erosion）</h1><p>腐蚀的定义：二值图像中，对于图中的符合要求的前景元素（像素值为1的像素点），即该前景元素周围与结构元素尺寸一样大的邻域是和结构元素一样的，那么这个前景元素就是符合要求的，接下来就要<strong>将该前景元素周围与结构元素尺寸一样大的邻域都从0改为1，而位于结构元素中心位置（也就是符合条件的这个前景元素）仍然保持1不变</strong>，如下图所示</p>
+<img src="/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/1226410-20191223172242614-263001868.png" class="" title="img">
+<p>腐蚀用于缩小图像中的前景区域，具体如下：</p>
+<ul>
+<li>收缩边界：前景区域的边界向内收缩，减小物体的面积</li>
+<li>去除噪声：去除图像中的小的前景噪声，使得物体更清晰</li>
+<li>分离物体：将相互靠近的但是我们不希望它们连在一起的前景物体分离开来，形成独立的连通区域</li>
+<li>细化结构：细化物体的结构，突出细节结构</li>
+</ul>
+<p>可以调用OpenCV中的代码来完成腐蚀操作，如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eroded = cv2.erode(A, kernel, iterations=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<h1 id="四-开运算（Open）和闭运算（Close）"><a href="#四-开运算（Open）和闭运算（Close）" class="headerlink" title="四. 开运算（Open）和闭运算（Close）"></a>四. 开运算（Open）和闭运算（Close）</h1><p>开运算和闭运算是将腐蚀和膨胀操作按照一定的次序进行处理，但是二者并不是可逆的，也就是说，先开后闭不能得到原来的图像</p>
+<ol>
+<li><p>开运算：<strong>先腐蚀后膨胀，用于移除由图像噪声形成的斑点</strong>，把细微连在一起的两块目标分开了</p>
+<p>开运算的效果图如下</p>
+<img src="/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/1226410-20200109153333576-1966193930.png" class="" title="img">
+<p>开运算的总结：</p>
+<ul>
+<li>开运算能够<strong>去除前景区域外孤立的小点</strong>，毛刺和小桥，而总的位置和形状不变</li>
+<li>结构元素大小的不同将导致滤波效果的不同</li>
+<li>不同的结构元素的选择导致了不同的分割，即提取出不同的特征</li>
+</ul>
+<p>开运算示例图如下</p>
+<img src="/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/Unknown-101.png" class="" title="img">
+<p>开运算的代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">opening = cv2.morphologyEx(A, cv2.MORPH_OPEN, kernel)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>闭运算：<strong>先膨胀后腐蚀，用来连接被误分为许多小块的对象</strong>，将两个细微连接的图封闭在一起</p>
+<p>闭运算的效果图如下</p>
+<img src="/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/1226410-20200109153922238-2013494460.png" class="" title="img">
+<p>闭运算的总结：</p>
+<ul>
+<li>闭运算能够<strong>填平前景区域内的小孔</strong>，弥合小裂缝，而总的位置和形状不变</li>
+<li>结构元素大小的不同将导致滤波效果的不同</li>
+<li>不同结构元素的选择导致了不同形状的连接</li>
+</ul>
+<p>闭运算示例图如下</p>
+<img src="/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/Unknown-102.png" class="" title="img">
+<p>闭运算的代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">closing = cv2.morphologyEx(A, cv2.MORPH_CLOSE, kernel)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="五-顶帽运算（Tophat）、黑帽运算（Blackhat）和梯度运算（Grad）"><a href="#五-顶帽运算（Tophat）、黑帽运算（Blackhat）和梯度运算（Grad）" class="headerlink" title="五. 顶帽运算（Tophat）、黑帽运算（Blackhat）和梯度运算（Grad）"></a>五. 顶帽运算（Tophat）、黑帽运算（Blackhat）和梯度运算（Grad）</h1><ol>
+<li><p>顶帽运算</p>
+<p>定义：<strong>原始图像-原始图像进行开运算后的图像</strong></p>
+<p>顶帽运算示例图如下</p>
+<img src="/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/Unknown-103.png" class="" title="img">
+<p>使用代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tophat = cv2.morphologyEx(A, cv2.MORPH_TOPHAT, kernel)</span><br></pre></td></tr></table></figure>
+<p>顶帽运算主要用于<strong>提取图像中比开运算结果更亮的部分</strong></p>
+</li>
+<li><p>黑帽运算</p>
+<p>定义：<strong>原始图像进行闭运算后的图像-原始图像</strong></p>
+<p>黑帽运算示例图如下</p>
+<img src="/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/Unknown-104.png" class="" title="img">
+<p>使用代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">blackhat = cv2.morphologyEx(A. cv2.MORPH_BLACKHAT, kernel)</span><br></pre></td></tr></table></figure>
+<p>黑帽运算主要用于<strong>提取图像中比闭运算结果更暗的部分</strong></p>
+</li>
+<li><p>梯度运算</p>
+<p>定义：<strong>原始图像膨胀后的图像-原始图像腐蚀后的图像</strong></p>
+<p>梯度运算示例图如下</p>
+<img src="/2025/01/02/%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/Unknown-105.png" class="" title="img">
+<p>使用代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradient = cv2.morphologyEx(A, cv2.MORPH_GRADIENT, kernel)</span><br></pre></td></tr></table></figure>
+<p>梯度运算主要用于提取图像的边缘信息</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86-%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C/" rel="tag"># 数字图像处理 形态学操作</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/01/02/%E5%9B%BE%E5%83%8F%E6%BB%A4%E6%B3%A2/" rel="prev" title="图像滤波">
+      <i class="fa fa-chevron-left"></i> 图像滤波
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E4%BB%80%E4%B9%88%E6%98%AF%E5%BD%A2%E6%80%81%E5%AD%A6%E6%93%8D%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">一. 什么是形态学操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E8%86%A8%E8%83%80%EF%BC%88Dilation%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二. 膨胀（Dilation）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E8%85%90%E8%9A%80%EF%BC%88Erosion%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三. 腐蚀（Erosion）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-%E5%BC%80%E8%BF%90%E7%AE%97%EF%BC%88Open%EF%BC%89%E5%92%8C%E9%97%AD%E8%BF%90%E7%AE%97%EF%BC%88Close%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四. 开运算（Open）和闭运算（Close）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94-%E9%A1%B6%E5%B8%BD%E8%BF%90%E7%AE%97%EF%BC%88Tophat%EF%BC%89%E3%80%81%E9%BB%91%E5%B8%BD%E8%BF%90%E7%AE%97%EF%BC%88Blackhat%EF%BC%89%E5%92%8C%E6%A2%AF%E5%BA%A6%E8%BF%90%E7%AE%97%EF%BC%88Grad%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">五. 顶帽运算（Tophat）、黑帽运算（Blackhat）和梯度运算（Grad）</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ChenYuXuan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyxCHENYUXUAN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cyx2897@gmail.com" title="E-Mail → mailto:cyx2897@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <font color="red"><i class="fa fa-heartbeat" aria-hidden="true"></i></font>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChenYuXuan</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">65k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">59 分钟</span>
+</div>
+<!--添加运行时间-->
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+      Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+      year - 作为date对象的年份，为4位年份值
+      month - 0-11之间的整数，做为date对象的月份
+      day - 1-31之间的整数，做为date对象的天数
+      hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+      minutes - 0-59之间的整数，做为date对象的分钟数
+      seconds - 0-59之间的整数，做为date对象的秒数
+      microseconds - 0-999之间的整数，做为date对象的毫秒数
+     */
+		var t1 = Date.UTC(2024,12,24,15,00,00); //北京时间
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" 已运行"+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒";
+	}
+	siteTime();
+</script>
+<!--// 添加运行时间-->
+
+<!-- 新增访客统计代码 -->
+<div class="busuanzi-count">
+    <script async="" src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      访客数量 <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 人
+      <span class="post-meta-divider">|</span>
+    </span>
+    <div class="powered-by"></div>
+    <span class="site-uv">
+      <i class="fa fa-eye"></i>
+      总访问量 <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 次
+    </span>
+    <!--
+    <span class="site-pv">
+      <i class="fa fa-pencil"></i>
+      本站博客共 <span class="post-count">34.1k</span> 字
+    </span>
+    -->
+</div>
+<!-- 新增访客统计代码 END-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
