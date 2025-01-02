@@ -29,8 +29,12 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/Unknown-29.png">
 <meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/Unknown-34.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/QQ_1735802482293.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/QQ_1735802508710.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/QQ_1735802529874.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/QQ_1735802548941.png">
 <meta property="article:published_time" content="2025-01-01T08:33:13.000Z">
-<meta property="article:modified_time" content="2025-01-02T06:49:13.700Z">
+<meta property="article:modified_time" content="2025-01-02T07:27:55.341Z">
 <meta property="article:author" content="ChenYuXuan">
 <meta property="article:tag" content="数字图像处理 空间域图像增强">
 <meta name="twitter:card" content="summary">
@@ -210,7 +214,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-02 14:49:13" itemprop="dateModified" datetime="2025-01-02T14:49:13+08:00">2025-01-02</time>
+                <time title="修改时间：2025-01-02 15:27:55" itemprop="dateModified" datetime="2025-01-02T15:27:55+08:00">2025-01-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -235,7 +239,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.9k</span>
+              <span>4.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -259,7 +263,7 @@
 <p>通过改变像素的高度、对比度或颜色等属性来达到增强效果。空间域增强方法操作简单且直观，与频域图像增强（如傅里叶变换）不同，空间域图像增强不需要对图像进行复杂的数学变换，而是通过基本的数学运算或者滤波器应用来实现增强效果</p>
 <span id="more"></span>
 <h1 id="二-颜色空间变换"><a href="#二-颜色空间变换" class="headerlink" title="二. 颜色空间变换"></a>二. 颜色空间变换</h1><p>我们所看到的彩色图像都是以RGB格式编码的。在用OpenCV读取图片时，默认的是BGR格式，要将其转换为RGB格式。可以使用下面的代码进行转换</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">path = <span class="string">&#x27;&#x27;</span>										<span class="comment">#图片路径</span></span><br><span class="line">img = cv2.imread(path)							<span class="comment">#这时是BGR格式</span></span><br><span class="line">img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)	<span class="comment">#转换成RGB格式</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line"><span class="comment">#图片路径</span></span><br><span class="line">path = <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="comment">#这时是BGR格式</span></span><br><span class="line">img = cv2.imread(path)</span><br><span class="line"><span class="comment">#转换成RGB格式</span></span><br><span class="line">img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)</span><br></pre></td></tr></table></figure>
 <p>转换结果如下图所示</p>
 <img src="/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/Unknown-29.png" class="" title="img">
 <ol>
@@ -279,32 +283,24 @@
 <p>下面介绍如何<strong>将RGB转为HSV</strong></p>
 <ol>
 <li><p>色相<strong>H</strong></p>
-<p>首先将RGB归一化</p>
+<p>首先将RGB三个通道像素值归一化</p>
 <script type="math/tex; mode=display">
-r=\frac{R}{255}, g=\frac{G}{255}, b=\frac{B}{255}</script></li>
-</ol>
-</li>
-</ol>
-<pre><code>  计算全部数值的差值
-  $$
-  \triangle = \max(r, g, b) - \min(r, g, b)
-  $$
-
-
-  可以用如下公式计算色相
-  $$
-  H = \begin&#123;cases&#125; 0, &amp; \text&#123;if &#125; \Delta = 0 \\ 60^\circ \times \frac&#123;g - b&#125;&#123;\Delta&#125; + 360^\circ, &amp; \text&#123;if &#125; \max(r,g,b) = r \text&#123; and &#125; g &lt; b \\ 60^\circ \times \frac&#123;g - b&#125;&#123;\Delta&#125;, &amp; \text&#123;if &#125; \max(r,g,b) = r \text&#123; and &#125; g \geq b \\ 60^\circ \times \frac&#123;b - r&#125;&#123;\Delta&#125; + 120^\circ, &amp; \text&#123;if &#125; \max(r,g,b) = g \\ 60^\circ \times \frac&#123;r - g&#125;&#123;\Delta&#125; + 240^\circ, &amp; \text&#123;if &#125; \max(r,g,b) = b \end&#123;cases&#125;
-  $$
-</code></pre><ol>
+r=\frac{R}{255}, g=\frac{G}{255}, b=\frac{B}{255}</script><p>计算像素差值</p>
+<script type="math/tex; mode=display">
+\triangle = \max(r, g, b) - \min(r, g, b)</script><p>用下面的公式计算色相</p>
+<script type="math/tex; mode=display">
+H = \begin{cases} 0, & \text{if } \Delta = 0 \\ 60^\circ \times \frac{g - b}{\Delta} + 360^\circ, & \text{if } \max(r,g,b) = r \text{ and } g < b \\ 60^\circ \times \frac{g - b}{\Delta}, & \text{if } \max(r,g,b) = r \text{ and } g \geq b \\ 60^\circ \times \frac{b - r}{\Delta} + 120^\circ, & \text{if } \max(r,g,b) = g \\ 60^\circ \times \frac{r - g}{\Delta} + 240^\circ, & \text{if } \max(r,g,b) = b \end{cases}</script></li>
 <li><p>饱和度<strong>S</strong></p>
 <script type="math/tex; mode=display">
 S=\frac{\triangle}{\max(r, g, b)}</script></li>
-<li><p>亮度<strong>V</strong></p>
+<li><p>亮度<strong>V</strong>（R，G，B三个通道的最大值）</p>
 <script type="math/tex; mode=display">
 V=\max(r, g, b)</script></li>
 </ol>
-<pre><code>可以用下面的OpenCV代码实现HSV与RGB的相互转换
-</code></pre>   <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">image_hsv = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2HSV)</span><br><span class="line">image_rgb_from_hsv = cv2.cvtColor(image_hsv, cv2.COLOR_HSV2RGB)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>   可以用下面的OpenCV代码实现HSV与RGB的相互转换</p>
+   <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">image_hsv = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2HSV)</span><br><span class="line">image_rgb_from_hsv = cv2.cvtColor(image_hsv, cv2.COLOR_HSV2RGB)</span><br></pre></td></tr></table></figure>
 <h1 id="三-亮度与对比度调整"><a href="#三-亮度与对比度调整" class="headerlink" title="三. 亮度与对比度调整"></a>三. 亮度与对比度调整</h1><ol>
 <li><p>简单的亮度调整</p>
 <p>亮度调整主要是改变图像中的每个像素的光照强度。调整亮度时，是在原始像素值的基础上加上（减去）一个固定的值，这影响整个图像的明暗程度，但<strong>不改变像素之间的相对差异</strong>。对于RGB图像而言，通常对R，G，B三个颜色通道分别进行处理，最后将三个通道合并成一个彩色图像；对于HSV图像而言，通常是对V通道进行亮度增强</p>
@@ -344,72 +340,23 @@ I'(x, y)=\alpha I(x, y)</script><p>当$\alpha&gt;1$时，总体亮度增加且�
   4&  5&  7&  4&  2&  7&2 \\
   1&  7&  1&  5&  2&  1&1
 \end{bmatrix}</script><p>统计结果如下</p>
+<img src="/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/QQ_1735802482293.png" class="" title="img">
+</li>
+<li><p>统计比例与累计直方图</p>
+<p>累计直方图是随着像素等级的顺序逐渐累积全部直方图的比例，按照像素值的大小将比例累加，累加到最后一个像素值时为1</p>
+<p>对上述统计结果进行统计比例</p>
+<img src="/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/QQ_1735802508710.png" class="" title="img">
+<p>累计直方图如下</p>
+<img src="/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/QQ_1735802529874.png" class="" title="img">
+</li>
+<li><p>建立像素等级映射表</p>
+<p>上面的像素等级范围是1到7，如果想将其映射到0到3，可以对每个像素的累计值乘上像素等级的数量，这里要映射到0到3，那么就可以乘上4，结果如下</p>
+<img src="/2025/01/01/%E7%A9%BA%E9%97%B4%E5%9F%9F%E5%9B%BE%E5%83%8F%E5%A2%9E%E5%BC%BA/QQ_1735802548941.png" class="" title="img">
 </li>
 </ul>
+<p>可以使用下面代码对RGB图像进行全局直方图均衡化</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line"><span class="comment">#将彩色图像转换为R,G,B三个通道的图像</span></span><br><span class="line">b,g,r = cv2.split(image_rgb)</span><br><span class="line"></span><br><span class="line"><span class="comment">#对每个通道进行直方图均衡化</span></span><br><span class="line">equ_b = cv2.equalizeHist(b)</span><br><span class="line">equ_g = cv2.equalizeHist(g)</span><br><span class="line">equ_r = cv2.equalizeHist(r)</span><br><span class="line"></span><br><span class="line"><span class="comment">#将三个通道的直方图均衡化合并成一张彩色图像</span></span><br><span class="line">image_rgb_equ = cv2.merge([equ_b, equ_g, equ_r])</span><br></pre></td></tr></table></figure>
 </li>
-</ol>
-</li>
-</ol>
-<pre><code>    | 像素 | 数量 |
-    | ---- | ---- |
-    | 1    | 18   |
-    | 2    | 6    |
-    | 3    | 5    |
-    | 4    | 6    |
-    | 5    | 3    |
-    | 6    | 3    |
-    | 7    | 8    |
-
-  - 统计比例与累计直方图
-
-    累计直方图是随着像素等级的顺序逐渐累积全部直方图的比例，按照像素值的大小将比例累加，累加到最后一个像素值时为1
-
-    对上述统计结果进行统计比例
-
-
-
-    | 像素 | 比例 |
-    | ---- | ---- |
-    | 1    | 0.38 |
-    | 2    | 0.12 |
-    | 3    | 0.10 |
-    | 4    | 0.12 |
-    | 5    | 0.06 |
-    | 6    | 0.06 |
-    | 7    | 0.16 |
-
-    累计直方图如下
-
-
-
-    | 像素 | 累计 |
-    | ---- | ---- |
-    | 1    | 0.38 |
-    | 2    | 0.50 |
-    | 3    | 0.60 |
-    | 4    | 0.72 |
-    | 5    | 0.78 |
-    | 6    | 0.84 |
-    | 7    | 1    |
-
-  - 建立像素等级映射表
-
-    上面的像素等级范围是1到7，如果想将其映射到0到3，可以对每个像素的累计值乘上像素等级的数量，这里要映射到0到3，那么就可以乘上4，结果如下
-
-    | 像素 | 累计 | 操作  | 操作结果 | 映射像素 |
-    | ---- | ---- | ----- | -------- | -------- |
-    | 1    | 0.38 | 乘以4 | 1.52     | 2        |
-    | 2    | 0.50 | 乘以4 | 2        | 2        |
-    | 3    | 0.60 | 乘以4 | 2.4      | 2        |
-    | 4    | 0.72 | 乘以4 | 2.88     | 3        |
-    | 5    | 0.78 | 乘以4 | 3.12     | 3        |
-    | 6    | 0.84 | 乘以4 | 3.36     | 3        |
-    | 7    | 1    | 乘以4 | 4        | 4        |
-
-  可以使用下面代码对RGB图像进行全局直方图均衡化
-
-  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line"><span class="comment">#将彩色图像转换为R,G,B三个通道的图像</span></span><br><span class="line">b,g,r = cv2.split(image_rgb)</span><br><span class="line"></span><br><span class="line"><span class="comment">#对每个通道进行直方图均衡化</span></span><br><span class="line">equ_b = cv2.equalizeHist(b)</span><br><span class="line">equ_g = cv2.equalizeHist(g)</span><br><span class="line">equ_r = cv2.equalizeHist(r)</span><br><span class="line"></span><br><span class="line"><span class="comment">#将三个通道的直方图均衡化合并成一张彩色图像</span></span><br><span class="line">image_rgb_equ = cv2.merge([equ_b, equ_g, equ_r])</span><br></pre></td></tr></table></figure>
-</code></pre><ol>
 <li><p>自适应直方图均衡化（AHE）</p>
 <p>自适应直方图均衡化是一种改进常规直方图均衡化的图像处理技术，适用于提高局部图像对比度而不过度放大噪声或造成其它区域的对比度失真。上面的全局直方图均衡化仍然会使得亮部过曝，是因为其处理直方图的算法具有全局性，也就是说，这种方法对所有像素都进行优化。而<strong>自适应直方图均衡化将图像对比度的改变限制在局部</strong>，可以解决上面的直方图均衡化所带来的<strong>过曝光问题</strong></p>
 <p>AHE的具体步骤如下</p>
@@ -425,9 +372,11 @@ I'(x, y)=\alpha I(x, y)</script><p>当$\alpha&gt;1$时，总体亮度增加且�
 <li><strong>重新分配裁剪的像素</strong>：裁剪直方图的高峰后，将超出阈值的像素重新均匀的分配到其它像素上</li>
 <li><strong>增强边界</strong>：CLAHE改进了AHE中区块处理边界的方法，采用更平滑的技术来处理相邻块之间的过渡</li>
 </ul>
-<p>使用下面代码对RGB图像进行CLAHE算法</p>
+<p>可以使用下面代码对RGB图像进行CLAHE算法</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">clahe = cv2.createCLAHE(clipLimit=<span class="number">2.0</span>, tileGridSize=(<span class="number">8</span>,<span class="number">8</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment">#将彩色图像转换为R,G,B三个通道的图像</span></span><br><span class="line">b,g,r = cv2.split(image_rgb)</span><br><span class="line"></span><br><span class="line"><span class="comment">#对每个通道进行直方图均衡化</span></span><br><span class="line">clahe_b = clahe.apply(b)</span><br><span class="line">clahe_g = clahe.apply(g)</span><br><span class="line">clahe_r = clahe.apply(r)</span><br><span class="line"></span><br><span class="line"><span class="comment">#将三个通道的直方图均衡化合并成一张彩色图像</span></span><br><span class="line">image_rgb_clahe = cv2.merge([clahe_b, clahe_g, clahe_r])</span><br></pre></td></tr></table></figure>
 <p><code>clipLimit</code>表示某个区块的像素上界，<code>tileGridSize</code>表示按照多大的区块来进行直方图均衡化。其中像素上限越多，噪声被强化的越多，同时细节也被保留的更多；区块尺寸越大，局部对比度就会增强，但是应用于全局效果不好</p>
+</li>
+</ol>
 </li>
 </ol>
 
@@ -582,7 +531,7 @@ I'(x, y)=\alpha I(x, y)</script><p>当$\alpha&gt;1$时，总体亮度增加且�
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">59k</span>
+    <span title="站点总字数">58k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
@@ -647,7 +596,7 @@ I'(x, y)=\alpha I(x, y)</script><p>当$\alpha&gt;1$时，总体亮度增加且�
     <!--
     <span class="site-pv">
       <i class="fa fa-pencil"></i>
-      本站博客共 <span class="post-count">30.2k</span> 字
+      本站博客共 <span class="post-count">30k</span> 字
     </span>
     -->
 </div>
