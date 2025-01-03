@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一. 什么是图像空间变换图像空间变换是对图像形态的改变，包括改变图像的尺寸、图像的角度。本质上是对像素的位置进行修正。 常见的图像空间变换有图像缩放变换、仿射变换、透视变换">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图像空间变换">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/index.html">
+<meta property="og:site_name" content="ChenYuXuan的个人博客">
+<meta property="og:description" content="一. 什么是图像空间变换图像空间变换是对图像形态的改变，包括改变图像的尺寸、图像的角度。本质上是对像素的位置进行修正。 常见的图像空间变换有图像缩放变换、仿射变换、透视变换">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/image.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/1266341-20220520155402449-1499681711.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/%E9%80%8F%E8%A7%86%E5%8F%98%E6%8D%A2.webp">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/QQ_1735908114812.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/QQ_1735908134282.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/QQ_1735908149382.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/QQ_1735908380404.png">
+<meta property="article:published_time" content="2025-01-03T08:29:04.000Z">
+<meta property="article:modified_time" content="2025-01-03T12:56:45.430Z">
+<meta property="article:author" content="ChenYuXuan">
+<meta property="article:tag" content="数字图像处理 图像空间变换">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/image.png">
+
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>图像空间变换 | ChenYuXuan的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ChenYuXuan的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-github">
+
+    <a href="https://github.com/cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>Github</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ChenYuXuan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ChenYuXuan的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          图像空间变换
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-01-03 16:29:04 / 修改时间：20:56:45" itemprop="dateCreated datePublished" datetime="2025-01-03T16:29:04+08:00">2025-01-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">数字图像处理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一-什么是图像空间变换"><a href="#一-什么是图像空间变换" class="headerlink" title="一. 什么是图像空间变换"></a>一. 什么是图像空间变换</h1><p>图像空间变换是对图像形态的改变，包括改变图像的尺寸、图像的角度。本质上是对像素的位置进行修正。</p>
+<p>常见的图像空间变换有<strong>图像缩放变换、仿射变换、透视变换</strong></p>
+<span id="more"></span>
+<h1 id="二-图像缩放变换"><a href="#二-图像缩放变换" class="headerlink" title="二. 图像缩放变换"></a>二. 图像缩放变换</h1><p>图像缩放变换是指改变数字图像的尺寸（高度和宽度），可以对数字图像进行放大或缩小</p>
+<p>图像缩放变换的本质，简单来说，拍摄数字图像后，相当于在一个矩形区域内对纵、横两个方向进行等间隔的记录，将这些像素点的坐标记为$\{(x, y)\}$。对该图像进行缩放，就需要一组新的采样坐标，将其记为$\{(x’,  y’)\}$，缩放变换的目的就是在这一组新的坐标下获取像素值</p>
+<p>缩放变换的过程中，无法根据原图像为缩放后的图像重建出完全一致的连续信号。因此只能对原图采样点以外的像素进行估计和预测，也就是插值，如果插值不当，重建后的图像会产生失真、模糊、锯齿</p>
+<ol>
+<li><p>缩放变换的数学原理</p>
+<p>一张数字图像的坐标为$\{(x, y)\}$，对其进行缩小或者放大，相当于分别对其横轴和纵轴进行缩放变换，分别记为$S_x$、$S_y$。经过缩放之后的图像的坐标记为$\{(x’, y’)\}$，那么二者之间的变换如下所示</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}
+x'\\
+y'
+\end{bmatrix}=\begin{bmatrix}
+S_x & 0\\
+0 & S_y
+\end{bmatrix}\begin{bmatrix}
+x\\
+y
+\end{bmatrix}</script><p>对于上式：</p>
+<ul>
+<li>若$S_x&gt;1$或$S_y&gt;1$，就是对原图像进行拉长或拉宽</li>
+<li>若$0&lt;S_X&lt;1$或$0&lt;S_y&lt;1$，就是让图像变窄或者变矮</li>
+<li>若$S_x=S_y$，就是保持图像的长宽比例不变</li>
+<li>新图像中的像素点的坐标$\{(x’, y’)\}$就是$\{(S_x·x, S_y·y)\}$</li>
+</ul>
+</li>
+<li><p>像素插值技术</p>
+<ul>
+<li><p>最近邻插值</p>
+<p>最近邻插值是一种最简单的插值方法，其思想是将变换后的位置$(x’,y’)$映射到原图像中最近的一个像素点$(x,y)$，并将该像素的值赋给$(x’,y’)$</p>
+</li>
+<li><p>双线性插值</p>
+<p>双线性插值考虑了目标像素周围四个最近的像素，通过对这四个像素在水平和垂直方向上的线性插值，来估算目标像素的值</p>
+<p>假设目标像素$(x’, y’)$映射到原图像的非整数坐标$(x,y)$中，记为</p>
+<script type="math/tex; mode=display">
+x'=\lfloor x\rfloor+\delta_x\\
+y'=\lfloor y\rfloor+\delta_y\\</script><p>记原图中该像素点的四个近邻像素的值为$I_{00},I_{01}, I_{10}, I_{11}$。双线性插值的公式可以写为如下公式</p>
+<script type="math/tex; mode=display">
+I'(x',y')=(1-\delta_x)(1-\delta_y)I_{00}+\delta_x(1-\delta_y)I_{10}+(1-\delta_x)\delta_yI_{01}+\delta_x\delta_yI_{11}</script><p>上面的公式可以看成先对水平方向插值，再对垂直方向插值，如下所示</p>
+<p>首先是水平方向插值</p>
+<script type="math/tex; mode=display">
+I_A=(1-\delta_x)I_{00}+\delta_xI_{10}\\
+I_B=(1-\delta_x)I_{01}+\delta_xI_{11}</script><p>再利用水平方向插值的结果对垂直方向进行插值就可以得到双线性插值的公式</p>
+<script type="math/tex; mode=display">
+I'(x', y')=(1-\delta_y)I_A+\delta_yI_B</script><p>双线性插值的示意图如下</p>
+<img src="/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/image.png" class="" title="img">
+</li>
+<li><p>双三次插值</p>
+<p>双三次插值利用目标像素周围更大范围（16个像素）的信息，通过三次多项式进行插值，能够更好地保留图像的细节和边缘。双三次插值是<strong>通过一个三次多项式来预测当前像素的变化趋势</strong>，它是非线性的</p>
+<p>设目标像素点坐标为$(x’, y’)$，记周围的$4\times4$的像素值为$I_{m,n}$，其中$m,n\in\{-1, 0, 1, 2\}$。那么双三次插值的公式为</p>
+<script type="math/tex; mode=display">
+I'(x',y')=\sum_{m=-1}^{2}\sum_{n=-1}^{2} I_{m,n}W(m-\delta_x)\cdot W(n-\delta_y)</script><p>$W(t)$是一个三次函数，表达式如下</p>
+<script type="math/tex; mode=display">
+W(t)=\begin{cases}
+1.5|t|^3-2.5t^2+1, & \text{if}\quad |t|\leq1\\
+-0.5|t|^3+2.5t^2-4|t|+2, & \text{if}\quad 1\leq|t|\leq2\\
+0,& \text{otherwise}
+\end{cases}</script></li>
+<li><p>区域插值算法</p>
+<p>区域插值算法基于区域关系，核心思想是通过计算目标像素覆盖的源像素区域内的像素值的加权平均来确定目标像素的值。具体来说，当进行图像缩小时，目标图像中的一个像素可能对应源图像中的多个像素区域，通过计算这些源像素的加权平均来获得目标像素的值，以最大程度上保存图像的信息</p>
+</li>
+<li><p>Lanczos插值</p>
+<p>Lanczos 插值是一种高质量的图像插值技术，它能更好地保持图像细节和减少混叠效应</p>
+<p>Lanczos 插值是一种基于sinc函数的高阶插值方法。它通过对目标像素周围多个源像素进行加权，利用窗口化的sinc函数作为插值核，实现高质量的图像重采样。Lanczos 插值的核心在于插值核函数——Lanczos核，该核函数在保持高频信息的同时，有效抑制混叠效应</p>
+</li>
+</ul>
+<p>在OpenCV使用上面插值技术的代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">nearest = cv2.resize(target_img, (<span class="number">768</span>, <span class="number">768</span>), interpolation=cv2.INTER_NEAREST)</span><br><span class="line">linear = cv2.resize(target_img, (<span class="number">768</span>, <span class="number">768</span>), interpolation=cv2.INTER_LINEAR)</span><br><span class="line">cubic = cv2.resize(target_img, (<span class="number">768</span>, <span class="number">768</span>), interpolation=cv2.INTER_CUBIC)</span><br><span class="line">area = cv2.resize(target_img, (<span class="number">768</span>, <span class="number">768</span>), interpolation=cv2.INTER_AREA)</span><br><span class="line">lanczos = cv2.resize(target_img, (<span class="number">768</span>, <span class="number">768</span>), interpolation=cv2.INTER_LANCZOS4)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="三-仿射变换"><a href="#三-仿射变换" class="headerlink" title="三. 仿射变换"></a>三. 仿射变换</h1><p>仿射变换是从一个二维坐标系变换到另一个二维坐标系，属于<strong>线性变换</strong>。可以<strong>通过已知的3对坐标点来求得变换矩阵</strong>。仿射变换保持了图像的形状不变，即直线、圆弧不变；保持了平行关系不变，直线的相对关系不变，但是夹角可能会改变</p>
+<ol>
+<li><p>仿射变换的一般形式</p>
+<p>仿射变换代表的是两幅图之间的映射关系，<strong>仿射变换矩阵为2x3的矩阵</strong>。如下图中的矩阵M，其中的B起着<strong>平移</strong>的作用，而A中的对角线决定<strong>缩放</strong>，反对角线决定<strong>旋转或错切</strong></p>
+<img src="/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/1266341-20220520155402449-1499681711.png" class="" title="img">
+</li>
+<li><p>仿射变换的求解过程</p>
+<p>由上图可知仿射变换矩阵中有6个未知数，因此需要3对坐标点（6个点）来求解方程</p>
+<p>给定三个点$(x_1,y_1), (x_2,y_2), (x_3,y_3)$和它们变换后的点$ (x’_1,y’_1)，(x’_2,y’_2)，(x’_3,y’_3)$，需要求解变换矩阵中的参数 $a_{00},a_{01},b_{00},a_{10},a_{11},b_{10}$</p>
+<p>可以构造下面的线性方程组求解</p>
+<script type="math/tex; mode=display">
+\left[\begin{array}{cccccc}
+x_{1} & y_{1} & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & x_{1} & y_{1} & 1 \\
+x_{2} & y_{2} & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & x_{2} & y_{2} & 1 \\
+x_{3} & y_{3} & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & x_{3} & y_{3} & 1
+\end{array}\right]\left[\begin{array}{c}
+a_{00} \\
+a_{01} \\
+b_{00} \\
+a_{10} \\
+a_{11} \\
+b_{10}
+\end{array}\right]=\left[\begin{array}{c}
+x_{1}^{\prime} \\
+y_{1}^{\prime} \\
+x_{2}^{\prime} \\
+y_{2}^{\prime} \\
+x_{3}^{\prime} \\
+y_{3}^{\prime}
+\end{array}\right]</script><p>对于上述方程，采用最小二乘法求解，步骤如下</p>
+<ul>
+<li><p>构造增广矩阵$A$和向量$b$</p>
+<script type="math/tex; mode=display">
+A=\left[\begin{array}{cccccc}
+x_{1} & y_{1} & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & x_{1} & y_{1} & 1 \\
+x_{2} & y_{2} & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & x_{2} & y_{2} & 1 \\
+x_{3} & y_{3} & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & x_{3} & y_{3} & 1
+\end{array}\right]，
+b=\left[\begin{array}{c}
+x_{1}^{\prime} \\
+y_{1}^{\prime} \\
+x_{2}^{\prime} \\
+y_{2}^{\prime} \\
+x_{3}^{\prime} \\
+y_{3}^{\prime}
+\end{array}\right]</script></li>
+<li><p>计算$A^{T}A$和$A^{T}b$</p>
+</li>
+<li><p>求解线性方程$A^{T}Ax=A^{T}b$</p>
+<script type="math/tex; mode=display">
+x=(A^{T}A)^{-1}A^{T}b</script><p>$x$就是包含$a_{00},a_{01},b_{00},a_{10},a_{11},b_{10}$的向量，结果如下</p>
+<script type="math/tex; mode=display">
+\left[\begin{array}{c}
+a_{00} \\
+a_{01} \\
+b_{00} \\
+a_{10} \\
+a_{11} \\
+b_{10}
+\end{array}\right]</script></li>
+</ul>
+</li>
+<li><p>仿射变换的代码</p>
+<p>首先用下面的代码求解仿射矩阵</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">M_computed = cv2.getAffineTransform(pts_original, pts_transformed)</span><br></pre></td></tr></table></figure>
+<p><code>pts_original</code>和<code>pts_transformed</code>共3组坐标（6个坐标）。前者为原图中的3个坐标，后者为变换后的3个坐标</p>
+<p>然后使用下面的代码进行仿射变换，OpenCV代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">transformed_image = cv2.warpAffine(image, M_computed, (cols, rows))</span><br></pre></td></tr></table></figure>
+<p><code>M_computed</code>为仿射矩阵；<code>(cols, rows)</code>是 输出图像的大小，cols 是宽度，rows 是高度，这一组值可以是输入图像的尺寸，也可以改为你想要的尺寸</p>
+<h1 id="四-透视变换"><a href="#四-透视变换" class="headerlink" title="四. 透视变换"></a>四. 透视变换</h1></li>
+</ol>
+<p>透视变换是从一个二维坐标系变换到一个三维坐标系（如下图所示），属于<strong>非线性变换</strong>。通过<strong>已知4对坐标点</strong>可以求得变换矩阵。透视变换会彻底改变物体的位置和形状</p>
+<img src="/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/%E9%80%8F%E8%A7%86%E5%8F%98%E6%8D%A2.webp" class="" title="透视变换">
+<ol>
+<li><p>单应性矩阵</p>
+<script type="math/tex; mode=display">
+H=\begin{bmatrix}
+a_{11} & a_{12} & a_{13} \\
+a_{21} & a_{22} & a_{23} \\
+a_{31} & a_{32} & a_{33} 
+\end{bmatrix}</script><p>其中，$\begin{bmatrix} a_{11} &amp; a_{12} \\ a_{21} &amp; a_{22} \end{bmatrix}$用于线性变换，如旋转、缩放等；$[a_{13}, a_{23}]^{T}$用于平移变换（在$x$方向和$y$方向上移动）；$[a_{31}, a_{32}, a_{33}]$用于透视变换（定义了变换后的图像的透视效果）</p>
+</li>
+<li><p>透视变换的求解过程</p>
+<p>首先定义如下的单应性矩阵</p>
+<script type="math/tex; mode=display">
+H=\begin{bmatrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+2 & 0.1 & 1 
+\end{bmatrix}</script><p>在原图上取$(0,0)、(0,100)、(100,0)、(100,100)$这四个点</p>
+<p>对于每个点$(x,y)$，将其表示为齐次方程$(x,y,1)$，然后乘以单应性矩阵$M$得到变换后的坐标$x’$和$y’$（如下图），最后用$x’$和$y’$除以$w’$得到变换后的笛卡尔坐标</p>
+<script type="math/tex; mode=display">
+\left[\begin{array}{c}
+x^{\prime} \\
+y^{\prime} \\
+w^{\prime}
+\end{array}\right]=\left[\begin{array}{ccc}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+2 & 0.1 & 1
+\end{array}\right]\left[\begin{array}{l}
+x \\
+y \\
+1
+\end{array}\right]</script><p>对每个点的求解过程如下：</p>
+<img src="/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/QQ_1735908114812.png" class="" title="img">
+<img src="/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/QQ_1735908134282.png" class="" title="img">
+<img src="/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/QQ_1735908149382.png" class="" title="img">
+<img src="/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/QQ_1735908380404.png" class="" title="img">
+</li>
+<li><p>透视变换的代码</p>
+<p>首先用下面的代码求解单应性矩阵$M$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">M = cv2.getPerspectiveTransform(src, dst)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#定义原图像中的四个角点</span></span><br><span class="line">src = np.float32([[<span class="number">0</span>, <span class="number">0</span>], [<span class="number">200</span>, <span class="number">0</span>], [<span class="number">200</span>, <span class="number">200</span>], [<span class="number">0</span>, <span class="number">200</span>]])</span><br><span class="line"></span><br><span class="line"><span class="comment">#定义变换后的图像中的四个角点</span></span><br><span class="line">dst = np.float32([[<span class="number">10</span>, <span class="number">100</span>], [<span class="number">300</span>, <span class="number">50</span>], [<span class="number">350</span>, <span class="number">250</span>], [<span class="number">50</span>, <span class="number">300</span>]])</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>src</code>：原平面上的点集，是一个形状为 <code>(3, N)</code> 的浮点数数组，其中 <code>N</code> 是点的数量，通常为 4（对应于四个角点）</li>
+<li><code>dst</code>：变换后的平面上的点集，也是一个形状为 <code>(3, N)</code> 的浮点数数组，对应于 <code>src</code> 中的点</li>
+</ul>
+<p>最后使用下面代码实现透视变换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dst = cv2.warpPerspective(src, M, dsize[, dst[, borderMode[, borderValue]]])</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>src</code>：输入图像，可以是灰度图或彩色图</li>
+<li><code>M</code>：3x3 的单应性矩阵</li>
+<li><code>dsize</code>：输出图像的大小（宽度，高度）</li>
+<li><code>dst</code>：（可选）输出图像</li>
+<li><code>borderMode</code>：（可选）边界填充模式，如 <code>cv2.BORDER_CONSTANT</code>、<code>cv2.BORDER_REPLICATE</code> 等</li>
+<li><code>borderValue</code>：（可选）边界填充值，当 <code>borderMode</code> 为 <code>cv2.BORDER_CONSTANT</code> 时使用</li>
+<li><code>dst</code>：变换后的输出图像</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86-%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/" rel="tag"># 数字图像处理 图像空间变换</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/01/03/%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/" rel="prev" title="边缘检测">
+      <i class="fa fa-chevron-left"></i> 边缘检测
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E4%BB%80%E4%B9%88%E6%98%AF%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2"><span class="nav-number">1.</span> <span class="nav-text">一. 什么是图像空间变换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E5%9B%BE%E5%83%8F%E7%BC%A9%E6%94%BE%E5%8F%98%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text">二. 图像缩放变换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E4%BB%BF%E5%B0%84%E5%8F%98%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">三. 仿射变换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-%E9%80%8F%E8%A7%86%E5%8F%98%E6%8D%A2"><span class="nav-number">4.</span> <span class="nav-text">四. 透视变换</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ChenYuXuan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyxCHENYUXUAN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cyx2897@gmail.com" title="E-Mail → mailto:cyx2897@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <font color="red"><i class="fa fa-heartbeat" aria-hidden="true"></i></font>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChenYuXuan</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">73k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:07</span>
+</div>
+<!--添加运行时间-->
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+      Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+      year - 作为date对象的年份，为4位年份值
+      month - 0-11之间的整数，做为date对象的月份
+      day - 1-31之间的整数，做为date对象的天数
+      hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+      minutes - 0-59之间的整数，做为date对象的分钟数
+      seconds - 0-59之间的整数，做为date对象的秒数
+      microseconds - 0-999之间的整数，做为date对象的毫秒数
+     */
+		var t1 = Date.UTC(2024,12,24,15,00,00); //北京时间
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" 已运行"+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒";
+	}
+	siteTime();
+</script>
+<!--// 添加运行时间-->
+
+<!-- 新增访客统计代码 -->
+<div class="busuanzi-count">
+    <script async="" src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      访客数量 <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 人
+      <span class="post-meta-divider">|</span>
+    </span>
+    <div class="powered-by"></div>
+    <span class="site-uv">
+      <i class="fa fa-eye"></i>
+      总访问量 <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 次
+    </span>
+    <!--
+    <span class="site-pv">
+      <i class="fa fa-pencil"></i>
+      本站博客共 <span class="post-count">38.6k</span> 字
+    </span>
+    -->
+</div>
+<!-- 新增访客统计代码 END-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
