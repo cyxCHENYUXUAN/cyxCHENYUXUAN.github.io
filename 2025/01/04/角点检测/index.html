@@ -20,22 +20,26 @@
     var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="一. 线性分类模型 分类问题与回归问题 回归问题解决的是“how much”的问题，例如预测房价 分类问题解决的是“which one”的问题，例如预测一个邮件“是不是”一个垃圾邮件，一个蘑菇“是不是”毒蘑菇，一个人”是不是“糖尿病，判断一朵花”是哪种“鸢尾花">
+  <meta name="description" content="一. 什么是角点检测角点的定义：两条边缘的交点或邻域内具有两个主方向的特征点 角点是图像亮度发生剧烈变化的点或边缘曲线上曲率为极大值的点。如下图中的E、F即可认为是典型的角点">
 <meta property="og:type" content="article">
-<meta property="og:title" content="线性分类">
-<meta property="og:url" content="http://cyxchenyuxuan.github.io/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/index.html">
+<meta property="og:title" content="角点检测">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/index.html">
 <meta property="og:site_name" content="ChenYuXuan的个人博客">
-<meta property="og:description" content="一. 线性分类模型 分类问题与回归问题 回归问题解决的是“how much”的问题，例如预测房价 分类问题解决的是“which one”的问题，例如预测一个邮件“是不是”一个垃圾邮件，一个蘑菇“是不是”毒蘑菇，一个人”是不是“糖尿病，判断一朵花”是哪种“鸢尾花">
+<meta property="og:description" content="一. 什么是角点检测角点的定义：两条边缘的交点或邻域内具有两个主方向的特征点 角点是图像亮度发生剧烈变化的点或边缘曲线上曲率为极大值的点。如下图中的E、F即可认为是典型的角点">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/image-20241228142516290.png">
-<meta property="article:published_time" content="2024-12-28T04:59:36.000Z">
-<meta property="article:modified_time" content="2024-12-28T06:28:28.180Z">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/890227-20210309125805758-197665184.jpg">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/890227-20210306160713323-455149193.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/5953a7fa5a172.jpg">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/5953b3774c2f2.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/image.png">
+<meta property="article:published_time" content="2025-01-04T11:09:48.000Z">
+<meta property="article:modified_time" content="2025-01-04T13:02:46.601Z">
 <meta property="article:author" content="ChenYuXuan">
-<meta property="article:tag" content="深度学习 线性分类 模型">
+<meta property="article:tag" content="数字图像处理 角点检测">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/image-20241228142516290.png">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/890227-20210309125805758-197665184.jpg">
 
-<link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/">
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/">
 
 
 <script id="page-configurations">
@@ -48,7 +52,7 @@
   };
 </script>
 
-  <title>线性分类 | ChenYuXuan的个人博客</title>
+  <title>角点检测 | ChenYuXuan的个人博客</title>
   
 
 
@@ -179,7 +183,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -192,7 +196,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          线性分类
+          角点检测
         </h1>
 
         <div class="post-meta">
@@ -203,7 +207,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-12-28 12:59:36 / 修改时间：14:28:28" itemprop="dateCreated datePublished" datetime="2024-12-28T12:59:36+08:00">2024-12-28</time>
+              <time title="创建时间：2025-01-04 19:09:48 / 修改时间：21:02:46" itemprop="dateCreated datePublished" datetime="2025-01-04T19:09:48+08:00">2025-01-04</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -211,7 +215,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                  <a href="/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">数字图像处理</span></a>
                 </span>
             </span>
 
@@ -228,7 +232,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.8k</span>
+              <span>2.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -247,93 +251,89 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="一-线性分类模型"><a href="#一-线性分类模型" class="headerlink" title="一. 线性分类模型"></a>一. 线性分类模型</h1><ol>
-<li><p>分类问题与回归问题</p>
-<p>回归问题解决的是“how much”的问题，例如预测房价</p>
-<p>分类问题解决的是“which one”的问题，例如预测一个邮件“是不是”一个垃圾邮件，一个蘑菇“是不是”毒蘑菇，一个人”是不是“糖尿病，判断一朵花”是哪种“鸢尾花</p>
-</li>
-</ol>
+        <h1 id="一-什么是角点检测"><a href="#一-什么是角点检测" class="headerlink" title="一. 什么是角点检测"></a>一. 什么是角点检测</h1><p>角点的定义：两条边缘的交点或邻域内具有两个主方向的特征点</p>
+<p>角点是图像亮度发生剧烈变化的点或边缘曲线上曲率为极大值的点。如下图中的E、F即可认为是典型的角点</p>
 <span id="more"></span>
-<ol>
-<li><p>分类模型的直观理解</p>
-<p>回归模型是<code>多输入</code>对应<code>单输出</code>，而分类模型是<code>多输入</code>对应<code>多输出</code>，下面用一张图直观展示分类模型</p>
-</li>
-</ol>
-   <img src="/2024/12/28/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/image-20241228142516290.png" class="" title="image-20241228142516290">
-<p>   其中$x_1$，$x_2$，$x_3$，$x_4$对应着多输入，$o_1$，$o_2$，$o_3$则对应着多输出</p>
-<ol>
-<li>线性回归模型与线性分类模型的区别</li>
-</ol>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th></th>
-<th>线性回归</th>
-<th>线性分类</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>输出</td>
-<td>标量</td>
-<td>向量</td>
-</tr>
-<tr>
-<td>权重</td>
-<td>向量</td>
-<td>矩阵</td>
-</tr>
-<tr>
-<td>偏置项</td>
-<td>标量</td>
-<td>向量</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h1 id="二-softmax"><a href="#二-softmax" class="headerlink" title="二. softmax"></a>二. softmax</h1><p>softmax用于分类问题，将多个输出映射到（0, 1）区间内，也就是转换成概率，同时需要注意，所有概率的和应当等于1</p>
-<p>假设有一个数组$V$，该数组共有$n$个元素，$V_i$表示$V$中的第$i$个元素，这时该元素的softmax值可以如下表示</p>
-<script type="math/tex; mode=display">
-S_i=\frac{e^{V_i} }{\sum_{0}^{n-1}e^{V_j} }</script><p>举个例子，假设有现在有3个数据，它们为[3,1,-3]，经过softmax之后，处理结果如下</p>
-<script type="math/tex; mode=display">
-S_0=\frac{e^{3}}{e^{3}+e^{1}+e^{-3}} =0.87887824</script><script type="math/tex; mode=display">
-S_1=\frac{e^{1}}{e^{3}+e^{1}+e^{-3}} =0.11894324</script><script type="math/tex; mode=display">
-S_2=\frac{e^{-3}}{e^{3}+e^{1}+e^{-3}} =0.00217852</script><h1 id="三-交叉熵（Cross-Entropy）"><a href="#三-交叉熵（Cross-Entropy）" class="headerlink" title="三. 交叉熵（Cross Entropy）"></a>三. 交叉熵（Cross Entropy）</h1><p>交叉熵一般用于求<code>目标与预测值之间的差距</code></p>
-<ol>
-<li><p>“熵”的概念</p>
-<p>熵用于衡量数据的不均衡程度。对于一个标签来说，我们将其视为一个真实概率分布，那么他的熵就可以表示为如下</p>
-<script type="math/tex; mode=display">
-H(p)=-\sum_ip_i\log p_i</script><p>$p_i$是真实分布的概率</p>
-<p>但是在机器学习中，往往不仅关注<code>真实分布</code>$p_i$，还要关注<code>预测结果</code>$q_i$，于是<strong>在给定真实分布$p_i$的情况下，衡量预测分布$q_i$描述真实分布所需的平均比特数的变量，被称为交叉熵</strong></p>
-</li>
-<li><p>交叉熵损失</p>
-<p>交叉熵的基本公式如下所示</p>
-<script type="math/tex; mode=display">
-H(p, q)=-\sum_ip_i\log(q_i)</script><p>那么对于分类模型，记<code>预测概率</code>为$\hat y_i$，<code>真实概率</code>为$y_i$，交叉熵损失可以表示如下</p>
-<script type="math/tex; mode=display">
-L(\mathbf{y}, \mathbf{\hat y})=-\sum_i y_i\log(\hat y_i)</script><p>举个例子，计算以下两个结果的均方误差和交叉熵损失</p>
-<script type="math/tex; mode=display">
-\begin{align*}\mathbf{\hat{y}^{(1)}}=&[0.6, 0.2, 0.2]\\\mathbf{\hat{y}^{(2)}}=&[0.3, 0.4, 0.3]\\\mathbf{y}=&[1, 0, 0]\end{align*}</script><p>均方误差计算结果如下</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-L_{\text{MSE}}^{(1)}=(0.6-1)^2+(0.2-0)^2+(0.2-0)^2=0.16 +0.08=0.24\\
-L_{\text{MSE}}^{(2)}=(0.8-1)^2+(0.1-0)^2+(0.1-0)^2=0.04+0.02=0.08 \end{align*}</script><p>交叉熵损失计算结果如下</p>
-<script type="math/tex; mode=display">
-\begin{align*}
-L_{\text{CRE}}^{(1)}=1\times\log0.6+0\times\log0.2+0\times\log0.2=0.51\\
-L_{\text{CRE}}^{(2)}=1\times\log0.3+0\times\log0.4+0\times\log0.3=1.20 \end{align*}</script><p>二者对比可以发现交叉熵损失有如下优势</p>
+<img src="/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/890227-20210309125805758-197665184.jpg" class="" title="img">
+<h1 id="二-角点检测的检测思路"><a href="#二-角点检测的检测思路" class="headerlink" title="二. 角点检测的检测思路"></a>二. 角点检测的检测思路</h1><p>在图像中定义一个局部小窗口，然后沿着各个方向移动时，会出现下面$a、b、c$这三种情况，分别对应着平坦区域、边缘区域、角点区域</p>
+<img src="/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/890227-20210306160713323-455149193.png" class="" title="img">
+<p>（a）窗口内的像素值在窗口向各个方向移动时都没有发生变化，那么窗口内都是“平坦区域”</p>
+<p>（b）窗口内的像素值在窗口向某一个（些）方向移动时，发生较大变化，但在另一个（些）方向不发生变化，          那么窗口内可能存在“边缘区域”</p>
+<p>（c）窗口内的像素值在窗口向各个方向移动时，都发生了较大的变化，则认为窗口内存在“角点区域”</p>
+<h1 id="三-Harris角点检测"><a href="#三-Harris角点检测" class="headerlink" title="三. Harris角点检测"></a>三. Harris角点检测</h1><ol>
+<li><p>基本思想</p>
+<p>在使用固定窗口进行移动时，无需比较所有方向上的像素值变化，只需<strong>比较局部窗口中像素值变化最显著的方向即局部窗口中的梯度向量（最大方向）和与最大方向垂直的方向（正交方向）</strong></p>
 <ul>
-<li>数值更大，从而有利于训练</li>
-<li>只关注正确类别的数值，不关注其他类别的数值</li>
-<li>计算更加便捷，训练过程加速</li>
+<li>对于平坦区域，这两个方向的变化都很小</li>
+<li>对于边缘区域，这两个方向存在较大差距</li>
+<li>对于角点区域，这两个方向的值都很大</li>
+</ul>
+<p>设$M$矩阵是图像梯度信息的二次形式（如下），用于描述图像在局部区域内的灰度变化情况</p>
+<script type="math/tex; mode=display">
+M=\sum_{x, y} w(x, y)\left[\begin{array}{cc}
+I_{x}^{2} & I_{x} I_{y} \\
+I_{x} I_{y} & I_{y}^{2}
+\end{array}\right]</script><p>其中$I_x、I_y$分别整个图像在$x$方向和$y$方向上的梯度，可以通过下面的代码求解</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">I_x = cv2.Sobel(img, cv2.CV_32F, <span class="number">1</span>, <span class="number">0</span>, ksize=<span class="number">3</span>)</span><br><span class="line">I_y = cv2.Sobel(img, cv2.CV_32F, <span class="number">0</span>, <span class="number">1</span>, ksize=<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+<p>$w(x,y)$是窗口函数，可以取均值函数或高斯函数，用于加权求和，如下图所示</p>
+<img src="/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/5953a7fa5a172.jpg" class="" title="weights.jpg">
+<p>由于矩阵$M$是一个$2\times2$的矩阵，因此记矩阵$M$的两个特征值为$\lambda_1、\lambda_2$，分别表示图像像素值在上面那两个方向上的变化信息，特征值表示在对应特征向量方向上的像素变化强度</p>
+<ul>
+<li>$\lambda_1$表示的是表示在<strong>某个局部区域内像素变化最显著的方向</strong>，在这个方向上像素强度变化最大</li>
+<li>$\lambda_2$表示的是与$\lambda_1$表示的方向垂直的方向，也就是<strong>某个局部区域内像素变化最缓慢的方向</strong></li>
+</ul>
+<p>对于上面的$\lambda_1、\lambda_2$，我们对不同的区域有了如下的定义：</p>
+<ul>
+<li>$\lambda_1\approx\lambda_2\approx0$：平坦区域</li>
+<li>$\lambda_1\gg\lambda_2\gg0或\lambda_2\gg\lambda_1\gg0$：边缘区域</li>
+<li>$\lambda_1\gg0、\lambda_2\gg0$且$\lambda_1$和$\lambda_2$的两个值相当：角点区域</li>
+</ul>
+<p>下图展示了上面的定义</p>
+<img src="/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/5953b3774c2f2.png" class="" title="judge corners.png">
+<p>但是，求特征值的计算较为复杂，可以通过其他近似的方式来实现。其中，Harris角点检测算法设计了一个相应函数来近似特征值关系，如下</p>
+<script type="math/tex; mode=display">
+R=\text{det}(M)-k\cdot\text{tr}(M)^2</script><p>$\text{det}(M)=\lambda_1\cdot\lambda_2$表示矩阵$M$的行列式，也就是矩阵的计算结果；$\text{tr}(M)=\lambda_1+\lambda_2$表示矩阵M的迹，反应梯度变化的总量；$k$为一常数，通常取值为0.04~0.06</p>
+<p>接下来就可以用$R$的值来判断不同的区域：</p>
+<ul>
+<li>平坦区域：$|R|$非常小</li>
+<li>边缘区域：$R&lt;0$</li>
+<li>角点区域：$|R|$非常大</li>
+</ul>
+</li>
+<li><p>Harris角点检测的OpenCV代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dst = cv2.cornerHarris(src, blockSize, ksize, k[, dst])</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>src</code>：输入图像，必须是单通道的灰度图像</li>
+<li><code>blockSize</code>：角点检测时考虑的窗口大小。这个参数定义了用于计算自相关矩阵的窗口大小。较大的 <code>blockSize</code> 可以检测到更大的角点，但可能会降低检测的精度</li>
+<li><code>ksize</code>：用于 Sobel 过滤器的内核大小。Sobel 过滤器用于计算窗口内的$x$和$y$方向梯度。<code>ksize</code> 必须是正奇数</li>
+<li><code>k</code>：Harris 角点检测算法中的自由参数，用于控制角点响应函数的灵敏度。通常取值范围在 0.04 到 0.06 之间</li>
+<li><code>dst</code>（可选）：输出图像，与输入图像 <code>src</code> 大小相同，存储了每个像素点的Harris角点响应值</li>
 </ul>
 </li>
 </ol>
-<h1 id="四-交叉熵损失在pytorch中的使用"><a href="#四-交叉熵损失在pytorch中的使用" class="headerlink" title="四. 交叉熵损失在pytorch中的使用"></a>四. 交叉熵损失在pytorch中的使用</h1><p>softmax函数并不用写在模型中。实际上，softmax的步骤是被集成到了交叉熵函数中的内容，使用torch时并不需要写softmax函数</p>
-<p>torch提供了专门的交叉熵损失函数，如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line">criterion = nn.CrossEntropyLoss()</span><br><span class="line">loss = criterion(outputs,labels)</span><br></pre></td></tr></table></figure>
-<p><code>outputs</code>为预测值，<code>labels</code>为真实标签</p>
+<h1 id="四-Shi-Thomasi角点检测"><a href="#四-Shi-Thomasi角点检测" class="headerlink" title="四. Shi-Thomasi角点检测"></a>四. Shi-Thomasi角点检测</h1><p>Shi-Thomasi角点检测是对Harris角点检测的一种改进的检测方法</p>
+<p>Shi-Thomasi角点检测主要是对$\lambda_1$和$\lambda_2$二者中较小的特征值进行限制，并将较小的特征值赋值给$R$</p>
+<script type="math/tex; mode=display">
+R=\min(\lambda_1, \lambda_2)</script><p>此时，设置一个阈值$\lambda_{\min}$，若$R&gt;\lambda_{\min}$，则认为该像素点处是一个角点，如下图所示</p>
+<img src="/2025/01/04/%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/image.png" class="" title="img">
+<p>Shi-Thomasi角点检测有如下优势：</p>
+<ul>
+<li><strong>更稳定的角点检测</strong>：由于使用的是特征值本身，Shi-Tomasi算法对图像噪声和边缘响应的鲁棒性更强。Harris角点检测中的k参数（经验参数）在不同场景下需要手动调整，而Shi-Tomasi直接使用最小特征值作为响应函数，更加稳定</li>
+<li><strong>较少的误检</strong>：Shi-Tomasi算法减少了将边缘误检为角点的可能性</li>
+</ul>
+<p>Shi-Thomasi角点检测的OpenCV代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv2.goodFeaturesToTrack(image, maxCorners, qualityLevel, minDistance[, corners[, mask[, blockSize[, useHarrisDetector[, k]]]]])</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>image</code>：输入图像，必须是单通道的灰度图像</li>
+<li><code>maxCorners</code>：要检测的最大角点数量。如果这个参数不大于 0，表示没有角点数的限制</li>
+<li><code>qualityLevel</code>：角点的质量水平因子。它是检测到的角点的最小可接受质量水平，值越大表示检测到的角点质量越高</li>
+<li><code>minDistance</code>：返回的角点之间最小的欧式距离，用于防止角点过于密集</li>
+<li><code>corners</code>（可选）：输出的检测到的角点向量</li>
+<li><code>mask</code>（可选）：检测区域的掩码。如果提供了掩码，只在掩码为非零的区域检测角点</li>
+<li><code>blockSize</code>（可选）：用于计算每个像素邻域上的导数协变矩阵的平均块的大小，默认为 3</li>
+<li><code>useHarrisDetector</code>（可选）：是否使用 Harris 角点检测器，默认为 False</li>
+<li><code>k</code>（可选）：如果使用 Harris 角点检测器，这是 Harris 检测器中的自由参数</li>
+</ul>
 
     </div>
 
@@ -343,7 +343,7 @@ L_{\text{CRE}}^{(2)}=1\times\log0.3+0\times\log0.4+0\times\log0.3=1.20 \end{alig
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB-%E6%A8%A1%E5%9E%8B/" rel="tag"># 深度学习 线性分类 模型</a>
+              <a href="/tags/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86-%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B/" rel="tag"># 数字图像处理 角点检测</a>
           </div>
 
         
@@ -352,13 +352,10 @@ L_{\text{CRE}}^{(2)}=1\times\log0.3+0\times\log0.4+0\times\log0.3=1.20 \end{alig
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2024/12/27/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%B8%80%E8%88%AC%E6%AD%A5%E9%AA%A4/" rel="prev" title="深度学习中训练模型的一般步骤">
-      <i class="fa fa-chevron-left"></i> 深度学习中训练模型的一般步骤
+    <a href="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/" rel="prev" title="图像的特征表示">
+      <i class="fa fa-chevron-left"></i> 图像的特征表示
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2024/12/28/%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/" rel="next" title="多层感知机">
-      多层感知机 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -417,7 +414,7 @@ L_{\text{CRE}}^{(2)}=1\times\log0.3+0\times\log0.4+0\times\log0.3=1.20 \end{alig
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">一. 线性分类模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-softmax"><span class="nav-number">2.</span> <span class="nav-text">二. softmax</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E4%BA%A4%E5%8F%89%E7%86%B5%EF%BC%88Cross-Entropy%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三. 交叉熵（Cross Entropy）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-%E4%BA%A4%E5%8F%89%E7%86%B5%E6%8D%9F%E5%A4%B1%E5%9C%A8pytorch%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">四. 交叉熵损失在pytorch中的使用</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E4%BB%80%E4%B9%88%E6%98%AF%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B"><span class="nav-number">1.</span> <span class="nav-text">一. 什么是角点检测</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B%E7%9A%84%E6%A3%80%E6%B5%8B%E6%80%9D%E8%B7%AF"><span class="nav-number">2.</span> <span class="nav-text">二. 角点检测的检测思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-Harris%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B"><span class="nav-number">3.</span> <span class="nav-text">三. Harris角点检测</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-Shi-Thomasi%E8%A7%92%E7%82%B9%E6%A3%80%E6%B5%8B"><span class="nav-number">4.</span> <span class="nav-text">四. Shi-Thomasi角点检测</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
