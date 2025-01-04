@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一. 什么是SIFTSIFT是指尺度不变特征变换。它对物体的尺度变化、刚体变换、光照强度和遮挡具有较好的稳定性，能够在图像中检测出关键点，是一种局部特征描述算子。SIFT算法是一种基于局部关键点的算法，因此不仅对图片的大小和旋转不敏感，而且对光照、噪声等影响表现的也较好">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图像的特征表示">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/index.html">
+<meta property="og:site_name" content="ChenYuXuan的个人博客">
+<meta property="og:description" content="一. 什么是SIFTSIFT是指尺度不变特征变换。它对物体的尺度变化、刚体变换、光照强度和遮挡具有较好的稳定性，能够在图像中检测出关键点，是一种局部特征描述算子。SIFT算法是一种基于局部关键点的算法，因此不仅对图片的大小和旋转不敏感，而且对光照、噪声等影响表现的也较好">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/image.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/Unknown-159.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E5%B7%AE%E5%88%86.webp">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E5%B1%80%E9%83%A8%E6%9E%81%E5%80%BC%E7%82%B9.webp">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E6%9E%81%E5%80%BC%E7%82%B9%E6%A3%80%E6%B5%8B%E7%BB%93%E6%9E%9C.webp">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/2023920-20210701093021398-1309437220.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E7%BB%93%E6%9E%9C.webp">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E7%89%B9%E5%BE%81%E7%82%B9%E6%96%B9%E5%90%91.webp">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/2023920-20210701115328301-106428364.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E6%8F%8F%E8%BF%B0%E5%AD%90.webp">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/2023920-20210701142101583-1186960979.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/2023920-20210701142141453-969896144.png">
+<meta property="article:published_time" content="2025-01-04T05:11:47.000Z">
+<meta property="article:modified_time" content="2025-01-04T07:55:43.345Z">
+<meta property="article:author" content="ChenYuXuan">
+<meta property="article:tag" content="数字图像处理 图像的特征表示 SIFT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/image.png">
+
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>图像的特征表示 | ChenYuXuan的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ChenYuXuan的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-github">
+
+    <a href="https://github.com/cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>Github</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ChenYuXuan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ChenYuXuan的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          图像的特征表示
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-01-04 13:11:47 / 修改时间：15:55:43" itemprop="dateCreated datePublished" datetime="2025-01-04T13:11:47+08:00">2025-01-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">数字图像处理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一-什么是SIFT"><a href="#一-什么是SIFT" class="headerlink" title="一. 什么是SIFT"></a>一. 什么是SIFT</h1><p>SIFT是指<strong>尺度不变特征变换</strong>。它对物体的尺度变化、刚体变换、光照强度和遮挡具有较好的稳定性，能够在图像中检测出关键点，是一种局部特征描述算子。SIFT算法是一种基于局部关键点的算法，因此不仅对图片的大小和旋转不敏感，而且对光照、噪声等影响表现的也较好</p>
+<span id="more"></span>
+<h1 id="二-SIFT的一般步骤"><a href="#二-SIFT的一般步骤" class="headerlink" title="二. SIFT的一般步骤"></a>二. SIFT的一般步骤</h1><ol>
+<li><p><strong>特征点提取（关键点检测）</strong></p>
+<p>生成高斯差分（DOG）尺度空间、寻找局部极值点、特征点筛选</p>
+</li>
+<li><p><strong>特征点主方向确定</strong></p>
+</li>
+<li><p><strong>特征点描述</strong></p>
+</li>
+<li><p><strong>特征点匹配</strong></p>
+<p>根据特征描述子的相似性进行匹配、匹配对比值提纯、使用RANSAC方法剔除离群匹配对</p>
+</li>
+</ol>
+<h1 id="三-特征点提取"><a href="#三-特征点提取" class="headerlink" title="三. 特征点提取"></a>三. 特征点提取</h1><p>两个图像在匹配的时候可能因为拍摄的距离、角度等因素，导致特征点提取时差异很大。因此希望SIFT的特征点具有尺度不变性和方向不变性</p>
+<ol>
+<li><p>尺度空间</p>
+<p>“尺度”可以理解为图像的模糊程度（类似于眼睛近视的度数），尺度越大细节越少。简单来说，尺度空间就是在不同远近范围拍摄的一组图像，因此<strong>尺度空间就是由经过不同的模糊滤波后的一组图像</strong>。尺度越大图像越模糊，<strong>尺度空间大小用$\sigma$来表示</strong>，$σ$越小，反应的局部点越清晰，$σ$越大，图像越模糊，越不能反映出图像的细节</p>
+<ul>
+<li><p>构建高斯金字塔</p>
+<p>高斯金字塔是尺度空间的离散表示，是对图像逐层进行高斯滤波以及降采样得到的，构建高斯金字塔的具体流程如下</p>
+<ul>
+<li><p>图像预处理</p>
+<p>彩色图像灰度化；使用小高斯核对图像进行初始模糊</p>
+</li>
+<li><p>确定参数</p>
+<p><code>Octaves</code>：将图像尺寸空间划分为若干组，每组表示一个尺度的图像形态。简单来说，图像尺寸相同的一组图片构成一个Octave</p>
+<p><code>Intervals</code>：模糊度，就是指在同一个Octave中要分别对图像进行多少次模糊</p>
+</li>
+<li><p>建立高斯尺度空间</p>
+<p>对于每个Octave中的全部图像，使用不同参数的高斯核进行高斯模糊，表示图像在相同尺寸下的不同尺度空间的特征</p>
+<p>对于该Octave层的所有图像都进行上述操作之后，图像的width和height都相比于上一层的Octave中的图像缩小一半</p>
+</li>
+</ul>
+<p>定义$Octaves=m$，$Intervals=n$，就要生成$m\times n$张图像，其中第$i$行和第$j$列的图像，尺寸为原始尺寸的$\frac{1}{2^i}$倍，采用$\sigma_j$的二维高斯核进行高斯模糊，如下图所示</p>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/image.png" class="" title="img">
+</li>
+</ul>
+</li>
+</ol>
+<ol>
+<li><p>差分高斯金字塔</p>
+<p>在构建了高斯金字塔之后，需要进一步生成差分高斯金字塔（高斯差分尺度空间）</p>
+<p>构建方法：<strong>在同一个Octave中，对相邻的高斯模糊后的图像相减，得到差分高斯图像</strong>。也就是说，同一行中，后图减去前图，来得到差分结果。并按原先的Octave排序，形成新的金字塔。如下图所示</p>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/Unknown-159.png" class="" title="img">
+<p>对上述高斯的照片构建差分高斯金字塔，如下</p>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E5%B7%AE%E5%88%86.webp" class="" title="差分">
+</li>
+<li><p>寻找局部极值点</p>
+<p>何为局部极值点，具体来说，对于差分高斯金字塔中的每个像素点，比较其与周围27个邻居像素的值（当前Octave层这个图像中这个像素点周围的8个邻居、上一个Octave层对应的这个图像中的这个像素点以及周围的9个邻居、下一个Octave层对应的这个图像中的这个像素点以及周围的9个邻居），如果当前像素点的值大于所有邻居或者小于所有邻居，那么这个像素点就是一个极值点，如下图所示</p>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E5%B1%80%E9%83%A8%E6%9E%81%E5%80%BC%E7%82%B9.webp" class="" title="局部极值点">
+<p>对上述的差分高斯金字塔进行极值点检测并标记，结果如下</p>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E6%9E%81%E5%80%BC%E7%82%B9%E6%A3%80%E6%B5%8B%E7%BB%93%E6%9E%9C.webp" class="" title="极值点检测结果">
+<p>对于上图的解释如下：被标记为黄色的点，确实在其区域内是一个极值点。但是它们的极值点的绝对值太小，产生的原因很可能是因为噪声，在后续会被进一步清除；而红色的点，则确实是局部极值点</p>
+</li>
+<li><p>对局部极值点进行特征点筛选</p>
+<p>初步检测到的极值点往往存在一定的不准确性和不稳定性，所有需要进行特征点筛选（精确定位），具体步骤如下：</p>
+<ul>
+<li><p>精细化坐标</p>
+<p>上述检测极值点的过程，只是从图像中抽取的离散的点，这些点只是对连续信号的一种采样，并不能准确采样到图像中的极值点，如下图所示</p>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/2023920-20210701093021398-1309437220.png" class="" title="img">
+<p>具体做法是对于每个已经检测到的极值点，利用周围的值进行二阶泰勒展开，以拟合DoG函数在该点附近的形状（不详细介绍）</p>
+</li>
+<li><p>去除边缘效应</p>
+<p>边缘上的关键点在尺度和旋转变化中不够稳定，例如在尺度更小的图像中，会获得更多边缘上的点。因此需要把边缘上的关键点去除</p>
+<p>对于每一个检测到的极值点，计算它在空间方向上的二阶导数，记为$Hessian$矩阵</p>
+<script type="math/tex; mode=display">
+H=\begin{bmatrix}
+D_{xx} & D_{xy} \\
+D_{xy} & D_{yy} \\
+\end{bmatrix}</script><p>$D_{xx}$和$D_{yy}$分别表明了像素在两个轴方向上的变化率的速率。如果二者相差无几，说明当前的轨迹是一条直线；如果二者相差较大，就是一条曲线，因此可以得出，当二者相差无几的时候，是边缘；当二者相差很多的时候，是角点</p>
+</li>
+</ul>
+<p>经过特征点筛选后图像如下，其中的黄色的点是即将被删除的点</p>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E7%BB%93%E6%9E%9C.webp" class="" title="结果">
+</li>
+</ol>
+<h1 id="四-特征点主方向确定"><a href="#四-特征点主方向确定" class="headerlink" title="四. 特征点主方向确定"></a>四. 特征点主方向确定</h1><p>不同方向的图像，计算特征时的矩阵元素也是不同的。所有需要确定特征点的主方向，使其具备旋转不变性。</p>
+<p>具体步骤如下</p>
+<ul>
+<li>首先以特征点为中心，以$L$(通常为4)为半径，画一个圆</li>
+<li>然后将圆范围内的区域划分成4个子区域，并计算其中每个像素的方向；将所有计算得到的梯度方向汇总到一个方向直方图中；直方图中峰值最高的方向被选为该关键点的主方向，如果当前直方图中存在多个局部峰值，则复制该关键点作为额外的特征点，配上对应的主方向</li>
+<li>将特征点选中的区域进行旋转并通过像素插值来进行补齐获得新的像素结果</li>
+</ul>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E7%89%B9%E5%BE%81%E7%82%B9%E6%96%B9%E5%90%91.webp" class="" title="特征点方向">
+<h1 id="五-特征点描述与特征点匹配"><a href="#五-特征点描述与特征点匹配" class="headerlink" title="五. 特征点描述与特征点匹配"></a>五. 特征点描述与特征点匹配</h1><p>对于上面检测到的特征点，其拥有三个信息：<strong>位置、尺度、方向</strong>。这一步就是为每一个特征点建立一个<strong>描述子</strong>，使其不随各种变化而变化</p>
+<ol>
+<li><p>确定描述子的计算区域并校正主方向</p>
+<p>为了保证特征矢量具有旋转不变性，需要以特征点为中心，将特征点附近邻域内图像梯度的位置和方向<strong>旋转一个方向角θ</strong>即将原图像x轴转到与主方向相同的方向，如下图</p>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/2023920-20210701115328301-106428364.png" class="" title="img">
+</li>
+<li><p>生成描述子</p>
+<p>具体步骤如下：</p>
+<ul>
+<li>将1中旋转后的区域划分为$d\times d$的子区域，在子区域内计算8个方向的梯度直方图。因此，在一个子区域里，我们可以获得一个8维的向量，每一维度的值表示在该方向中的全部梯度的累加幅度</li>
+<li>通常将d设置为4，那么最终可以获得$4\times 4$个8维向量，共计128维度的特征</li>
+</ul>
+<p>如下图所示</p>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/%E6%8F%8F%E8%BF%B0%E5%AD%90.webp" class="" title="描述子">
+<p>这个128维的SIFT特征向量就像是我们每个人的身份证一样，拥有绝对标识，几乎不可能重复，在这里可以对128维向量进行归一化处理，可以去除光照变化的影响</p>
+</li>
+</ol>
+<p>对模板图和目标图分别建立描述子集合。<strong>特征点的匹配是通过两点集合内特征点的描述子的比对来完成</strong>，描述子的相似度量采用欧氏距离。假设如下</p>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/2023920-20210701142101583-1186960979.png" class="" title="img">
+<p>那么最后留在两张图上的特征点的描述子需要满足下面的条件</p>
+<img src="/2025/01/04/%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA/2023920-20210701142141453-969896144.png" class="" title="img">
+<h1 id="六-SIFT的代码实现"><a href="#六-SIFT的代码实现" class="headerlink" title="六. SIFT的代码实现"></a>六. SIFT的代码实现</h1><p>首先创建一个SIFT对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">sift = cv2.SIFT_creat(nfeatures=<span class="number">0</span>, nOctaveLayers=<span class="number">3</span>, contrastThreshold=<span class="number">0.04</span>, edgeThreshold=<span class="number">10</span>, sigma=<span class="number">1.6</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>nfeatures</code>：指定保留的特征的数量。0表示保留所有特征</li>
+<li><code>nOctaveLayers</code>：创建金字塔的层数。层数越大，计算越慢，但尺度不变性越好。</li>
+<li><code>contrastThreshold</code>：对比度阈值，用于过滤弱特征</li>
+<li><code>edgeThreshold</code>：边缘阈值或者主曲率阈值。主要用于上面的去除边缘效应的过程，设置的过大会在去除边缘效应时过滤掉了所有的特征点，导致没有特征点可用，设置的过小会降低旋转不变性。</li>
+<li><code>sigma</code>：在构建金字塔之前，对图像进行初始滤波时的高斯滤波参数</li>
+</ul>
+<p>接下来对输入图像，来提取其中的特征点</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">keypoints, descriptors = sift.detectAndCompute(image, mask)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>image</code> ：输入的图像，应该是灰度图像</li>
+<li><code>mask</code> ：一个可选参数，用于指定图像中需要检测关键点的区域。如果不需要对图像的某些区域进行特征检测，可以通过掩码来排除这些区域。如果设置为 <code>None</code> 或不提供，则在整个图像上检测关键点</li>
+<li><code>keypoints</code>：检测到的关键点（返回列表）</li>
+<li><code>descriptors</code>：对应的特征点的描述子数组，形状为(n, 128)</li>
+</ul>
+<p>最后绘制关键点</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output_image = cv2.drawKeypoints(image, keypoints, <span class="literal">None</span>, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>image</code>：原始图像</li>
+<li><code>keypoints</code>：关键点列表</li>
+<li><code>output_image</code>：输出图像</li>
+<li><code>flags</code>：绘制标志，<code>cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS</code>指带有尺度和方向的关键点</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86-%E5%9B%BE%E5%83%8F%E7%9A%84%E7%89%B9%E5%BE%81%E8%A1%A8%E7%A4%BA-SIFT/" rel="tag"># 数字图像处理 图像的特征表示 SIFT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/01/03/%E5%9B%BE%E5%83%8F%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/" rel="prev" title="图像空间变换">
+      <i class="fa fa-chevron-left"></i> 图像空间变换
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E4%BB%80%E4%B9%88%E6%98%AFSIFT"><span class="nav-number">1.</span> <span class="nav-text">一. 什么是SIFT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-SIFT%E7%9A%84%E4%B8%80%E8%88%AC%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">二. SIFT的一般步骤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E7%89%B9%E5%BE%81%E7%82%B9%E6%8F%90%E5%8F%96"><span class="nav-number">3.</span> <span class="nav-text">三. 特征点提取</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-%E7%89%B9%E5%BE%81%E7%82%B9%E4%B8%BB%E6%96%B9%E5%90%91%E7%A1%AE%E5%AE%9A"><span class="nav-number">4.</span> <span class="nav-text">四. 特征点主方向确定</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94-%E7%89%B9%E5%BE%81%E7%82%B9%E6%8F%8F%E8%BF%B0%E4%B8%8E%E7%89%B9%E5%BE%81%E7%82%B9%E5%8C%B9%E9%85%8D"><span class="nav-number">5.</span> <span class="nav-text">五. 特征点描述与特征点匹配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD-SIFT%E7%9A%84%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">6.</span> <span class="nav-text">六. SIFT的代码实现</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ChenYuXuan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyxCHENYUXUAN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cyx2897@gmail.com" title="E-Mail → mailto:cyx2897@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <font color="red"><i class="fa fa-heartbeat" aria-hidden="true"></i></font>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChenYuXuan</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">77k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:10</span>
+</div>
+<!--添加运行时间-->
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+      Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+      year - 作为date对象的年份，为4位年份值
+      month - 0-11之间的整数，做为date对象的月份
+      day - 1-31之间的整数，做为date对象的天数
+      hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+      minutes - 0-59之间的整数，做为date对象的分钟数
+      seconds - 0-59之间的整数，做为date对象的秒数
+      microseconds - 0-999之间的整数，做为date对象的毫秒数
+     */
+		var t1 = Date.UTC(2024,12,24,15,00,00); //北京时间
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" 已运行"+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒";
+	}
+	siteTime();
+</script>
+<!--// 添加运行时间-->
+
+<!-- 新增访客统计代码 -->
+<div class="busuanzi-count">
+    <script async="" src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      访客数量 <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 人
+      <span class="post-meta-divider">|</span>
+    </span>
+    <div class="powered-by"></div>
+    <span class="site-uv">
+      <i class="fa fa-eye"></i>
+      总访问量 <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 次
+    </span>
+    <!--
+    <span class="site-pv">
+      <i class="fa fa-pencil"></i>
+      本站博客共 <span class="post-count">41.2k</span> 字
+    </span>
+    -->
+</div>
+<!-- 新增访客统计代码 END-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
