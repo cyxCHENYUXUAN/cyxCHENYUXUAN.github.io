@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E6%9D%83%E9%87%8D%E8%A1%B0%E9%80%80%E4%B8%8E%E4%B8%A2%E5%BC%83%E6%B3%95/QQ_1735386278436.png">
 <meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/28/%E6%9D%83%E9%87%8D%E8%A1%B0%E9%80%80%E4%B8%8E%E4%B8%A2%E5%BC%83%E6%B3%95/%E6%97%A9%E5%81%9C%E6%B3%95%E7%A4%BA%E6%84%8F%E5%9B%BE.png">
 <meta property="article:published_time" content="2024-12-28T11:21:26.000Z">
-<meta property="article:modified_time" content="2025-01-05T05:55:03.234Z">
+<meta property="article:modified_time" content="2025-01-05T06:11:13.759Z">
 <meta property="article:author" content="ChenYuXuan">
 <meta property="article:tag" content="权重衰退  丢弃法 过拟合与欠拟合 深度学习">
 <meta name="twitter:card" content="summary">
@@ -210,7 +210,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-05 13:55:03" itemprop="dateModified" datetime="2025-01-05T13:55:03+08:00">2025-01-05</time>
+                <time title="修改时间：2025-01-05 14:11:13" itemprop="dateModified" datetime="2025-01-05T14:11:13+08:00">2025-01-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,19 +278,15 @@
 </li>
 <li><p>防止过拟合的方法</p>
 <p>首先通过思维导图展示缓解过拟合的方法</p>
-</li>
-</ol>
-   <pre class="mermaid">   graph LR
-   A(缓解过拟合)-->B(降低模型容量)
-   A --> C(早停法)
-   A --> D(增加数据复杂度)
-   B --> B1(约束参数取值范围)
-   B --> B2(约束参数数量)
-   B1 --> B11(权重衰减weight_decay)
-   B2 --> B12(丢弃法dropout)
-   B2 --> B13(正则化)</pre>
-
-
+<pre class="mermaid">   graph LR
+A(缓解过拟合)-->B(降低模型容量)
+A --> C(早停法)
+A --> D(增加数据复杂度)
+B --> B1(约束参数取值范围)
+B --> B2(约束参数数量)
+B1 --> B11(权重衰减weight_decay)
+B2 --> B12(丢弃法dropout)
+B2 --> B13(正则化)</pre>
 
 <ul>
 <li><p>增加数据量</p>
@@ -299,10 +295,8 @@
 <li><p>正则化</p>
 <p>在进行目标函数或代价函数优化时，在目标函数或代价函数后面加上一个正则项</p>
 <ul>
-<li><p>L1正则化：在原损失函数后面加上权值向量 $w$中各个元素的绝对值之和，通常表示为 $||w||_1$</p>
-</li>
-<li><p>L2正则化：在原损失函数后面加上权值向量中各个元素的平方和的开方，通常表示为 $||w||_2$</p>
-</li>
+<li>L1正则化：在原损失函数后面加上权值向量 $w$中各个元素的绝对值之和，通常表示为 $||w||_1$</li>
+<li>L2正则化：在原损失函数后面加上权值向量中各个元素的平方和的开方，通常表示为  $||w||_2$</li>
 </ul>
 </li>
 <li><p>丢弃法（Dropout）</p>
@@ -322,12 +316,9 @@
 <script type="math/tex; mode=display">
 \text { Loss }_{\text {total }}=\text { Loss }_{\text {data }}+\frac{\lambda}{2}\|w\|_2^{2}</script><p>其中：</p>
 <ul>
-<li><p>$\text { Loss }_{\text {total }}$是模型在数据上的原始损失</p>
-</li>
-<li><p>$\lambda$是L2正则化的系数，用于控制正则项对于总损失的贡献程度</p>
-</li>
-<li><p>$|w|_2^{2}$是权重向量$w$的L2范数的平方</p>
-</li>
+<li>$\text { Loss }_{\text {total }}$是模型在数据上的原始损失</li>
+<li>$\lambda$是L2正则化的系数，用于控制正则项对于总损失的贡献程度</li>
+<li>$|w|_2^{2}$是权重向量$w$的L2范数的平方</li>
 </ul>
 <p><code>weight_decay</code>的值就是上面公式中的$\lambda$，$\lambda$的大小决定了对大权重的惩罚程度。较高的 <code>weight_decay</code> 值增强了对复杂模型结构的惩罚，$\lambda$越大，优化器就更能够<strong>限制权重趋于0</strong>，有助于防止过拟合</p>
 <p>在使用weight_decay时通常设置其为1e-3或1e-4，代码展示如下</p>
@@ -335,7 +326,7 @@
 <p>其中<code>lr</code>是学习率，<code>model.parameters()</code>是模型中所有需要优化的参数（即权重$w$和偏置$b$）</p>
 </li>
 </ul>
-<ol>
+</li>
 <li><p>防止欠拟合的方法</p>
 <ul>
 <li><p>增加特征数（自变量）</p>
