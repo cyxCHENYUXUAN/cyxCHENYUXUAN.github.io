@@ -20,20 +20,23 @@
     var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="一. 计算图计算图是一众深度学习框架中求梯度值和本源值的经典方法，具体来说，计算图是一个用于动态构建和管理计算过程中所有操作的有向无环图，将复杂的计算分解为若干个简单计算后，将每个简单计算视为一个节点，只关注该节点的输入与输出">
+  <meta name="description" content="一. 图的定义、图的分类图$G$由顶点集$V$和边集$E$组成，记为$G&#x3D;(V,E)$，其中$V(G)$表示图$G$中顶点的有限非空集；$E(G)$表示图$G$中顶点之间的关系（边）集合。若$V&#x3D;\{v_1,v_2,…,v_n\}$，则用$|V|$表示图$G$中顶点的个数，$E&#x3D;\{(u,v)|u∈V,v∈V\}$，则用$|E|$表示图$G$中边的条数 注意：线性表可以是空表，树可以是空树，但图不">
 <meta property="og:type" content="article">
-<meta property="og:title" content="pytorch的计算图理解以及自动求导">
-<meta property="og:url" content="http://cyxchenyuxuan.github.io/2024/12/27/pytorch%E7%9A%84%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%90%86%E8%A7%A3%E4%BB%A5%E5%8F%8A%E8%87%AA%E5%8A%A8%E6%B1%82%E5%AF%BC/index.html">
+<meta property="og:title" content="图的定义、分类与存储结构">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/index.html">
 <meta property="og:site_name" content="ChenYuXuan的个人博客">
-<meta property="og:description" content="一. 计算图计算图是一众深度学习框架中求梯度值和本源值的经典方法，具体来说，计算图是一个用于动态构建和管理计算过程中所有操作的有向无环图，将复杂的计算分解为若干个简单计算后，将每个简单计算视为一个节点，只关注该节点的输入与输出">
+<meta property="og:description" content="一. 图的定义、图的分类图$G$由顶点集$V$和边集$E$组成，记为$G&#x3D;(V,E)$，其中$V(G)$表示图$G$中顶点的有限非空集；$E(G)$表示图$G$中顶点之间的关系（边）集合。若$V&#x3D;\{v_1,v_2,…,v_n\}$，则用$|V|$表示图$G$中顶点的个数，$E&#x3D;\{(u,v)|u∈V,v∈V\}$，则用$|E|$表示图$G$中边的条数 注意：线性表可以是空表，树可以是空树，但图不">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-12-27T06:47:01.000Z">
-<meta property="article:modified_time" content="2024-12-27T08:02:35.695Z">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/1280px-Multi-pseudograph.svg.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/d62a6059252dd42ae0f9b54c0a3b5bb5c8eab861">
+<meta property="article:published_time" content="2025-03-31T12:09:27.000Z">
+<meta property="article:modified_time" content="2025-03-31T14:47:09.895Z">
 <meta property="article:author" content="ChenYuXuan">
-<meta property="article:tag" content="计算图 自动求导">
+<meta property="article:tag" content="数据结构 图基础">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/1280px-Multi-pseudograph.svg.png">
 
-<link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/27/pytorch%E7%9A%84%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%90%86%E8%A7%A3%E4%BB%A5%E5%8F%8A%E8%87%AA%E5%8A%A8%E6%B1%82%E5%AF%BC/">
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/">
 
 
 <script id="page-configurations">
@@ -46,7 +49,7 @@
   };
 </script>
 
-  <title>pytorch的计算图理解以及自动求导 | ChenYuXuan的个人博客</title>
+  <title>图的定义、分类与存储结构 | ChenYuXuan的个人博客</title>
   
 
 
@@ -177,7 +180,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2024/12/27/pytorch%E7%9A%84%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%90%86%E8%A7%A3%E4%BB%A5%E5%8F%8A%E8%87%AA%E5%8A%A8%E6%B1%82%E5%AF%BC/">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -190,7 +193,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          pytorch的计算图理解以及自动求导
+          图的定义、分类与存储结构
         </h1>
 
         <div class="post-meta">
@@ -201,7 +204,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-12-27 14:47:01 / 修改时间：16:02:35" itemprop="dateCreated datePublished" datetime="2024-12-27T14:47:01+08:00">2024-12-27</time>
+              <time title="创建时间：2025-03-31 20:09:27 / 修改时间：22:47:09" itemprop="dateCreated datePublished" datetime="2025-03-31T20:09:27+08:00">2025-03-31</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -209,7 +212,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
                 </span>
             </span>
 
@@ -226,7 +229,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2k</span>
+              <span>1.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -245,97 +248,83 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="一-计算图"><a href="#一-计算图" class="headerlink" title="一. 计算图"></a>一. 计算图</h1><p>计算图是一众深度学习框架中求梯度值和本源值的经典方法，具体来说，计算图是一个用于动态构建和管理计算过程中所有操作的有向无环图，将复杂的计算分解为若干个简单计算后，将每个简单计算视为一个节点，只关注该节点的输入与输出</p>
-<span id="more"></span>
-<p>计算图描述了从输入数据到输出结果的计算过程，并同时计算梯度，从而支持深度学习中的反向传播算法</p>
-<p>举个例子，给定如下方程：</p>
-<script type="math/tex; mode=display">
-y = \log(e^{x} + 5)</script><p>给定$x=5$为初值</p>
+        <h1 id="一-图的定义、图的分类"><a href="#一-图的定义、图的分类" class="headerlink" title="一. 图的定义、图的分类"></a>一. 图的定义、图的分类</h1><p>图$G$由顶点集$V$和边集$E$组成，记为$G=(V,E)$，其中$V(G)$表示图$G$中顶点的有限非空集；$E(G)$表示图$G$中顶点之间的关系（边）集合。若$V=\{v_1,v_2,…,v_n\}$，则用$|V|$表示图$G$中顶点的个数，$E=\{(u,v)|u∈V,v∈V\}$，则用$|E|$表示图$G$中边的条数</p>
+<p><strong>注意：线性表可以是空表，树可以是空树，但图不可以是空图</strong></p>
 <ol>
-<li><p>绘制该公式的计算图，包括每个节点和边。标注每个节点的计算操作(公式形式)</p>
+<li><p><strong>有向图</strong></p>
+<p>若$E$是有向边（也称弧）的有限集合，则图$G$为有向图。弧是顶点的<strong>有序对</strong>，记为$<v,w>$，其中$v,w$是顶点，$v$称为<strong>弧尾</strong>，$w$称为<strong>弧头</strong>。$<v,w>$称为从$v$到$w$的弧，也称$v$邻接到$w$。</p>
 </li>
-<li><p>对计算图中的每一步进行反向传播，写出每个变量梯度的计算过程与结果</p>
+<li><p><strong>无向图</strong></p>
+<p>若$E$是无向边（简称边）的有限集合，则称图G为无向图。边是顶点的<strong>无序对</strong>，记为$(v,w)$或$(w,v)$。可以说$w$和$v$互为邻接点。边$(v,w)$依附于$w$和$v$，或称边$(v,w)$和$v,w$相关联。</p>
 </li>
-<li><p>使用pytorch的自动求导方法(使用backward)来计算梯度的初始值，验证结果是否准确</p>
+<li><p><strong>简单图、多重图</strong></p>
+<p>一个图$G$满足：①不存在重复边；②不存在顶点到自身的边，则称图$G$为<strong>简单图</strong>。</p>
+<p>若图$G$中某两个顶点之间的边数大于$1$条，又允许顶点通过一条边和自身关联，则称图$G$为<strong>多重图</strong>，0如下图所示，含有多重边（红色）和自环（蓝色）的多重图。并非所有的多重图都允许包含自环。</p>
+<img src="/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/1280px-Multi-pseudograph.svg.png" class="" title="undefined">
+</li>
+<li><p><strong>顶点的度、入读和出度</strong></p>
+<p>无向图中，顶点$v$的度是指依附于顶点$v$的边的条数。<strong>无向图的全部顶点的度之和等于边数的两倍</strong>。</p>
+<p>有向图中，顶点$v$的度分为入度和出度，入度是以顶点$v$为终点的有向边的数目；出度是以顶点$v$为起点的有向边的数目。<strong>有向图的全部顶点的入度之和与出度之和相等，且等于边数</strong>，因为每一条有向边都有一个起点和终点。</p>
+</li>
+<li><p><strong>路径、路径长度和回路</strong></p>
+<p>顶点$v_p$到顶点$v_q$之间的一条<strong>路径</strong>是指顶点序列$v_p,v_{i_1},v_{i_2},v_{i_3},…,v_{i_m},v_q$。路径上的边的数目称为<strong>路径长度</strong>，路径上第一个顶点和最后一个顶点相同的路径称为<strong>回路</strong>或<strong>环</strong>。若一个图有$n$个顶点，且有大于$n-1$条边，则此图一定有环。</p>
+</li>
+<li><p><strong>简单路径、简单回路</strong></p>
+<p>在路径中，<strong>顶点不重复出现</strong>的路径称为<strong>简单路径</strong>。</p>
+<p>除了第一个顶点和最后一个顶点外，<strong>其余顶点不重复出现</strong>的路径称为<strong>简单回路</strong>。</p>
+</li>
+<li><p><strong>距离</strong></p>
+<p>从顶点$u$到顶点$v$的<strong>最短路径</strong>若存在，则此路径的长度称为从$u$到$v$的<strong>距离</strong>。</p>
+<p>若从$u$到$v$不存在<strong>路径不存在</strong>，则记该距离为无穷（$∞$）。</p>
+</li>
+<li><p><strong>子图</strong></p>
+<p>设有两个图$G=(V,E)$和$G’=(V,E)$，若$V’$是$V$的子集，且$E’$是$E$的子集，则称$G’$是$G$的<strong>子图</strong>。</p>
+<p>若有满足$V(G’)=V(G)$的子图$G’$，即子图与原图的顶点一样，则称其为$G$的<strong>生成子图</strong>。</p>
+</li>
+<li><p><strong>连通、连通图、连通分量</strong>（只适用于无向图）</p>
+<p>在无向图中，若从顶点$v$到顶点$w$有路径存在，则称$v$和$w$是<strong>连通</strong>的。</p>
+<p>若图$G$中任意两个顶点都是连通的，则称图$G$为<strong>连通图</strong>。</p>
+<p>无向图中的极大连通子图称为<strong>连通分量</strong>。</p>
+<p>极大连通子图中的极大性：不是指“顶点最多”，而是指“无法再扩展”。即使原图还有其它顶点，一旦加入就会导致子图不连通。</p>
+</li>
+<li><p><strong>强连通图、强连通分量</strong>（只适用于有向图）</p>
+<p>在有向图中，若有一对顶点$v$和$w$，从$v$到$w$和从$w$到$v$之间都有路径，则称这两个顶点是<strong>强连通</strong>的。</p>
+<p>若有向图中任意一对顶点都是强连通的，则称此图是<strong>强连通图</strong>。</p>
+<p>有向图中的极大强连通子图称为<strong>强连通分量</strong>。</p>
+<p>极大性解释同上。</p>
+</li>
+<li><p><strong>生成树、生成森林</strong></p>
+<p>连通图的生成树是包含<strong>全部顶点</strong>的一个极小连通子图。若图中顶点数为$n$，则它的生成树包含有$n-1$条边。</p>
+<p>非连通图中，所有连通分量的生成树构成了非连通图的生成森林。</p>
+<ul>
+<li><p><strong>极大连通子图、极小连通子图、生成树三者的区别</strong>：</p>
+<p>极大连通子图：无向图的连通分量</p>
+<p>生成树：必须覆盖所有顶点，边数固定为$n-1$</p>
+<p>极小连通子图：连通无向图的生成树（生成树==极小连通子图），可以覆盖任意的子集顶点，边数不固定，只要保证图连通且无冗余边即可</p>
+</li>
+</ul>
+<ol>
+<li><p><strong>边的权、网和带权路径长度</strong></p>
+<p>在一个图中，每条边都可以标上具有某种含义的值，该数值称为该边的<strong>权值</strong>。这种边上带有权值的图称为<strong>带权图（网）</strong>。</p>
+<p>路径上所有边的权值之和，称之为该路径的<strong>带权路径长度</strong>。</p>
 </li>
 </ol>
-<p>首先展示求导过程，如下</p>
-<p>​    链式求导</p>
-<p>​                    </p>
-<script type="math/tex; mode=display">
-\frac{\partial y}{\partial x}=\frac{\partial y}{\partial\left(e^{x}+5\right)} \cdot \frac{\partial\left(e^{x}+5\right)}{\partial e^{x}} \cdot \frac{\partial e^{x}}{\partial x}</script><p>​    对每一步的求导</p>
-<script type="math/tex; mode=display">
-\frac{\partial y}{\partial (e^{x}+5)} =\frac{1}{e^{x}+5}</script><script type="math/tex; mode=display">
-\frac{\partial(e^{x}+5)}{\partial e^{x}} =1</script><script type="math/tex; mode=display">
-\frac{\partial e^{x}}{\partial x} =e^{x}</script><p>​    最后结果</p>
+</li>
+<li><p><strong>完全图（简单完全图）</strong></p>
+<p>对于无向图，$|E|$的取值范围为$0$到$n(n-1)/2$，<strong>有$n(n-1)/2$条边的无向图称为完全图</strong>。</p>
+<p>对于有向图，$|E|$的取值范围为$0$到$n(n-1)$，<strong>有$n(n-1)$条弧的有向图称为有向完全图</strong>。</p>
+</li>
+<li><p><strong>稠密图、稀疏图</strong></p>
+<p>边数很少的图称为稀疏图，反之为稠密图。</p>
+</li>
+<li><p><strong>有向树</strong></p>
+<p>一个顶点的入度为$0$、其余顶点的入度均为$1$、从树根到任一结点有一条有向通路的有向图称为<strong>有向树</strong>。如下图</p>
+<img src="/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/d62a6059252dd42ae0f9b54c0a3b5bb5c8eab861" class="" title="img">
+</li>
+</ol>
 <p>​    </p>
-<script type="math/tex; mode=display">
-\frac{\partial y}{\partial x} = \frac{1}{e^{x}+5} *1*e^{x}=\frac{e^{x}}{e^{x}+5}</script><p>​    当x=5时</p>
-<script type="math/tex; mode=display">
-\frac{\partial y}{\partial x} = \frac{1}{e^{5}+5} *1*e^{5}=\frac{e^{5}}{e^{5}+5}\approx 0.9674</script><p>根据所给方程构建一个计算图如下</p>
-<pre class="mermaid">graph LR
-    A((A: x))-->C(C: e**A)
-    C(C: e**A) --> E(E: C+D)
-    D((D: b)) --> E(E: C+D)
-    E(E: C+D) --> F(F: logE)</pre>
-
-<p>上图中，节点A、D是数据节点，节点C、E、F是计算节点，当给定数据节点的数值，就可以在最终节点处得到例题公式中的结果</p>
-<p>计算图的优势就是方便求导，只需要在计算节点处，保存好导数的值，就可以在得到最终结果的时候，把所求得的导数相乘起来，就可以得到当前的导数值，如下图，图中虚线所指的就是计算节点的导数</p>
-<pre class="mermaid">graph LR
-    A((A: x))-->C(C: e**A)
-    C(C: e**A)-.->C1(C1: e**A)
-    C(C: e**A) --> E(E: C+D)
-    D((D: b)) --> E(E: C+D)
-    E(E:C+D) -.-> E1(E1: 1)
-    E(E: C+D) --> F(F: logE)
-    F(F: logE) -.-> F1(F1: 1/E)</pre>
-
-<p>上图流程如下：</p>
-<ul>
-<li><p>给定节点A、D的值如下：</p>
-<script type="math/tex; mode=display">x=5, b=5</script></li>
-<li><p>数据先流入C，得到$e^{5}$，同时计算得到C1即$e^{5} $</p>
-</li>
-<li><p>进而，数据流到E节点，得到$C+D=e^{5} +5$，同时得到E1为1</p>
-</li>
-<li><p>最后，数据流到F节点，得到$\log_{}{E} =\log_{}{(e^{5} +5)} $，同时得到F1为$\frac{1}{E} =\frac{1}{e^{5} +5} $</p>
-</li>
-</ul>
-<p>此时，已经得到了方程的输出结果为$\log_{}{(e^{5} +5)}$，其导数数值只需要把C1、E1、F1的数值乘起来就可以了，即</p>
-<script type="math/tex; mode=display">
-y'=e^{5}*1*\frac{1}{e^{5} +5}=\frac{e^{5}}{e^{5} +5}</script><p><strong>注意，此处进行了两轮计算：</strong> </p>
-<ol>
-<li><p>从A、D节点到F节点(从前到后) </p>
-</li>
-<li><p>将F1、E1、C1相乘(从后到前) </p>
-</li>
-</ol>
-<p>这里将第一步称为前向传播，第二步称为反向传播</p>
-<h1 id="二-pytorch的自动求导"><a href="#二-pytorch的自动求导" class="headerlink" title="二. pytorch的自动求导"></a>二. pytorch的自动求导</h1><p>pytorch采用动态计算图的方式进行计算，即在运算过程中(前向传播)，计算图可以随时变动</p>
-<p>从计算图的计算过程中可以看出，在前向传播时，当前节点的值不需要始终保存</p>
-<ul>
-<li>当该节点的计算结果传送到下一个节点时，该节点的数值可以删除</li>
-<li>然而，还需要保存该节点的梯度</li>
-</ul>
-<p>计算图中的主要资源，都用于保存每个节点的梯度了，这也是深度学习中主要的资源消耗部分</p>
-<ol>
-<li><p>需要指定求导的变量</p>
-<p>指定$\bf{x}$为目标变量时，需要在定义变量时指定<code>requires_grad=True</code>，如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x = torch.tensor([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], requires_grad=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li><p>前向传播与反向传播</p>
-<p>当在pytorch中写完运算过程并运行后，即完成了前向传播</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x = torch.<span class="built_in">pow</span>(torch.dot(w, w) - <span class="number">1</span>, <span class="number">2</span>)</span><br></pre></td></tr></table></figure>
-<p>当前向传播完成后就可以进行反向传播</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x.backward()</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>输出梯度</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x.grad</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-
+<p>​    </p>
+<h1 id="二-图的存储结构"><a href="#二-图的存储结构" class="headerlink" title="二. 图的存储结构"></a>二. <strong>图的存储结构</strong></h1>
     </div>
 
     
@@ -344,7 +333,7 @@ y'=e^{5}*1*\frac{1}{e^{5} +5}=\frac{e^{5}}{e^{5} +5}</script><p><strong>注意�
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E8%AE%A1%E7%AE%97%E5%9B%BE-%E8%87%AA%E5%8A%A8%E6%B1%82%E5%AF%BC/" rel="tag"># 计算图 自动求导</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%9B%BE%E5%9F%BA%E7%A1%80/" rel="tag"># 数据结构 图基础</a>
           </div>
 
         
@@ -353,13 +342,10 @@ y'=e^{5}*1*\frac{1}{e^{5} +5}=\frac{e^{5}}{e^{5} +5}</script><p><strong>注意�
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2024/12/26/pytorch%E7%9A%84%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/" rel="prev" title="pytorch的基础用法">
-      <i class="fa fa-chevron-left"></i> pytorch的基础用法
+    <a href="/2025/02/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%BB%AA%E8%AE%BA/" rel="prev" title="数据结构绪论">
+      <i class="fa fa-chevron-left"></i> 数据结构绪论
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2024/12/27/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/" rel="next" title="线性回归">
-      线性回归 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -418,7 +404,7 @@ y'=e^{5}*1*\frac{1}{e^{5} +5}=\frac{e^{5}}{e^{5} +5}</script><p><strong>注意�
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E8%AE%A1%E7%AE%97%E5%9B%BE"><span class="nav-number">1.</span> <span class="nav-text">一. 计算图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-pytorch%E7%9A%84%E8%87%AA%E5%8A%A8%E6%B1%82%E5%AF%BC"><span class="nav-number">2.</span> <span class="nav-text">二. pytorch的自动求导</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%9B%BE%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">一. 图的定义、图的分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E5%9B%BE%E7%9A%84%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">二. 图的存储结构</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
