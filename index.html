@@ -194,10 +194,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-03-31 20:09:27 / 修改时间：22:47:09" itemprop="dateCreated datePublished" datetime="2025-03-31T20:09:27+08:00">2025-03-31</time>
+              <time title="创建时间：2025-03-31 20:09:27" itemprop="dateCreated datePublished" datetime="2025-03-31T20:09:27+08:00">2025-03-31</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-06 13:38:57" itemprop="dateModified" datetime="2025-04-06T13:38:57+08:00">2025-04-06</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -214,14 +220,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.9k</span>
+              <span>21k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>19 分钟</span>
             </span>
 
         </div>
@@ -234,82 +240,14 @@
 
       
           <h1 id="一-图的定义、图的分类"><a href="#一-图的定义、图的分类" class="headerlink" title="一. 图的定义、图的分类"></a>一. 图的定义、图的分类</h1><p>图$G$由顶点集$V$和边集$E$组成，记为$G=(V,E)$，其中$V(G)$表示图$G$中顶点的有限非空集；$E(G)$表示图$G$中顶点之间的关系（边）集合。若$V=\{v_1,v_2,…,v_n\}$，则用$|V|$表示图$G$中顶点的个数，$E=\{(u,v)|u∈V,v∈V\}$，则用$|E|$表示图$G$中边的条数</p>
-<p><strong>注意：线性表可以是空表，树可以是空树，但图不可以是空图</strong></p>
-<ol>
-<li><p><strong>有向图</strong></p>
-<p>若$E$是有向边（也称弧）的有限集合，则图$G$为有向图。弧是顶点的<strong>有序对</strong>，记为$<v,w>$，其中$v,w$是顶点，$v$称为<strong>弧尾</strong>，$w$称为<strong>弧头</strong>。$<v,w>$称为从$v$到$w$的弧，也称$v$邻接到$w$。</p>
-</li>
-<li><p><strong>无向图</strong></p>
-<p>若$E$是无向边（简称边）的有限集合，则称图G为无向图。边是顶点的<strong>无序对</strong>，记为$(v,w)$或$(w,v)$。可以说$w$和$v$互为邻接点。边$(v,w)$依附于$w$和$v$，或称边$(v,w)$和$v,w$相关联。</p>
-</li>
-<li><p><strong>简单图、多重图</strong></p>
-<p>一个图$G$满足：①不存在重复边；②不存在顶点到自身的边，则称图$G$为<strong>简单图</strong>。</p>
-<p>若图$G$中某两个顶点之间的边数大于$1$条，又允许顶点通过一条边和自身关联，则称图$G$为<strong>多重图</strong>，0如下图所示，含有多重边（红色）和自环（蓝色）的多重图。并非所有的多重图都允许包含自环。</p>
-<img src="/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/1280px-Multi-pseudograph.svg.png" class="" title="undefined">
-</li>
-<li><p><strong>顶点的度、入读和出度</strong></p>
-<p>无向图中，顶点$v$的度是指依附于顶点$v$的边的条数。<strong>无向图的全部顶点的度之和等于边数的两倍</strong>。</p>
-<p>有向图中，顶点$v$的度分为入度和出度，入度是以顶点$v$为终点的有向边的数目；出度是以顶点$v$为起点的有向边的数目。<strong>有向图的全部顶点的入度之和与出度之和相等，且等于边数</strong>，因为每一条有向边都有一个起点和终点。</p>
-</li>
-<li><p><strong>路径、路径长度和回路</strong></p>
-<p>顶点$v_p$到顶点$v_q$之间的一条<strong>路径</strong>是指顶点序列$v_p,v_{i_1},v_{i_2},v_{i_3},…,v_{i_m},v_q$。路径上的边的数目称为<strong>路径长度</strong>，路径上第一个顶点和最后一个顶点相同的路径称为<strong>回路</strong>或<strong>环</strong>。若一个图有$n$个顶点，且有大于$n-1$条边，则此图一定有环。</p>
-</li>
-<li><p><strong>简单路径、简单回路</strong></p>
-<p>在路径中，<strong>顶点不重复出现</strong>的路径称为<strong>简单路径</strong>。</p>
-<p>除了第一个顶点和最后一个顶点外，<strong>其余顶点不重复出现</strong>的路径称为<strong>简单回路</strong>。</p>
-</li>
-<li><p><strong>距离</strong></p>
-<p>从顶点$u$到顶点$v$的<strong>最短路径</strong>若存在，则此路径的长度称为从$u$到$v$的<strong>距离</strong>。</p>
-<p>若从$u$到$v$不存在<strong>路径不存在</strong>，则记该距离为无穷（$∞$）。</p>
-</li>
-<li><p><strong>子图</strong></p>
-<p>设有两个图$G=(V,E)$和$G’=(V,E)$，若$V’$是$V$的子集，且$E’$是$E$的子集，则称$G’$是$G$的<strong>子图</strong>。</p>
-<p>若有满足$V(G’)=V(G)$的子图$G’$，即子图与原图的顶点一样，则称其为$G$的<strong>生成子图</strong>。</p>
-</li>
-<li><p><strong>连通、连通图、连通分量</strong>（只适用于无向图）</p>
-<p>在无向图中，若从顶点$v$到顶点$w$有路径存在，则称$v$和$w$是<strong>连通</strong>的。</p>
-<p>若图$G$中任意两个顶点都是连通的，则称图$G$为<strong>连通图</strong>。</p>
-<p>无向图中的极大连通子图称为<strong>连通分量</strong>。</p>
-<p>极大连通子图中的极大性：不是指“顶点最多”，而是指“无法再扩展”。即使原图还有其它顶点，一旦加入就会导致子图不连通。</p>
-</li>
-<li><p><strong>强连通图、强连通分量</strong>（只适用于有向图）</p>
-<p>在有向图中，若有一对顶点$v$和$w$，从$v$到$w$和从$w$到$v$之间都有路径，则称这两个顶点是<strong>强连通</strong>的。</p>
-<p>若有向图中任意一对顶点都是强连通的，则称此图是<strong>强连通图</strong>。</p>
-<p>有向图中的极大强连通子图称为<strong>强连通分量</strong>。</p>
-<p>极大性解释同上。</p>
-</li>
-<li><p><strong>生成树、生成森林</strong></p>
-<p>连通图的生成树是包含<strong>全部顶点</strong>的一个极小连通子图。若图中顶点数为$n$，则它的生成树包含有$n-1$条边。</p>
-<p>非连通图中，所有连通分量的生成树构成了非连通图的生成森林。</p>
-<ul>
-<li><p><strong>极大连通子图、极小连通子图、生成树三者的区别</strong>：</p>
-<p>极大连通子图：无向图的连通分量</p>
-<p>生成树：必须覆盖所有顶点，边数固定为$n-1$</p>
-<p>极小连通子图：连通无向图的生成树（生成树==极小连通子图），可以覆盖任意的子集顶点，边数不固定，只要保证图连通且无冗余边即可</p>
-</li>
-</ul>
-<ol>
-<li><p><strong>边的权、网和带权路径长度</strong></p>
-<p>在一个图中，每条边都可以标上具有某种含义的值，该数值称为该边的<strong>权值</strong>。这种边上带有权值的图称为<strong>带权图（网）</strong>。</p>
-<p>路径上所有边的权值之和，称之为该路径的<strong>带权路径长度</strong>。</p>
-</li>
-</ol>
-</li>
-<li><p><strong>完全图（简单完全图）</strong></p>
-<p>对于无向图，$|E|$的取值范围为$0$到$n(n-1)/2$，<strong>有$n(n-1)/2$条边的无向图称为完全图</strong>。</p>
-<p>对于有向图，$|E|$的取值范围为$0$到$n(n-1)$，<strong>有$n(n-1)$条弧的有向图称为有向完全图</strong>。</p>
-</li>
-<li><p><strong>稠密图、稀疏图</strong></p>
-<p>边数很少的图称为稀疏图，反之为稠密图。</p>
-</li>
-<li><p><strong>有向树</strong></p>
-<p>一个顶点的入度为$0$、其余顶点的入度均为$1$、从树根到任一结点有一条有向通路的有向图称为<strong>有向树</strong>。如下图</p>
-<img src="/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/d62a6059252dd42ae0f9b54c0a3b5bb5c8eab861" class="" title="img">
-</li>
-</ol>
-<p>​    </p>
-<p>​    </p>
-<h1 id="二-图的存储结构"><a href="#二-图的存储结构" class="headerlink" title="二. 图的存储结构"></a>二. <strong>图的存储结构</strong></h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1330,13 +1268,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">82k</span>
+    <span title="站点总字数">101k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">1:15</span>
+    <span title="站点阅读时长">1:32</span>
 </div>
 <!--添加运行时间-->
 <span id="sitetime"></span>
@@ -1395,7 +1333,7 @@
     <!--
     <span class="site-pv">
       <i class="fa fa-pencil"></i>
-      本站博客共 <span class="post-count">45k</span> 字
+      本站博客共 <span class="post-count">49.8k</span> 字
     </span>
     -->
 </div>
