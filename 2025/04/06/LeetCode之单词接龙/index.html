@@ -20,27 +20,20 @@
     var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="一. 什么是卷积神经网络卷积神经网络是近年发展起来的，并引起广泛重视的一种高效识别方法，20世纪60年代，Hubel和Wiesel在研究猫脑皮层中用于局部敏感和方向选择的神经元时发现其独特的网络结构可以有效地降低反馈神经网络的复杂性，继而提出了卷积神经网络（Convolutional Neural Networks-简称CNN）。现在，CNN已经成为众多科学领域的研究热点之一，特别是在模式分类领域">
+  <meta name="description" content="单词接龙力扣题目链接 字典 $wordList$ 中从单词 $beginWord$ 到 $endWord$的 转换序列 是一个按下述规格形成的序列 $beginWord -&gt; s_1 -&gt; s_2 -&gt; … -&gt; s_k$：  每一对相邻的单词只差一个字母。 对于 $1 &lt;&#x3D; i &lt;&#x3D; k$ 时，每个 $s_i$ 都在 $wordList$ 中。注意， $beg">
 <meta property="og:type" content="article">
-<meta property="og:title" content="卷积神经网络">
-<meta property="og:url" content="http://cyxchenyuxuan.github.io/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/index.html">
+<meta property="og:title" content="LeetCode之单词接龙">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2025/04/06/LeetCode%E4%B9%8B%E5%8D%95%E8%AF%8D%E6%8E%A5%E9%BE%99/index.html">
 <meta property="og:site_name" content="ChenYuXuan的个人博客">
-<meta property="og:description" content="一. 什么是卷积神经网络卷积神经网络是近年发展起来的，并引起广泛重视的一种高效识别方法，20世纪60年代，Hubel和Wiesel在研究猫脑皮层中用于局部敏感和方向选择的神经元时发现其独特的网络结构可以有效地降低反馈神经网络的复杂性，继而提出了卷积神经网络（Convolutional Neural Networks-简称CNN）。现在，CNN已经成为众多科学领域的研究热点之一，特别是在模式分类领域">
+<meta property="og:description" content="单词接龙力扣题目链接 字典 $wordList$ 中从单词 $beginWord$ 到 $endWord$的 转换序列 是一个按下述规格形成的序列 $beginWord -&gt; s_1 -&gt; s_2 -&gt; … -&gt; s_k$：  每一对相邻的单词只差一个字母。 对于 $1 &lt;&#x3D; i &lt;&#x3D; k$ 时，每个 $s_i$ 都在 $wordList$ 中。注意， $beg">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/1226410-20181009202515631-1056461501.png">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/1226410-20181009202815705-1130979104.gif">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/0b9d596d66775198cdf69c9f67ac1187.jpeg">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20241229202812615.png">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/003434_MygV_876354.png">
-<meta property="og:image" content="http://cyxchenyuxuan.github.io/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/51418d07fe5dfc7416c463928319da20.png">
-<meta property="article:published_time" content="2024-12-29T11:00:21.000Z">
-<meta property="article:modified_time" content="2024-12-29T12:43:15.342Z">
+<meta property="article:published_time" content="2025-04-06T13:08:32.000Z">
+<meta property="article:modified_time" content="2025-04-06T13:37:28.320Z">
 <meta property="article:author" content="ChenYuXuan">
-<meta property="article:tag" content="卷积神经网络 深度学习 卷积 池化">
+<meta property="article:tag" content="leetcode单词接龙">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/1226410-20181009202515631-1056461501.png">
 
-<link rel="canonical" href="http://cyxchenyuxuan.github.io/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/">
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2025/04/06/LeetCode%E4%B9%8B%E5%8D%95%E8%AF%8D%E6%8E%A5%E9%BE%99/">
 
 
 <script id="page-configurations">
@@ -53,7 +46,7 @@
   };
 </script>
 
-  <title>卷积神经网络 | ChenYuXuan的个人博客</title>
+  <title>LeetCode之单词接龙 | ChenYuXuan的个人博客</title>
   
 
 
@@ -184,7 +177,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2025/04/06/LeetCode%E4%B9%8B%E5%8D%95%E8%AF%8D%E6%8E%A5%E9%BE%99/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -197,7 +190,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          卷积神经网络
+          LeetCode之单词接龙
         </h1>
 
         <div class="post-meta">
@@ -208,7 +201,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-12-29 19:00:21 / 修改时间：20:43:15" itemprop="dateCreated datePublished" datetime="2024-12-29T19:00:21+08:00">2024-12-29</time>
+              <time title="创建时间：2025-04-06 21:08:32 / 修改时间：21:37:28" itemprop="dateCreated datePublished" datetime="2025-04-06T21:08:32+08:00">2025-04-06</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -216,7 +209,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                  <a href="/categories/LeetCode%E8%8F%9C%E9%B8%9F%E9%A2%98%E8%A7%A3/" itemprop="url" rel="index"><span itemprop="name">LeetCode菜鸟题解</span></a>
                 </span>
             </span>
 
@@ -233,7 +226,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.6k</span>
+              <span>2.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -252,49 +245,38 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="一-什么是卷积神经网络"><a href="#一-什么是卷积神经网络" class="headerlink" title="一. 什么是卷积神经网络"></a>一. 什么是卷积神经网络</h1><p>卷积神经网络是近年发展起来的，并引起广泛重视的一种高效识别方法，20世纪60年代，Hubel和Wiesel在研究猫脑皮层中用于局部敏感和方向选择的神经元时发现其独特的网络结构可以有效地降低反馈神经网络的复杂性，继而提出了卷积神经网络（Convolutional Neural Networks-简称CNN）。现在，CNN已经成为众多科学领域的研究热点之一，特别是在模式分类领域，由于该网络避免了对图像的复杂前期预处理，可以直接输入原始图像，因而得到了更为广泛的应用。 K.Fukushima在1980年提出的新识别机是卷积神经网络的第一个实现网络。随后，更多的科研工作者对该网络进行了改进。其中，具有代表性的研究成果是Alexander和Taylor提出的“改进认知机”，该方法综合了各种改进方法的优点并避免了耗时的误差反向传播</p>
-<span id="more"></span>
-<p>一个简单的CNN可能只包含几个卷积层、池化层和全连接层，而一个复杂的CNN可能包含多个卷积层、池化层、归一化层以及更深的全连接层结构。此外，现代CNN架构可能还包括残差连接、注意力机制等高级特性</p>
-<p>CNN主要用来识别位移、缩放及其他形式扭曲不变性的二维图形，该部分功能主要由池化层实现。由于CNN的特征检测层通过训练数据进行学习，所以在使用CNN时，避免了显式的特征抽取，而隐式地从训练数据中进行学习；再者由于<strong>同一特征映射面上的神经元权值相同</strong>，所以网络可以并行学习，这也是卷积网络相对于神经元彼此相连网络的一大优势。卷积神经网络以其局部权值共享的特殊结构在语音识别和图像处理方面有着独特的优越性，其布局更接近于实际的生物神经网络，权值共享降低了网络的复杂性，特别是多维输入向量的图像可以直接输入网络这一特点避免了特征提取和分类过程中数据重建的复杂度</p>
-<p>下面给出一张图像识别的例子，CNN可以识别出是X还是O</p>
-<img src="/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/1226410-20181009202515631-1056461501.png" class="" title="img">
-<p>一个简单的卷积神经网络包含输入层、<strong>卷积层、ReLU激活函数、池化层、全连接层</strong>、输出层，下面将具体介绍卷积层、ReLU激活函数、池化层、全连接层</p>
-<h1 id="二-卷积层"><a href="#二-卷积层" class="headerlink" title="二. 卷积层"></a>二. 卷积层</h1><p>给出一张图片让CNN识别，CNN并不知道这些特征分别属于原图的哪些部分所以，它会在原图中把每一个可能的位置都进行尝试，这就相当于把feature变成了一个过滤器，用于匹配的过程就被称之为卷积操作，卷积神经网络也就由此诞生</p>
-<p>卷积操作如下所示</p>
-<img src="/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/1226410-20181009202815705-1130979104.gif" class="" title="img">
-<p>关于卷积的操作已经在<a href="https://cyxchenyuxuan.github.io/2024/12/29/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E5%8D%B7%E7%A7%AF%E5%B1%82/#more">深度学习中的卷积层</a>中进行详细讲解</p>
-<h1 id="三-池化层"><a href="#三-池化层" class="headerlink" title="三. 池化层"></a>三. 池化层</h1><p>池化层的目的是为了有效的减少计算量，具体来说池化就是将输入图像进行缩小，减少像素信息，只保留重要信息，池化过程在一般卷积过程后。池化（pooling）的本质其实就是采样。Pooling对于输入的Feature Map，选择某种方式对其进行降维压缩，以加快运算速度</p>
-<p>常见的池化方法有<strong>最大池化（Max Pooling）</strong>、<strong>平均池化（Average Pooling）</strong>、<strong>自适应平均池化（Adaptive Average Pooling）</strong>、<strong>最大平均池化（Max-Average Pooling）</strong></p>
+        <h1 id="单词接龙"><a href="#单词接龙" class="headerlink" title="单词接龙"></a>单词接龙</h1><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/word-ladder/description/">力扣题目链接</a></p>
+<p>字典 $wordList$ 中从单词 $beginWord$ 到 $endWord$的 <strong>转换序列</strong> 是一个按下述规格形成的序列 $beginWord -&gt; s_1 -&gt; s_2 -&gt; … -&gt; s_k$：</p>
 <ul>
-<li><strong>最大池化</strong>：在池化窗口内选择最大值作为输出。保留特征映射中最重要的特征</li>
-<li><strong>平均池化</strong>：计算池化窗口内所有值的平均值作为输出。这种方法可以平滑特征映射，减少噪声</li>
-<li><strong>自适应平均池化</strong>：动态调整输出的大小，使得无论输入特征映射的大小如何，输出都具有相同的尺寸</li>
-<li><strong>最大平均池化</strong>：结合了最大池化和平均池化，先在池化窗口内选择最大值，然后计算最大值和窗口内所有值的平均值的平均值</li>
+<li>每一对相邻的单词只差一个字母。</li>
+<li>对于 $1 &lt;= i &lt;= k$ 时，每个 $s_i$ 都在 $wordList$ 中。注意， $beginWord$ 不需要在 $wordList$ 中。</li>
+<li>$s_k == endWord$</li>
 </ul>
-<p>下面以最大池化为例，展示了其具体过程</p>
-<img src="/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/0b9d596d66775198cdf69c9f67ac1187.jpeg" class="" title="img">
-<p>从上图可以看出，池化层与卷积层有着类似的操作，即从feature map中按区域操作，来<strong>得到新的feature map</strong>。池化层中不含有任何参数，只是单纯的对特征进行凝练和压缩。对于多通道的特征图来说，池化并不会改变通道的数量。换句话说，池化层的作用是对每一层特征图进行压缩，并保持原通道不变</p>
-<p>池化层（以最大池化为例）的函数为<code>torch.nn.MaxPool2d(kernel_size = 2, stride, padding)</code>，参数解释如下</p>
+<p>给你两个单词 $beginWord$ 和 $endWord$ 和一个字典 $wordList$ ，返回 <em>从 $beginWord$ 到 $endWord$ 的 <strong>最短转换序列</strong> 中的 <strong>单词数目</strong></em> 。如果不存在这样的转换序列，返回 $0$。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：beginWord = &quot;hit&quot;, endWord = &quot;cog&quot;, wordList = [&quot;hot&quot;,&quot;dot&quot;,&quot;dog&quot;,&quot;lot&quot;,&quot;log&quot;,&quot;cog&quot;]</span><br><span class="line">输出：5</span><br><span class="line">解释：一个最短转换序列是 &quot;hit&quot; -&gt; &quot;hot&quot; -&gt; &quot;dot&quot; -&gt; &quot;dog&quot; -&gt; &quot;cog&quot;, 返回它的长度 5。</span><br></pre></td></tr></table></figure>
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：beginWord = &quot;hit&quot;, endWord = &quot;cog&quot;, wordList = [&quot;hot&quot;,&quot;dot&quot;,&quot;dog&quot;,&quot;lot&quot;,&quot;log&quot;]</span><br><span class="line">输出：0</span><br><span class="line">解释：endWord &quot;cog&quot; 不在字典中，所以无法进行转换。</span><br></pre></td></tr></table></figure>
+<p><strong>提示：</strong></p>
 <ul>
-<li><code>kernel_size</code>：表示池化窗口的尺寸，kernel_size=2表示池化窗口的大小是 $2\times2$</li>
-<li><code>stride</code>： 表示步长，表示池化窗口每次移动的像素值</li>
-<li><code>padding</code>：表示填充的像素值，如果未指定则默认<code>padding = 0</code></li>
+<li><code>1 &lt;= beginWord.length &lt;= 10</code></li>
+<li><code>endWord.length == beginWord.length</code></li>
+<li><code>1 &lt;= wordList.length &lt;= 5000</code></li>
+<li><code>wordList[i].length == beginWord.length</code></li>
+<li><code>beginWord</code>、<code>endWord</code> 和 <code>wordList[i]</code> 由小写英文字母组成</li>
+<li><code>beginWord != endWord</code></li>
+<li><code>wordList</code> 中的所有字符串 <strong>互不相同</strong></li>
 </ul>
-<p>池化层的输出尺寸的计算与卷积层一致</p>
-<script type="math/tex; mode=display">
-m_o = \frac{m-k+2p}{s} +1</script><p>其中$m_0$表示输出尺寸，$m$表示输入尺寸，$k$表示池化窗口的尺寸，$p$表示padding的值，$s$表示stride的值</p>
-<h1 id="四-ReLU激活函数"><a href="#四-ReLU激活函数" class="headerlink" title="四. ReLU激活函数"></a>四. ReLU激活函数</h1><p>常用的激活函数有sigmoid、tanh、relu等，前两者sigmoid和tanh比较常见于全连接层，ReLU常常作用于卷积层的下一层。多层感知机在接收到各个输入，然后进行求和，再经过激活函数后输出。在卷积神经网络中激活函数的作用是用来加入非线性因素，对卷积层输出结果做非线性映射</p>
-<p>在卷积神经网络中，激活函数一般使用ReLU函数，其特点是收敛快，求梯度简单。计算公式也很简单，ReLU函数为<code>max(0, T)</code>，即对于输入的负值，输出全为0，对于正值，则原样输出</p>
-<p><strong>注意</strong>：在卷积神经网络中卷积层、池化层、ReLU函数的执行顺序如下</p>
-<script type="math/tex; mode=display">
-卷积层 -> ReLU -> 池化层</script><h1 id="五-全连接层"><a href="#五-全连接层" class="headerlink" title="五. 全连接层"></a>五. 全连接层</h1><p>全连接层在整个卷积神经网络中起到<code>分类器</code>的作用，即通过卷积层、ReLU、池化层等步骤后，再经过全连接层对结果进行识别分类，</p>
-<p>全连接层是将所有已经处理好的feature map全都展平成一维向量，然后将这些一维向量从头到尾连接成一个整体的一维向量，这步操作就是将卷积层和池化层提取的特征整合起来，用于最终的决策或预测，下面给出两张图片来展示全连接层的工作原理</p>
-<img src="/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20241229202812615.png" class="" title="image-20241229202812615">
-<img src="/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/003434_MygV_876354.png" class="" title="img">
-<p>那么怎样对全连接层的数据进行分类呢？这就要用到之前已经讲到过的<strong>softmax</strong></p>
-<p>softmax函数将输出的原始的全连接层的数据转换为概率分布，其中所有类别的概率之和为1，并且每个类别的概率都在0到1之间，下面这张图展示了softmax是如何进行分类的</p>
-<img src="/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/51418d07fe5dfc7416c463928319da20.png" class="" title="img">
-<p><strong>注意</strong>：softmax函数并不用写在模型中。实际上，softmax的步骤是被集成到了交叉熵函数中的内容，使用torch时并不需要写softmax函数，可以使用<code>criterion = torch.nn.CrossEntropyLoss()</code>来调用交叉熵损失</p>
+<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p><strong>方案：普通BFS + Hash map（STL中的unordered_map）</strong></p>
+<p><em>缺点：时间和空间效率低，有待优化</em>。</p>
+<p>将每个单词视为节点，转换关系视为边，那么就构成了一个无权图。<strong>在无权图中求最短路径，想到BFS</strong>。如下图所示，每个单词只调整一个字母就能走向另一个单词，可以双向转换，所以是无权图。</p>
+
+<p>从起点到终点的最短转换序列也就是在无权图中求最短路径，即<strong>边数+1</strong>。采用单源BFS求解。</p>
+<p>顶点是$string$类型，若要存储该点对应的从起点到该点的最短路径，可以采用$Hash map$存储二者。设此哈希表名为$maps$。</p>
+<p>在此题中，我还采用了哈希表$visited$来存放每个节点的访问情况，初始是均未被访问，置为$false$，若该节点被访问，修改对应位置的值为$true$。</p>
+<p>由于是BFS，所以还要引入一个辅助队列$q$。</p>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><p>基于上述解题思路可以写出下面的<code>c++</code>代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">ladderLength</span><span class="params">(string beginWord, string endWord, vector&lt;string&gt;&amp; wordList)</span> </span>&#123;</span><br><span class="line">        queue&lt;string&gt; q;</span><br><span class="line">        unordered_map&lt;string, <span class="type">bool</span>&gt; visited;</span><br><span class="line">        unordered_map&lt;string, <span class="type">int</span>&gt; maps;            <span class="comment">//记录每个点距离起点的距离</span></span><br><span class="line">        </span><br><span class="line">        q.<span class="built_in">push</span>(beginWord);</span><br><span class="line">        visited[beginWord] = <span class="literal">true</span>;</span><br><span class="line">        maps[beginWord] = <span class="number">1</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span>(!q.<span class="built_in">empty</span>())&#123;</span><br><span class="line">            <span class="keyword">auto</span> front = q.<span class="built_in">front</span>();</span><br><span class="line">            q.<span class="built_in">pop</span>();</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">for</span>(<span class="type">const</span> <span class="keyword">auto</span>&amp; word : wordList)&#123;</span><br><span class="line">                <span class="keyword">if</span>(visited[word]) <span class="keyword">continue</span>;</span><br><span class="line">                </span><br><span class="line">                <span class="comment">//比较不同的字符数量</span></span><br><span class="line">                <span class="type">int</span> count = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; word.<span class="built_in">size</span>(); i++)&#123;</span><br><span class="line">                    <span class="keyword">if</span>(word[i] != front[i])&#123;</span><br><span class="line">                        count++;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                </span><br><span class="line">                <span class="comment">//只有count等于1满足条件，入队</span></span><br><span class="line">                <span class="keyword">if</span>(count == <span class="number">1</span>)&#123;</span><br><span class="line">                    maps[word] = maps[front] + <span class="number">1</span>;</span><br><span class="line">                    q.<span class="built_in">push</span>(word);</span><br><span class="line">                    visited[word] = <span class="literal">true</span>;</span><br><span class="line">                    </span><br><span class="line">                    <span class="keyword">if</span>(word == endWord) <span class="keyword">return</span> maps[endWord];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -304,7 +286,7 @@ m_o = \frac{m-k+2p}{s} +1</script><p>其中$m_0$表示输出尺寸，$m$表示�
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E5%8D%B7%E7%A7%AF-%E6%B1%A0%E5%8C%96/" rel="tag"># 卷积神经网络 深度学习 卷积 池化</a>
+              <a href="/tags/leetcode%E5%8D%95%E8%AF%8D%E6%8E%A5%E9%BE%99/" rel="tag"># leetcode单词接龙</a>
           </div>
 
         
@@ -313,13 +295,10 @@ m_o = \frac{m-k+2p}{s} +1</script><p>其中$m_0$表示输出尺寸，$m$表示�
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2024/12/29/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E5%8D%B7%E7%A7%AF%E5%B1%82/" rel="prev" title="深度学习中的卷积层">
-      <i class="fa fa-chevron-left"></i> 深度学习中的卷积层
+    <a href="/2025/04/06/LeetCode%E4%B9%8B%E5%B2%9B%E5%B1%BF%E6%95%B0%E9%87%8F/" rel="prev" title="LeetCode之岛屿数量">
+      <i class="fa fa-chevron-left"></i> LeetCode之岛屿数量
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2024/12/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8BLeNet/" rel="next" title="卷积神经网络之LeNet">
-      卷积神经网络之LeNet <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -378,7 +357,7 @@ m_o = \frac{m-k+2p}{s} +1</script><p>其中$m_0$表示输出尺寸，$m$表示�
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E4%BB%80%E4%B9%88%E6%98%AF%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">1.</span> <span class="nav-text">一. 什么是卷积神经网络</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="nav-number">2.</span> <span class="nav-text">二. 卷积层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="nav-number">3.</span> <span class="nav-text">三. 池化层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-ReLU%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0"><span class="nav-number">4.</span> <span class="nav-text">四. ReLU激活函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94-%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82"><span class="nav-number">5.</span> <span class="nav-text">五. 全连接层</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E8%AF%8D%E6%8E%A5%E9%BE%99"><span class="nav-number">1.</span> <span class="nav-text">单词接龙</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="nav-number">2.</span> <span class="nav-text">解题思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">代码实现</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
