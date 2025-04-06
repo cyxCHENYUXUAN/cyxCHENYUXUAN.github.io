@@ -36,9 +36,10 @@
 <meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/1363578-20180630154411739-1609549891.png">
 <meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/1363578-20180630154805372-1872676169.png">
 <meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/1363578-20180630160605880-1606205993.png">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/QQ_1743923091226.png">
 <meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/1363578-20180630161222280-66873200.png">
 <meta property="article:published_time" content="2025-03-31T12:09:27.000Z">
-<meta property="article:modified_time" content="2025-04-06T05:38:57.129Z">
+<meta property="article:modified_time" content="2025-04-06T07:05:07.263Z">
 <meta property="article:author" content="ChenYuXuan">
 <meta property="article:tag" content="数据结构 图基础">
 <meta name="twitter:card" content="summary">
@@ -218,7 +219,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-06 13:38:57" itemprop="dateModified" datetime="2025-04-06T13:38:57+08:00">2025-04-06</time>
+                <time title="修改时间：2025-04-06 15:05:07" itemprop="dateModified" datetime="2025-04-06T15:05:07+08:00">2025-04-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -267,7 +268,7 @@
 <p><strong>注意：线性表可以是空表，树可以是空树，但图不可以是空图</strong></p>
 <ol>
 <li><p><strong>有向图</strong></p>
-<p>若$E$是有向边（也称弧）的有限集合，则图$G$为有向图。弧是顶点的<strong>有序对</strong>，记为$<v,w>$，其中$v,w$是顶点，$v$称为<strong>弧尾</strong>，$w$称为<strong>弧头</strong>。$<v,w>$称为从$v$到$w$的弧，也称$v$邻接到$w$。</p>
+<p>若$E$是有向边（也称弧）的有限集合，则图$G$为有向图。弧是顶点的<strong>有序对</strong>，记为$\langle v, w \rangle$，其中$v,w$是顶点，$v$称为<strong>弧尾</strong>，$w$称为<strong>弧头</strong>。$\langle v, w \rangle$称为从$v$到$w$的弧，也称$v$邻接到$w$。</p>
 </li>
 <li><p><strong>无向图</strong></p>
 <p>若$E$是无向边（简称边）的有限集合，则称图G为无向图。边是顶点的<strong>无序对</strong>，记为$(v,w)$或$(w,v)$。可以说$w$和$v$互为邻接点。边$(v,w)$依附于$w$和$v$，或称边$(v,w)$和$v,w$相关联。</p>
@@ -337,8 +338,6 @@
 <img src="/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/d62a6059252dd42ae0f9b54c0a3b5bb5c8eab861" class="" title="img">
 </li>
 </ol>
-<p>​    </p>
-<p>​    </p>
 <h1 id="二-图的存储结构"><a href="#二-图的存储结构" class="headerlink" title="二. 图的存储结构"></a>二. <strong>图的存储结构</strong></h1><p><strong>图的四种常见的存储结构：邻接矩阵、邻接表、有向图的十字链表、无向图的邻接多重表。</strong></p>
 <h2 id="1-邻接矩阵"><a href="#1-邻接矩阵" class="headerlink" title="1. 邻接矩阵"></a>1. 邻接矩阵</h2><p><strong>图的领接矩阵（Adjacency Matrix）存储方式是用两个数组来表示图。一个一位数组存储图中顶点信息，一个二维数组（称为领接矩阵）存储图中的边或弧的信息。</strong></p>
 <p>无向图的邻接矩阵的第$i$行或第$i$列的非零元素的个数正好是第$i$个顶点的度，如下图所示</p>
@@ -362,7 +361,7 @@
 <p>对于弧结点：$tailvex$和$headvex$分别存放弧尾和弧头这两个顶点的编号；$headlink$指向弧头相同的下一条弧；$taillink$指向弧尾相同的下一条弧。</p>
 <p>对于顶点结点：$data$存放顶点的编号；$firstin$指向以该顶点为弧头的第一条弧；$firstout$指向以该顶点为弧尾的第一条弧；</p>
 <p>解释一下弧尾和弧头，如下图所示，$v$为弧尾，$w$为弧头。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    A((V)) --&gt; B((w))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<img src="/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/QQ_1743923091226.png" class="" title="img">
 <h2 id="4-无向图的邻接多重表"><a href="#4-无向图的邻接多重表" class="headerlink" title="4. 无向图的邻接多重表"></a>4. 无向图的邻接多重表</h2><p>对于无向图来说，如果更关注边的操作，可以仿照十字链表的方式，对边表结点的结构进行一些改造，即形成邻接多重表。</p>
 <p>在邻接表中，容易求得顶点和边的各种信息，但是求两个顶点之间是否存在边而执行删除边等操作时，需要分别在两个顶点的边表中遍历，效率低下。对于无向图来说，如果更关注边的操作，可以仿照十字链表的方式，对边表结点的结构进行一些改造，即形成邻接多重表。</p>
 <img src="/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/1363578-20180630161222280-66873200.png" class="" title="img">
@@ -665,7 +664,7 @@
 if (document.querySelectorAll('pre.mermaid').length) {
   NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
     mermaid.initialize({
-      theme    : 'forest',
+      theme    : 'default',
       logLevel : 3,
       flowchart: { curve     : 'linear' },
       gantt    : { axisFormat: '%m/%d/%Y' },
