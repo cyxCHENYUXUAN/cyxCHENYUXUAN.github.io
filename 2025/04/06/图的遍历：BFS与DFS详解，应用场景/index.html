@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cyxchenyuxuan.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="遍历的定义：从已给的连通图中某一个顶点出发，沿着边访问图中所有的顶点，且每个顶点仅被访问一次，就叫做图的遍历，它是图的基本运算  遍历的实质：找每个顶点的邻接节点的过程  图的特点：图中可能存在回路，且图的任一顶点都可能与其它顶点相通，在访问完某个顶点之后，可能会沿着某些边又回到了曾经访问过的顶点  如何避免不重复访问 解决思路——设置辅助数组$visited[n]$来标记每个顶点是否已经被访问">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图的遍历：BFS与DFS详解，应用场景">
+<meta property="og:url" content="http://cyxchenyuxuan.github.io/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/index.html">
+<meta property="og:site_name" content="ChenYuXuan的个人博客">
+<meta property="og:description" content="遍历的定义：从已给的连通图中某一个顶点出发，沿着边访问图中所有的顶点，且每个顶点仅被访问一次，就叫做图的遍历，它是图的基本运算  遍历的实质：找每个顶点的邻接节点的过程  图的特点：图中可能存在回路，且图的任一顶点都可能与其它顶点相通，在访问完某个顶点之后，可能会沿着某些边又回到了曾经访问过的顶点  如何避免不重复访问 解决思路——设置辅助数组$visited[n]$来标记每个顶点是否已经被访问">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/1">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/2">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/v2-c99400ca84a22ff6f871eeb8f0b46eea_1440w.jpg">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/3">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/4">
+<meta property="og:image" content="http://cyxchenyuxuan.github.io/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/v2-8b7fbf0da66f503abf820836e9a450f1_1440w.jpg">
+<meta property="article:published_time" content="2025-04-06T07:09:39.000Z">
+<meta property="article:modified_time" content="2025-04-06T12:09:18.876Z">
+<meta property="article:author" content="ChenYuXuan">
+<meta property="article:tag" content="数据结构 图的遍历 BFS与DFS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cyxchenyuxuan.github.io/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/1">
+
+<link rel="canonical" href="http://cyxchenyuxuan.github.io/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>图的遍历：BFS与DFS详解，应用场景 | ChenYuXuan的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ChenYuXuan的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-github">
+
+    <a href="https://github.com/cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>Github</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cyxchenyuxuan.github.io/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ChenYuXuan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ChenYuXuan的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          图的遍历：BFS与DFS详解，应用场景
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-04-06 15:09:39 / 修改时间：20:09:18" itemprop="dateCreated datePublished" datetime="2025-04-06T15:09:39+08:00">2025-04-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ul>
+<li><p>遍历的定义：从已给的连通图中某一个顶点出发，沿着边访问图中所有的顶点，且每个顶点仅被访问一次，就叫做图的遍历，它是图的基本运算</p>
+</li>
+<li><p>遍历的实质：找每个顶点的邻接节点的过程</p>
+</li>
+<li><p>图的特点：图中可能存在回路，且图的任一顶点都可能与其它顶点相通，在访问完某个顶点之后，可能会沿着某些边又回到了曾经访问过的顶点</p>
+</li>
+<li><p>如何避免不重复访问</p>
+<p>解决思路——设置辅助数组$visited[n]$来标记每个顶点是否已经被访问</p>
+<ul>
+<li>初始状态$visited[i]$为$0(false)$</li>
+<li>顶点$i$被访问，将$visited[i]$改为$1(true)$，防止其被多次访问</li>
+</ul>
+</li>
+<li><p>图的常见的遍历算法</p>
+<ul>
+<li>广度优先搜索（BFS）</li>
+<li>深度优先搜索（DFS）</li>
+</ul>
+</li>
+</ul>
+<h1 id="一-广度优先搜索（BFS）"><a href="#一-广度优先搜索（BFS）" class="headerlink" title="一. 广度优先搜索（BFS）"></a>一. 广度优先搜索（BFS）</h1><p>图的广度优先搜索（BFS）类似于树的层次遍历</p>
+<h2 id="1-基本思想"><a href="#1-基本思想" class="headerlink" title="1. 基本思想"></a>1. 基本思想</h2><p>首先访问起始顶点$v$，然后选取与$v$邻接的全部顶点$w$，进行访问，再依次访问与$w$邻接的全部顶点（已经访问过的除外），以此类推，直到所有顶点都被访问过为止。</p>
+<ul>
+<li>广度优先搜索遍历图的时候，需要用到一个队列（二叉树的层次遍历也要用到队列），<strong>节点入队时，将该节点设置为已访问</strong>，执行过程概括如下：<ul>
+<li>任取图中的一个顶点访问，将其入队，将这个顶点标记为已访问。</li>
+<li>（当队列不为空时循环执行此次操作）将队头顶点出队，检查出队顶点的所有邻接顶点，访问未被访问过的邻接顶点，同时将其入队。</li>
+<li>当队列为空时，跳出循环，BFS完成。</li>
+</ul>
+</li>
+</ul>
+<p>下图展示了BFS的过程</p>
+<img src="/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/1" class="" title="img1">
+<img src="/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/2" class="" title="img2">
+<h2 id="2-BFS的性能分析"><a href="#2-BFS的性能分析" class="headerlink" title="2. BFS的性能分析"></a>2. BFS的性能分析</h2><p>无论是邻接表还是邻接矩阵的存储方式，BFS算法都需要借助一个辅助队列，$n$个顶点均入队一次，在最坏的情况下，空间复杂度为$O(|V|)$。</p>
+<p><strong>遍历图的过程实质上是对每个顶点查找其邻接点的过程</strong>，耗费时间取决于所采取的存储结构。</p>
+<p>采用<strong>邻接表存储</strong>，每个顶点均需要搜索（入队）一次，时间复杂度为$O(|V|)$，在搜索每个顶点的邻接点时，每个边至少访问一次，时间复杂度为$O(|E|)$，总的时间复杂度为$O(|V|+|E|)$。</p>
+<p>采用<strong>邻接矩阵存储</strong>，查找每个顶点的邻接点所需的时间为$O(|V|)$，查找对应的边需要的时间为$O(|V|^2)$，总时间为$O(|V|^2)$。</p>
+<h2 id="3-广度优先生成树"><a href="#3-广度优先生成树" class="headerlink" title="3. 广度优先生成树"></a>3. 广度优先生成树</h2><p>在广度遍历的过程中，我们可以得到一棵遍历树，称为广度优先生成树，如图所示。需要注意的是，一给定图的邻接矩阵存储表示是唯一的，故其广度优先生成树也是唯一的，但由于邻接表存储表示不唯一，故其广度优先生成树也是不唯一的。</p>
+<img src="/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/v2-c99400ca84a22ff6f871eeb8f0b46eea_1440w.jpg" class="" title="img">
+<h2 id="4-BFS算法的应用场景——求（无权图的单源）最短路径问题"><a href="#4-BFS算法的应用场景——求（无权图的单源）最短路径问题" class="headerlink" title="4. BFS算法的应用场景——求（无权图的单源）最短路径问题"></a>4. BFS算法的应用场景——求（无权图的单源）最短路径问题</h2><p>由于广度优先搜索总是按照距离由近到远遍历图中的每个顶点，所有可以利用这个性质求解最短路径问题。</p>
+<p>BFS算法求解最短路径的基本代码模板如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">BFS_MIN_Distance</span><span class="params">(Graph G, <span class="type">int</span> u)</span></span>&#123;</span><br><span class="line">    <span class="comment">//用d[i]表示从u到i的最短路径</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i&lt;G.vexnum;i++)</span><br><span class="line">        d[i] = ∞;					<span class="comment">//初始化路径长度</span></span><br><span class="line">    visited[u] = <span class="literal">true</span>; d[u] = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">EnQueue</span>(Q,u);</span><br><span class="line">    <span class="keyword">while</span>(!<span class="built_in">isEmpty</span>(Q))&#123;</span><br><span class="line">        <span class="built_in">DeQueue</span>(Q,u);				<span class="comment">//对头元素出队</span></span><br><span class="line">        <span class="keyword">for</span>(w = <span class="built_in">FirstNeighbor</span>(G,u);w&gt;=<span class="number">0</span>;w=<span class="built_in">NextNeighbor</span>(G,u,w))</span><br><span class="line">            <span class="keyword">if</span>(!visited[w])&#123;		<span class="comment">//邻接节点未访问</span></span><br><span class="line">                visited[w] = <span class="literal">true</span>;	<span class="comment">//标记为已访问</span></span><br><span class="line">                d[w] = d[u] + <span class="number">1</span>;	<span class="comment">//更新最短路径长度，+1</span></span><br><span class="line">                <span class="built_in">Enqueue</span>(Q,w);		<span class="comment">//邻接节点入队</span></span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="二-深度优先搜索（DFS）"><a href="#二-深度优先搜索（DFS）" class="headerlink" title="二. 深度优先搜索（DFS）"></a>二. 深度优先搜索（DFS）</h1><p>图的深度优先搜索（DFS）类似于树的先序遍历</p>
+<h2 id="1-基本思想-1"><a href="#1-基本思想-1" class="headerlink" title="1. 基本思想"></a>1. 基本思想</h2><p>首先访问图中某一起始地点$v$，然后由$v$出发，访问与$v$邻接且未被访问过的任意一个顶点$w_1$，再访问与$w_1$邻接且未被访问过的任意一个顶点$w_2$……重复上述过程。<strong>当不能再继续向下访问时，依次退回到最近被访问的顶点</strong>，若它还有邻接顶点未被访问过，则从该点开始继续上述搜索，直到图中所有顶点被访问过为止。</p>
+<ul>
+<li>深度优先搜索遍历图时，需要用到一个栈（或采用递归），<strong>栈顶节点出栈，此时标记该节点为已访问</strong>，算法执行过程如下：<ul>
+<li>首先访问顶点$i$，并将其设置为已访问，即$visited[i]=1$。</li>
+<li>然后搜索与顶点$i$有边相连的下一个顶点$j$，若$j$未被访问过，则访问它，并且将$j$设置为已访问，$visited[j]=1$，然后从$j$开始重复此过程，若$j$已访问，则查看$i$的其它邻接节点。</li>
+<li>若$i$的所有邻接节点均被访问过，则回退到前一个顶点并且重复上面的第二步，直到所有顶点被访问完。</li>
+</ul>
+</li>
+</ul>
+<p>下图展示了DFS的过程（节点上的蓝色数字代表访问顺序）</p>
+<img src="/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/3" class="" title="img3">
+<img src="/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/4" class="" title="img4">
+<h2 id="2-DFS的性能分析"><a href="#2-DFS的性能分析" class="headerlink" title="2. DFS的性能分析"></a>2. DFS的性能分析</h2><p>DFS算法是一个递归算法，需要借助一个递归工作栈；所以其空间复杂度为$O(|V|)$。</p>
+<p>遍历图的过程实质上是通过边来查找邻接点的过程，因此<strong>两种遍历方式（DFS和BFS）的时间复杂度都相同</strong>，不同之处在于对顶点的访问顺序不同。采用邻接矩阵存储时，二者的时间复杂度均为$O(|V|^2)$；采用邻接表存储时，二者的时间复杂度均为$O(|V|+|E|)$。</p>
+<h2 id="3-深度优先生成树和生成森林"><a href="#3-深度优先生成树和生成森林" class="headerlink" title="3. 深度优先生成树和生成森林"></a>3. 深度优先生成树和生成森林</h2><p>对<strong>连通图</strong>调用DFS才能产生深度优先生成树，否则将产生深度优先生成森林。与BFS类似，基于邻接表存储的深度优先生成树是<strong>不唯一的</strong>。</p>
+<img src="/2025/04/06/%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%EF%BC%9ABFS%E4%B8%8EDFS%E8%AF%A6%E8%A7%A3%EF%BC%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/v2-8b7fbf0da66f503abf820836e9a450f1_1440w.jpg" class="" title="img">
+<h2 id="4-DFS算法的应用场景——拓扑排序、连通分量检测、迷宫问题"><a href="#4-DFS算法的应用场景——拓扑排序、连通分量检测、迷宫问题" class="headerlink" title="4. DFS算法的应用场景——拓扑排序、连通分量检测、迷宫问题"></a>4. DFS算法的应用场景——拓扑排序、连通分量检测、迷宫问题</h2><p>深度优先遍历主要思路是从一条未访问的顶点V开始，沿着一条路一直走到底，然后从这条路尽头的节点回退到上一个节点，再从另一条路开始走到底……，不断循环重复这个过程，直到所有的顶点都遍历完成，它的特点是<strong>不撞南墙不尽头</strong>，先走完一条路，换再继续一条路走。</p>
+<p>DFS沿着路径尽可能深入，回溯后继续探索其它分支。利用这种特点，可以解决上述问题。</p>
+<h1 id="三-图的遍历和图的连通性"><a href="#三-图的遍历和图的连通性" class="headerlink" title="三. 图的遍历和图的连通性"></a>三. 图的遍历和图的连通性</h1><p><strong>对于无向图，调用DFS()和BFS()</strong>（这两个函数在下文给出）<strong>的次数等于该图的连通分量数</strong>。</p>
+<p><strong>在有向图中，则不是这样的</strong>。</p>
+<p>图的遍历算法可以用来判断图的连通性。</p>
+<p>对于无向图：</p>
+<ul>
+<li>若无向图是连通的，则从任一结点出发，仅需一次遍历就能够访问图中的所有顶点</li>
+<li>若无向图是非连通的，则从某一个顶点出发，一次遍历只能访问到该顶点所在连通分量的所有顶点，而对于图中其他连通分量的顶点，则无法通过这次遍历访问。</li>
+</ul>
+<p>对于有向图：</p>
+<ul>
+<li>若从初始顶点到图中的每个顶点都有路径，则能访问到图中的所有顶点，否则不能访问到所有顶点。</li>
+</ul>
+<h1 id="四-BFS的队列实现"><a href="#四-BFS的队列实现" class="headerlink" title="四. BFS的队列实现"></a>四. BFS的队列实现</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// BFS队列实现</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">BFS</span><span class="params">(<span class="type">int</span> startVertex)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//visited数组</span></span><br><span class="line">        <span class="function">vector&lt;<span class="type">bool</span>&gt; <span class="title">visited</span><span class="params">(numVertices, <span class="literal">false</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//辅助队列</span></span><br><span class="line">        queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line"></span><br><span class="line">        visited[startVertex] = <span class="literal">true</span>;</span><br><span class="line">        q.<span class="built_in">push</span>(startVertex);</span><br><span class="line"></span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;BFS 遍历结果 (从顶点 &quot;</span> &lt;&lt; startVertex &lt;&lt; <span class="string">&quot; 开始): &quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>(!q.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">            <span class="comment">//取队头元素</span></span><br><span class="line">            <span class="type">int</span> currentVertex = q.<span class="built_in">front</span>();</span><br><span class="line">            q.<span class="built_in">pop</span>();<span class="comment">//出队</span></span><br><span class="line">            cout&lt;&lt; currentVertex &lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//将队头的邻接顶点入队（存储结构为邻接表）</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> adjacent : adjList[currentVertex]) &#123;</span><br><span class="line">                <span class="comment">//将未访问的邻接顶点加入入队</span></span><br><span class="line">                <span class="keyword">if</span>(!visited[adjacent]) &#123;</span><br><span class="line">                    q.<span class="built_in">push</span>(adjacent);<span class="comment">//入队</span></span><br><span class="line">                    visited[adjacent] = <span class="literal">true</span>;<span class="comment">//标记为已访问</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        cout&lt;&lt; endl;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="五-DFS的递归实现和栈实现"><a href="#五-DFS的递归实现和栈实现" class="headerlink" title="五. DFS的递归实现和栈实现"></a>五. DFS的递归实现和栈实现</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//DFS-递归实现的辅助函数</span></span><br><span class="line">    <span class="comment">//作用：①访问一个节点，同时修改其对应的visited数组为true；</span></span><br><span class="line">    <span class="comment">//②递归访问其所有visited值为false的邻接节点，同时修改visited值为true</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">DFSRecursiveUtil</span><span class="params">(<span class="type">int</span> vertex, vector&lt;<span class="type">bool</span>&gt;&amp; visited)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//标记当前顶点为已访问，输出</span></span><br><span class="line">        visited[vertex] = <span class="literal">true</span>;</span><br><span class="line">        cout&lt;&lt; vertex &lt;&lt; <span class="string">&quot; &quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//递归访问所有未访问的邻接节点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> adjacent : adjList[vertex]) &#123;</span><br><span class="line">            <span class="keyword">if</span>(!visited[adjacent]) &#123;</span><br><span class="line">                <span class="built_in">DFSRecursiveUtil</span>(adjacent, visited);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//DFS-递归实现</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">DFSRecursive</span><span class="params">(<span class="type">int</span> startVertex)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//visited数组，初始均为false</span></span><br><span class="line">        <span class="function">vector&lt;<span class="type">bool</span>&gt; <span class="title">visited</span><span class="params">(numVertices, <span class="literal">false</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;DFS 递归遍历结果 (从顶点 &quot;</span> &lt;&lt; startVertex &lt;&lt; <span class="string">&quot; 开始): &quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//从起始顶点开始DFS</span></span><br><span class="line">        <span class="built_in">DFSRecursiveUtil</span>(startVertex, visited);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 处理图中不连通的部分（如果有）</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; numVertices; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!visited[i]) &#123;</span><br><span class="line">                <span class="built_in">DFSRecursiveUtil</span>(i, visited);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        cout &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//DFS-栈实现</span></span><br><span class="line">	<span class="comment">//第一步，首先将startVertex入栈，startVertex此时为栈顶元素</span></span><br><span class="line">    <span class="comment">//将栈顶出栈，再加入已经出栈的栈顶元素的所有未访问的邻接节点</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">DFSStack</span><span class="params">(<span class="type">int</span> startVertex)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//visited数组，初始化为false</span></span><br><span class="line">        <span class="function">vector&lt;<span class="type">bool</span>&gt; <span class="title">visited</span><span class="params">(numVertices, <span class="literal">false</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//辅助栈</span></span><br><span class="line">        stack&lt;<span class="type">int</span>&gt; s;</span><br><span class="line"></span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;DFS 栈遍历结果 (从顶点 &quot;</span> &lt;&lt; startVertex &lt;&lt; <span class="string">&quot; 开始): &quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//初始时，栈为空，顶点入栈</span></span><br><span class="line">        s.<span class="built_in">push</span>(startVertex);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//栈不为空则循环继续</span></span><br><span class="line">        <span class="keyword">while</span>(!s.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">            <span class="comment">//先获取栈顶元素，再将栈顶元素出栈</span></span><br><span class="line">            <span class="type">int</span> currentVertex = s.<span class="built_in">top</span>();</span><br><span class="line">            s.<span class="built_in">pop</span>();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//如果当前顶点（栈顶元素）未访问，则标记为已访问并打印</span></span><br><span class="line">            <span class="keyword">if</span>(!visited[currentVertex]) &#123;</span><br><span class="line">                visited[currentVertex] = <span class="literal">true</span>;</span><br><span class="line">                cout &lt;&lt; currentVertex &lt;&lt; <span class="string">&quot; &quot;</span>;</span><br><span class="line"></span><br><span class="line">                <span class="comment">//将所有与栈顶元素邻接、未被访问过（邻接节点的visited数组为false）的邻接节点按照逆序入栈</span></span><br><span class="line">                <span class="keyword">for</span>(<span class="type">int</span> i = adjList[currentVertex].<span class="built_in">size</span>() - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">                    <span class="type">int</span> adjacent = adjList[currentVertex][i];</span><br><span class="line">                    <span class="keyword">if</span>(!visited[adjacent]) &#123;</span><br><span class="line">                        s.<span class="built_in">push</span>(adjacent);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 处理图中不连通的部分（如果有）</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; numVertices; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!visited[i]) &#123;</span><br><span class="line">                s.<span class="built_in">push</span>(i);</span><br><span class="line">                <span class="keyword">while</span> (!s.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">                    <span class="type">int</span> currentVertex = s.<span class="built_in">top</span>();</span><br><span class="line">                    s.<span class="built_in">pop</span>();</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (!visited[currentVertex]) &#123;</span><br><span class="line">                        visited[currentVertex] = <span class="literal">true</span>;</span><br><span class="line">                        cout &lt;&lt; currentVertex &lt;&lt; <span class="string">&quot; &quot;</span>;</span><br><span class="line"></span><br><span class="line">                        <span class="keyword">for</span> (<span class="type">int</span> j = adjList[currentVertex].<span class="built_in">size</span>() - <span class="number">1</span>; j &gt;= <span class="number">0</span>; j--) &#123;</span><br><span class="line">                            <span class="type">int</span> adjacent = adjList[currentVertex][j];</span><br><span class="line">                            <span class="keyword">if</span> (!visited[adjacent]) &#123;</span><br><span class="line">                                s.<span class="built_in">push</span>(adjacent);</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        cout &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="六-LeetCode题目实战"><a href="#六-LeetCode题目实战" class="headerlink" title="六. LeetCode题目实战"></a>六. LeetCode题目实战</h1><h2 id="1-岛屿数量（DFS）"><a href="#1-岛屿数量（DFS）" class="headerlink" title="1. 岛屿数量（DFS）"></a>1. 岛屿数量（DFS）</h2><h2 id="2-单词接龙（BFS）"><a href="#2-单词接龙（BFS）" class="headerlink" title="2. 单词接龙（BFS）"></a>2. 单词接龙（BFS）</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86-BFS%E4%B8%8EDFS/" rel="tag"># 数据结构 图的遍历 BFS与DFS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/03/31/%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/" rel="prev" title="图的定义、分类与存储结构">
+      <i class="fa fa-chevron-left"></i> 图的定义、分类与存储结构
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2%EF%BC%88BFS%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">一. 广度优先搜索（BFS）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%9F%BA%E6%9C%AC%E6%80%9D%E6%83%B3"><span class="nav-number">1.1.</span> <span class="nav-text">1. 基本思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-BFS%E7%9A%84%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-number">1.2.</span> <span class="nav-text">2. BFS的性能分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%94%9F%E6%88%90%E6%A0%91"><span class="nav-number">1.3.</span> <span class="nav-text">3. 广度优先生成树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-BFS%E7%AE%97%E6%B3%95%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E2%80%94%E2%80%94%E6%B1%82%EF%BC%88%E6%97%A0%E6%9D%83%E5%9B%BE%E7%9A%84%E5%8D%95%E6%BA%90%EF%BC%89%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.4.</span> <span class="nav-text">4. BFS算法的应用场景——求（无权图的单源）最短路径问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2%EF%BC%88DFS%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二. 深度优先搜索（DFS）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%9F%BA%E6%9C%AC%E6%80%9D%E6%83%B3-1"><span class="nav-number">2.1.</span> <span class="nav-text">1. 基本思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-DFS%E7%9A%84%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-number">2.2.</span> <span class="nav-text">2. DFS的性能分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%94%9F%E6%88%90%E6%A0%91%E5%92%8C%E7%94%9F%E6%88%90%E6%A3%AE%E6%9E%97"><span class="nav-number">2.3.</span> <span class="nav-text">3. 深度优先生成树和生成森林</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-DFS%E7%AE%97%E6%B3%95%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E2%80%94%E2%80%94%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F%E3%80%81%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F%E6%A3%80%E6%B5%8B%E3%80%81%E8%BF%B7%E5%AE%AB%E9%97%AE%E9%A2%98"><span class="nav-number">2.4.</span> <span class="nav-text">4. DFS算法的应用场景——拓扑排序、连通分量检测、迷宫问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86%E5%92%8C%E5%9B%BE%E7%9A%84%E8%BF%9E%E9%80%9A%E6%80%A7"><span class="nav-number">3.</span> <span class="nav-text">三. 图的遍历和图的连通性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-BFS%E7%9A%84%E9%98%9F%E5%88%97%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.</span> <span class="nav-text">四. BFS的队列实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94-DFS%E7%9A%84%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%E5%92%8C%E6%A0%88%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.</span> <span class="nav-text">五. DFS的递归实现和栈实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD-LeetCode%E9%A2%98%E7%9B%AE%E5%AE%9E%E6%88%98"><span class="nav-number">6.</span> <span class="nav-text">六. LeetCode题目实战</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%B2%9B%E5%B1%BF%E6%95%B0%E9%87%8F%EF%BC%88DFS%EF%BC%89"><span class="nav-number">6.1.</span> <span class="nav-text">1. 岛屿数量（DFS）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%8D%95%E8%AF%8D%E6%8E%A5%E9%BE%99%EF%BC%88BFS%EF%BC%89"><span class="nav-number">6.2.</span> <span class="nav-text">2. 单词接龙（BFS）</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ChenYuXuan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cyxCHENYUXUAN" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cyxCHENYUXUAN" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cyx2897@gmail.com" title="E-Mail → mailto:cyx2897@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <font color="red"><i class="fa fa-heartbeat" aria-hidden="true"></i></font>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChenYuXuan</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">106k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:37</span>
+</div>
+<!--添加运行时间-->
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+      Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+      year - 作为date对象的年份，为4位年份值
+      month - 0-11之间的整数，做为date对象的月份
+      day - 1-31之间的整数，做为date对象的天数
+      hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+      minutes - 0-59之间的整数，做为date对象的分钟数
+      seconds - 0-59之间的整数，做为date对象的秒数
+      microseconds - 0-999之间的整数，做为date对象的毫秒数
+     */
+		var t1 = Date.UTC(2024,12,24,15,00,00); //北京时间
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" 已运行"+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒";
+	}
+	siteTime();
+</script>
+<!--// 添加运行时间-->
+
+<!-- 新增访客统计代码 -->
+<div class="busuanzi-count">
+    <script async="" src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      访客数量 <span class="busuanzi-value" id="busuanzi_value_site_uv"></span> 人
+      <span class="post-meta-divider">|</span>
+    </span>
+    <div class="powered-by"></div>
+    <span class="site-uv">
+      <i class="fa fa-eye"></i>
+      总访问量 <span class="busuanzi-value" id="busuanzi_value_site_pv"></span> 次
+    </span>
+    <!--
+    <span class="site-pv">
+      <i class="fa fa-pencil"></i>
+      本站博客共 <span class="post-count">52.5k</span> 字
+    </span>
+    -->
+</div>
+<!-- 新增访客统计代码 END-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'default',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
